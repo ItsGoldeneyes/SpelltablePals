@@ -25,7 +25,7 @@ def get_blocked_users():
     blocked_users = SpelltableBlocked.query.all()
 
     # Convert the results to a list of dictionaries
-    blocked_users_list = [{'id': user.id, 'username': user.username} for user in blocked_users]
+    blocked_users_list = [{'username': user.username, 'blocked':user.blocked} for user in blocked_users]
 
     # Return the blocked users as JSON
     return jsonify(blocked_users_list)
