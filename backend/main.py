@@ -3,6 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
+print(os.getenv('RAILWAY_ENV'))
+print(os.getenv('DB_USER'))
+print(os.getenv('DB_PASSWORD'))
+print(os.getenv('DB_NAME')) 
 
 # Configure the database URI for MariaDB. Replace the connection details accordingly.
 if os.getenv('RAILWAY_ENV') == 'PROD':
