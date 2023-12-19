@@ -1,0 +1,42 @@
+from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
+import os
+
+app = Flask(__name__)
+
+# Configure the database URI for MariaDB. Replace the connection details accordingly.
+if os.getenv('RAILWAY_ENV') == 'production':
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'database:3306/your_database_name'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'https://database-production-8713.up.railway.app/:3306/your_database_name'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+# Initialize the SQLAlchemy extension
+db = SQLAlchemy(app)
+
+# Define the model for the blockedUsers table
+class BlockedUser(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    blocked = db.Column(db.Boolean, nullable=False)
+
+# Route to get blocked users
+@app.route('/blocked_users', methods=['GET'])
+def get_blocked_users():
+    # Query the database for all blocked users
+    blocked_users = BlockedUser.query.all()
+
+    # Convert the results to a list of dictionaries
+    blocked_users_list = [{'username': user.username, 'blocked': user.blocked} for user in blocked_users]
+
+    # Return the blocked users as JSON
+    return jsonify(blocked_users_list)
+
+if __name__ == '__main__':
+    # Create the database tables before running the app
+    db.create_all()
+
+    # Run the Flask app
+    app.run(debug=True)
