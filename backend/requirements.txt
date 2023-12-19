@@ -3,3 +3,4 @@ blinker==1.7.0
 flask==3.0.0 
 sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
+gunicorn==21.2.0
