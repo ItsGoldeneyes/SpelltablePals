@@ -5,8 +5,8 @@ import os
 app = Flask(__name__)
 
 # Configure the database URI for MariaDB. Replace the connection details accordingly.
-if os.getenv('RAILWAY_ENV') == 'production':
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'database:3306/your_database_name'
+if os.getenv('RAILWAY_ENV') == 'PROD':
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{os.getenv("database.MARIADB_USER")}:{os.getenv("database.MARIADB_PASSWORD")}@database:3306/your_database_name'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'https://database-production-8713.up.railway.app/:3306/your_database_name'
