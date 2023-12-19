@@ -1,4 +1,4 @@
-let useDefaultDictionary = true; // Set this to false when using the API
+let useDefaultDictionary = false; // Set this to false when using the API
 
 let nameDictionary = {}; // Default empty dictionary
 
@@ -11,7 +11,8 @@ if (useDefaultDictionary) {
   // Fetch the nameDictionary from the API
   async function fetchNameDictionary() {
     try {
-      const response = await fetch('YOUR_API_URL');
+      // Fetch list of blocked users from the API
+      const response = await fetch('https://backend-production-c33b.up.railway.app/blocked_users');
       const data = await response.json();
 
       // Assuming the API returns a dictionary in JSON format
