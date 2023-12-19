@@ -1,2 +1,0 @@
-[deploy]
-startCommand = "sleep 3 && python main.py"
