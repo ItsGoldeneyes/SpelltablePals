@@ -3,14 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 print(os.getenv('RAILWAY_ENV'))
-print(os.getenv('database.railway.internal.MARIADB_USER'))
-print(os.getenv('database.railway.internal.MARIADB_PASSWORD'))
+print(os.getenv('DB_USER'))
+print(os.getenv('DB_PASSWORD'))
 
 app = Flask(__name__)
 
 # Configure the database URI for MariaDB. Replace the connection details accordingly.
 if os.getenv('RAILWAY_ENV') == 'PROD':
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{os.getenv("database.railway.internal.MARIADB_USER")}:{os.getenv("database.railway.internal.MARIADB_PASSWORD")}@database:3306/your_database_name'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@database:3306/your_database_name'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 else:
     quit()
