@@ -2,6 +2,10 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
 
+print(os.getenv('RAILWAY_ENV'))
+print(os.getenv('database.MARIADB_USER'))
+print(os.getenv('database.MARIADB_PASSWORD'))
+
 app = Flask(__name__)
 
 # Configure the database URI for MariaDB. Replace the connection details accordingly.
