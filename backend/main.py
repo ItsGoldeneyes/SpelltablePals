@@ -3,17 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
-print(os.getenv('RAILWAY_ENV'))
-print(os.getenv('DB_USER'))
-print(os.getenv('DB_PASSWORD'))
-print(os.getenv('DB_NAME')) 
 
-# Configure the database URI for MariaDB. Replace the connection details accordingly.
-if os.getenv('RAILWAY_ENV') == 'PROD':
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+mysqlconnector://{os.getenv("DB_USER")}:{os.getenv("DB_PASSWORD")}@Database:3306/{os.getenv("DB_NAME")}'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-else:
-    quit()
+# Configure the database URI for PostgreSQL. Replace the connection details accordingly.
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_NAME')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the SQLAlchemy extension
 db = SQLAlchemy(app)
@@ -22,18 +15,15 @@ db = SQLAlchemy(app)
 class BlockedUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    blocked = db.Column(db.Boolean, nullable=False)
 
 # Route to get blocked users
 @app.route('/blocked_users', methods=['GET'])
 def get_blocked_users():
     # Query the database for all blocked users
-    with app.app_context():
-        # Query the database for all blocked users
-        blocked_users = BlockedUser.query.all()
+    blocked_users = BlockedUser.query.all()
 
-        # Convert the results to a list of dictionaries
-        blocked_users_list = [{'id': user.id, 'username': user.username} for user in blocked_users]
+    # Convert the results to a list of dictionaries
+    blocked_users_list = [{'id': user.id, 'username': user.username} for user in blocked_users]
 
     # Return the blocked users as JSON
     return jsonify(blocked_users_list)
