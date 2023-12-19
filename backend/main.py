@@ -12,7 +12,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Define the model for the blockedUsers table
-class SpelltableBlocked(db.Model):
+class Spelltableblocked(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     blocked = db.Column(db.Boolean, nullable=False, default=False)
@@ -22,7 +22,7 @@ class SpelltableBlocked(db.Model):
 @app.route('/blocked_users', methods=['GET'])
 def get_blocked_users():
     # Query the database for all blocked users
-    blocked_users = SpelltableBlocked.query.all()
+    blocked_users = Spelltableblocked.query.all()
 
     # Convert the results to a list of dictionaries
     blocked_users_list = [{'username': user.username, 'blocked':user.blocked} for user in blocked_users]
