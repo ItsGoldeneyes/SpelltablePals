@@ -3,9 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
-print(os.getenv('Postgres.DATABASE_PRIVATE_URL'))
+print(os.getenv('DATABASE_PRIVATE_URL'))
 # Configure the database URI for PostgreSQL. Replace the connection details accordingly.
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('Postgres.DATABASE_PRIVATE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_PRIVATE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the SQLAlchemy extension
