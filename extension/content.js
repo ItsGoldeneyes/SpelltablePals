@@ -1,4 +1,4 @@
-let useDefaultDictionary = false; // Set this to false when using the API
+let useDefaultDictionary = true; // Set this to false when using the API
 
 let nameDictionary = {}; // Default empty dictionary
 
