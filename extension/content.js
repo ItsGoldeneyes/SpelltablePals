@@ -1,4 +1,4 @@
-let useDefaultDictionary = true; // Set this to false when using the API
+let useDefaultDictionary = false; // Set this to false when using the API
 
 let nameDictionary = {}; // Default empty dictionary
 
@@ -8,21 +8,25 @@ if (useDefaultDictionary) {
     "Goldeneyes": true,
   };
 } else {
-  // Fetch the nameDictionary from the API
-  async function fetchNameDictionary() {
-    try {
-      // Fetch list of blocked users from the API
-      const response = await fetch('https://backend-production-c33b.up.railway.app/blocked_users');
-      const data = await response.json();
-
-      // Assuming the API returns a dictionary in JSON format
-      nameDictionary = data;
-    } catch (error) {
-      console.error('Error fetching name dictionary:', error);
+  fetch('https://backend-production-c33b.up.railway.app/blocked_users', {
+    method: 'GET',
+    headers: {
+      'Origin': 'chrome-extension://1'
     }
-  }
-  
-  fetchNameDictionary();
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      nameDictionary = data;
+      console.log('Name dictionary fetched successfully:', nameDictionary);
+    })
+    .catch(error => {
+      console.error('Error fetching name dictionary:', error.message);
+    });
 }
 
 function detectBlocked(nameDictionary) {
@@ -58,6 +62,9 @@ function main(nameDictionary) {
     detectBlocked(nameDictionary);
   }
 }
+
+console.error('Running script...')
+console.error('Dictionary:', nameDictionary)
 
 // Set up an interval to execute detectAndHighlight every 2 seconds for 2 minutes
 const intervalId = setInterval(() => main(nameDictionary), 2000);

@@ -1,14 +1,23 @@
 {
-    "manifest_version": 2,
-    "name": "SpellTable Blocklist",
-    "version": "1.0",
-    "description": "Warns you if you're about to play against a player you've blocked on SpellTable.",
-    "permissions": ["activeTab"],
-    "content_scripts": [
-      {
-        "matches": ["https://spelltable.wizards.com/game/*"],
-        "js": ["content.js"],
-        "css": ["styles.css"]
-      }
-    ]
-  }
+  "manifest_version": 2,
+  "name": "Your Extension",
+  "version": "1.0",
+  "description": "Description of your extension",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "https://backend-production-c33b.up.railway.app/"
+  ],
+  "web_accessible_resources": [
+    "content.js"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://spelltable.wizards.com/game/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
