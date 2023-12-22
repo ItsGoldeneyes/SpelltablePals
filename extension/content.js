@@ -2,7 +2,7 @@ let useDefaultDictionary = false; // Set this to false when using the API
 
 let nameDictionary = {}; // Default empty dictionary
 
-// If using a test variable, set the default dictionary
+// If using the test variable, set the default dictionary
 if (useDefaultDictionary) {
   nameDictionary = {
     "Goldeneyes": true,
@@ -37,7 +37,8 @@ function detectBlocked(nameDictionary) {
 
     // Check if the element's text is in the name dictionary
     if (nameDictionary[elementText]) {
-      element.style.color = 'yellow';
+      element.style.color = 'red';
+      element.style.fontSize = '1.5em'
     } else {
       // Reset the color if it's not in the dictionary
       element.style.color = '';
@@ -49,27 +50,18 @@ function main(nameDictionary) {
 
   // Detect names in the window
   const textElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
-
-  const namesToHighlight = [];
+  const namesOnPage = [];
 
   textElements.forEach(element => {
     const name = element.textContent.trim();
-    namesToHighlight.push(name);
+    namesOnPage.push(name);
   });
 
-  // Check if the length of namesToHighlight is not zero before calling the function
-  if (namesToHighlight.length !== 0) {
+  // Check if the length of namesOnPage is not zero before calling the function
+  if (namesOnPage.length !== 0) {
     detectBlocked(nameDictionary);
   }
 }
 
-console.error('Running script...')
-console.error('Dictionary:', nameDictionary)
-
-// Set up an interval to execute detectAndHighlight every 2 seconds for 2 minutes
+// Set up an interval to execute detectAndHighlight every 2 seconds
 const intervalId = setInterval(() => main(nameDictionary), 2000);
-
-// Set up a timeout to stop the interval after 2 minutes (120,000 milliseconds)
-setTimeout(() => {
-  clearInterval(intervalId);
-}, 120000);

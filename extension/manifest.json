@@ -1,23 +1,16 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Your Extension",
   "version": "1.0",
   "description": "Description of your extension",
   "permissions": [
+    "scripting",
     "activeTab",
-    "storage",
-    "webRequest",
-    "webRequestBlocking",
-    "https://backend-production-c33b.up.railway.app/"
+    "storage"
   ],
-  "web_accessible_resources": [
-    "content.js"
+  "host_permissions": [
+    "https://spelltable.wizards.com/game/*"
   ],
-  "content_scripts": [
-    {
-      "matches": ["https://spelltable.wizards.com/game/*"],
-      "js": ["content.js"],
-      "css": ["styles.css"]
-    }
-  ]
+  "background": {
+    "service_worker": "background.js"}
 }
