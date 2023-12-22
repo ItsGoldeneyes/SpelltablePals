@@ -1,4 +1,4 @@
-let useDefaultDictionary = true; // Set this to false when using the API
+let useDefaultDictionary = false; // Set this to false when using the API
 
 let nameDictionary = {}; // Default empty dictionary
 
@@ -41,7 +41,7 @@ if (useDefaultDictionary) {
     }
   };
 } else {
-  fetch('https://backend-production-c33b.up.railway.app/blocked_users', {
+  fetch('https://backend-production-c33b.up.railway.app/user_profiles', {
     method: 'GET',
     headers: {
       'Origin': 'chrome-extension://1'

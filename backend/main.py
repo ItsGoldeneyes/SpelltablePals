@@ -19,18 +19,20 @@ class Spelltableblocked(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     blocked = db.Column(db.Boolean, nullable=False, default=False)
     reason = db.Column(db.String(200), nullable=True)
+    role = db.Column(db.String(50), nullable=True)
+    custom_format = db.Column(db.json, nullable=True)
 
-# Route to get blocked users
-@app.route('/blocked_users', methods=['GET'])
-def get_blocked_users():
+# Route to get user profiles + blocked users
+@app.route('/user_profiles', methods=['GET'])
+def get_user_profile():
     # Query the database for all blocked users
-    blocked_users = Spelltableblocked.query.all()
-
+    user_profiles = Spelltableblocked.query.all()
+    
     # Convert the results to a list of dictionaries
-    blocked_users_list = {user.username: user.blocked for user in blocked_users}
+    user_profiles_dict = {user.username: {user.blocked, user.custom_format} for user in user_profiles}
 
-    # Return the blocked users as JSON
-    return jsonify(blocked_users_list)
+    # Return the user profiles as JSON
+    return jsonify(user_profiles_dict)
 
 if __name__ == '__main__':
     # Create the database tables before running the app
