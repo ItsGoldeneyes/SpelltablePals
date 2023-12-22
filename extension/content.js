@@ -1,11 +1,44 @@
-let useDefaultDictionary = false; // Set this to false when using the API
+let useDefaultDictionary = true; // Set this to false when using the API
 
 let nameDictionary = {}; // Default empty dictionary
 
 // If using the test variable, set the default dictionary
 if (useDefaultDictionary) {
   nameDictionary = {
-    "Goldeneyes": true,
+    "Goldeneyes": {
+      "blocked": true,
+      "custom_format": {
+        "color": "#B8860B",
+        "fontSize": ".875rem",
+        "fontWeight": "",
+        "backgroundColor": "",
+        "textDecoration": "",
+        "textTransform": "",
+        "textShadow": "",
+        "textIndent": "",
+        "letterSpacing": "",
+        "lineHeight": "",
+        "wordSpacing": "",
+        "whiteSpace": ""
+      }
+    },
+    "blocked_format": {
+      "blocked": true,
+      "custom_format": {
+        "color": "red",
+        "fontSize": "1.6em",
+        "fontWeight": "bold",
+        "backgroundColor": "",
+        "textDecoration": "",
+        "textTransform": "",
+        "textShadow": "",
+        "textIndent": "",
+        "letterSpacing": "",
+        "lineHeight": "",
+        "wordSpacing": "",
+        "whiteSpace": ""
+      }
+    }
   };
 } else {
   fetch('https://backend-production-c33b.up.railway.app/blocked_users', {
@@ -29,26 +62,50 @@ if (useDefaultDictionary) {
     });
 }
 
-function detectBlocked(nameDictionary) {
+function formatNames(nameDictionary) {
   const elements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
 
   elements.forEach(element => {
     const elementText = element.textContent.trim();
 
-    // Check if the element's text is in the name dictionary
+    // Check if the player name is in the name dictionary
     if (nameDictionary[elementText]) {
-      element.style.color = 'red';
-      element.style.fontSize = '1.5em'
-    } else {
-      // Reset the color if it's not in the dictionary
-      element.style.color = '';
+      // If the player is flagged as blocked, use the default blocked format
+      if (nameDictionary[elementText].blocked) {
+        element.style.color = nameDictionary["blocked_format"].custom_format.color;
+        element.style.fontSize = nameDictionary["blocked_format"].custom_format.fontSize;
+        element.style.fontWeight = nameDictionary["blocked_format"].custom_format.fontWeight;
+        element.style.backgroundColor = nameDictionary["blocked_format"].custom_format.backgroundColor;
+        element.style.textDecoration = nameDictionary["blocked_format"].custom_format.textDecoration;
+        element.style.textTransform = nameDictionary["blocked_format"].custom_format.textTransform;
+        element.style.textShadow = nameDictionary["blocked_format"].custom_format.textShadow;
+        element.style.textIndent = nameDictionary["blocked_format"].custom_format.textIndent;
+        element.style.letterSpacing = nameDictionary["blocked_format"].custom_format.letterSpacing;
+        element.style.lineHeight = nameDictionary["blocked_format"].custom_format.lineHeight;
+        element.style.wordSpacing = nameDictionary["blocked_format"].custom_format.wordSpacing;
+        element.style.whiteSpace = nameDictionary["blocked_format"].custom_format.whiteSpace;
+      } else {
+        // If the player isn't blocked, then they should have a custom format
+        element.style.color = nameDictionary[elementText].custom_format.color;
+        element.style.fontSize = nameDictionary[elementText].custom_format.fontSize;
+        element.style.fontWeight = nameDictionary[elementText].custom_format.fontWeight;
+        element.style.backgroundColor = nameDictionary[elementText].custom_format.backgroundColor;
+        element.style.textDecoration = nameDictionary[elementText].custom_format.textDecoration;
+        element.style.textTransform = nameDictionary[elementText].custom_format.textTransform;
+        element.style.textShadow = nameDictionary[elementText].custom_format.textShadow;
+        element.style.textIndent = nameDictionary[elementText].custom_format.textIndent;
+        element.style.letterSpacing = nameDictionary[elementText].custom_format.letterSpacing;
+        element.style.lineHeight = nameDictionary[elementText].custom_format.lineHeight;
+        element.style.wordSpacing = nameDictionary[elementText].custom_format.wordSpacing;
+        element.style.whiteSpace = nameDictionary[elementText].custom_format.whiteSpace;
+      }
     }
   });
 }
 
 function main(nameDictionary) {
 
-  // Detect names in the window
+  // Detect names on the webpage
   const textElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
   const namesOnPage = [];
 
@@ -57,9 +114,9 @@ function main(nameDictionary) {
     namesOnPage.push(name);
   });
 
-  // Check if the length of namesOnPage is not zero before calling the function
+  // Check if the length of namesOnPage is not zero before calling the format function
   if (namesOnPage.length !== 0) {
-    detectBlocked(nameDictionary);
+    formatNames(nameDictionary);
   }
 }
 
