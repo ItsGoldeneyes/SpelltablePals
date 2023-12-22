@@ -59,7 +59,7 @@ def get_user_profile():
                     "fontSize": "1.6em",
                     "fontWeight": "bold",
                     "backgroundColor": "",
-                    "textDecoration": "",
+                    "textDecoration": "underline",
                     "textTransform": "",
                     "textShadow": "",
                     "textIndent": "",
