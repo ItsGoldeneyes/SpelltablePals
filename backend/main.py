@@ -31,7 +31,25 @@ def get_user_profile():
     
     # Convert the results to a list of dictionaries
     user_profiles_dict={}
-    # user_profiles_dict = {user.username: {'blocked':user.blocked, 'custom_format': user.custom_format} for user in user_profiles}
+    
+    # Set default blocked format
+    user_profiles_dict['blocked_format'] = {
+      "blocked": True,
+      "custom_format": {
+        "color": "red",
+        "fontSize": "1.6em",
+        "fontWeight": "bold",
+        "backgroundColor": "",
+        "textDecoration": "",
+        "textTransform": "",
+        "textShadow": "",
+        "textIndent": "",
+        "letterSpacing": "",
+        "lineHeight": "",
+        "wordSpacing": "",
+        "whiteSpace": ""
+      }
+    }
     
     for user in user_profiles:
         user_profiles_dict[user.username] = {'blocked':user.blocked, 'custom_format': user.custom_format}

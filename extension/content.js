@@ -71,21 +71,6 @@ function formatNames(nameDictionary) {
     // Check if the player name is in the name dictionary
     if (nameDictionary[elementText]) {
       // If the player is flagged as blocked, use the default blocked format
-      if (nameDictionary[elementText].blocked) {
-        element.style.color = nameDictionary["blocked_format"].custom_format.color;
-        element.style.fontSize = nameDictionary["blocked_format"].custom_format.fontSize;
-        element.style.fontWeight = nameDictionary["blocked_format"].custom_format.fontWeight;
-        element.style.backgroundColor = nameDictionary["blocked_format"].custom_format.backgroundColor;
-        element.style.textDecoration = nameDictionary["blocked_format"].custom_format.textDecoration;
-        element.style.textTransform = nameDictionary["blocked_format"].custom_format.textTransform;
-        element.style.textShadow = nameDictionary["blocked_format"].custom_format.textShadow;
-        element.style.textIndent = nameDictionary["blocked_format"].custom_format.textIndent;
-        element.style.letterSpacing = nameDictionary["blocked_format"].custom_format.letterSpacing;
-        element.style.lineHeight = nameDictionary["blocked_format"].custom_format.lineHeight;
-        element.style.wordSpacing = nameDictionary["blocked_format"].custom_format.wordSpacing;
-        element.style.whiteSpace = nameDictionary["blocked_format"].custom_format.whiteSpace;
-      } else {
-        // If the player isn't blocked, then they should have a custom format
         element.style.color = nameDictionary[elementText].custom_format.color;
         element.style.fontSize = nameDictionary[elementText].custom_format.fontSize;
         element.style.fontWeight = nameDictionary[elementText].custom_format.fontWeight;
@@ -98,7 +83,6 @@ function formatNames(nameDictionary) {
         element.style.lineHeight = nameDictionary[elementText].custom_format.lineHeight;
         element.style.wordSpacing = nameDictionary[elementText].custom_format.wordSpacing;
         element.style.whiteSpace = nameDictionary[elementText].custom_format.whiteSpace;
-      }
     }
   });
 }
