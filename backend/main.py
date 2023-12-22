@@ -30,7 +30,7 @@ def get_user_profile():
     user_profiles = Spelltableblocked.query.all()
     
     # Convert the results to a list of dictionaries
-    user_profiles_dict = {user.username: {user.blocked, user.custom_format} for user in user_profiles}
+    user_profiles_dict = {user.username: {'blocked':user.blocked, 'custom_format': user.custom_format} for user in user_profiles}
     
     # Return the user profiles as JSON
     return user_profiles_dict
