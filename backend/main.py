@@ -31,9 +31,9 @@ def get_user_profile():
     
     # Convert the results to a list of dictionaries
     user_profiles_dict = {user.username: {user.blocked, user.custom_format} for user in user_profiles}
-    print(user_profiles_dict)
+    
     # Return the user profiles as JSON
-    return jsonify(user_profiles_dict)
+    return user_profiles_dict
 
 if __name__ == '__main__':
     # Create the database tables before running the app
