@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import JSONB
 from flask_cors import CORS
 import os
 
@@ -20,7 +21,7 @@ class Spelltableblocked(db.Model):
     blocked = db.Column(db.Boolean, nullable=False, default=False)
     reason = db.Column(db.String(200), nullable=True)
     role = db.Column(db.String(50), nullable=True)
-    custom_format = db.Column(db.json, nullable=True)
+    custom_format = db.Column(JSONB, nullable=True)
 
 # Route to get user profiles + blocked users
 @app.route('/user_profiles', methods=['GET'])
