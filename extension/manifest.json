@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Your Extension",
+  "name": "SpellTable BlockList",
   "version": "1.0",
-  "description": "Description of your extension",
+  "description": "Warns you if you are about to play against a player the community has flagged.",
   "permissions": [
     "scripting",
     "activeTab",
@@ -12,5 +12,9 @@
     "https://spelltable.wizards.com/game/*"
   ],
   "background": {
-    "service_worker": "background.js"}
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "128": "128.png"
+  }
 }
