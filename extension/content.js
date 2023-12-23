@@ -7,6 +7,8 @@ if (useDefaultDictionary) {
   nameDictionary = {
     "Goldeneyes": {
       "blocked": true,
+      "role": "custom",
+      "reason": "Test",
       "custom_format": {
         "color": "#B8860B",
         "fontSize": ".875rem",
