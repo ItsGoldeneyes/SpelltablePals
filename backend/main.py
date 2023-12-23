@@ -52,7 +52,11 @@ def get_user_profile():
     }
     
     for user in user_profiles:
-        user_profiles_dict[user.username] = {'blocked':user.blocked, 'custom_format': user.custom_format}
+        user_profiles_dict[user.username] = {
+            'blocked':user.blocked, 
+            'role':user.role, 
+            'reason':user.reason, 
+            'custom_format': user.custom_format}
         if user.blocked:
             user_profiles_dict[user.username]['custom_format'] = {
                     "color": "red",
