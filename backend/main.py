@@ -18,7 +18,6 @@ db = SQLAlchemy(app)
 class Spelltableusers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    blocked = db.Column(db.Boolean, nullable=False, default=False)
     reason = db.Column(db.String(200), nullable=True)
     role = db.Column(db.String(50), nullable=True)
     custom_format = db.Column(JSONB, nullable=True)
