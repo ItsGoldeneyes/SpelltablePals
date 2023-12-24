@@ -27,9 +27,9 @@ class Spelltableblocked(db.Model):
 @app.route('/user_profiles', methods=['POST'])
 def get_user_profile():
     data = request.json
-    player_names = list(data.keys())
+    player_names = list(data)
     print("Getting user profiles...")
-    # Query the database for all blocked users
+    # Query the database for all players
     user_profiles = Spelltableblocked.query.filter(Spelltableblocked.username.in_(player_names)).all()
     
     # Convert the results to a list of dictionaries
