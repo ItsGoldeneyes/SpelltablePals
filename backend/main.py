@@ -28,31 +28,12 @@ class Spelltableblocked(db.Model):
 def get_user_profile():
     data = request.json
     player_names = list(data)
-    print("Getting user profiles...")
+    print("Getting user profiles for: ", ','.join(player_names))
     # Query the database for all players
     user_profiles = Spelltableblocked.query.filter(Spelltableblocked.username.in_(player_names)).all()
     
     # Convert the results to a list of dictionaries
     user_profiles_dict={}
-    
-    # Set default blocked format
-    user_profiles_dict['blocked_format'] = {
-      "blocked": True,
-      "custom_format": {
-        "color": "red",
-        "fontSize": "1.6em",
-        "fontWeight": "bold",
-        "backgroundColor": "",
-        "textDecoration": "",
-        "textTransform": "",
-        "textShadow": "",
-        "textIndent": "",
-        "letterSpacing": "",
-        "lineHeight": "",
-        "wordSpacing": "",
-        "whiteSpace": ""
-      }
-    }
     
     for user in user_profiles:
         user_profiles_dict[user.username] = {
