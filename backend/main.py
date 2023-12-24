@@ -50,6 +50,9 @@ def get_user_profile():
             new_user = Spelltableusers(id=max_id+1, username=username, reason=None, role=None, custom_format=None)
             db.session.add(new_user)
             db.session.commit()
+            
+        # Query the database for all players again
+        user_profiles = Spelltableusers.query.filter(Spelltableusers.username.in_(player_names)).all()
     
     # Convert the results to a dict of dictionaries
     user_profiles_dict={}
