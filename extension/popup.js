@@ -6,7 +6,22 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+function loadDynamicCSS() {
+  // Create a link element
+  const linkElement = document.createElement('link');
+
+  // Set the attributes of the link element
+  linkElement.rel = 'stylesheet';
+  linkElement.type = 'text/css';
+  linkElement.href = 'popup.css';
+
+  // Append the link element to the head section of the document
+  document.head.appendChild(linkElement);
+}
+
+
 document.addEventListener('DOMContentLoaded', function () {
+  loadDynamicCSS();
   // if value of nameDictionary is empty, send message to background script to get the name dictionary
   if (Object.keys(nameDictionary).length === 0) {
     chrome.runtime.sendMessage({ action: 'getNameDictPopup' });
@@ -34,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
       titlePage.style.display = 'block';
       gamePage.style.display = 'none';
     }
+  loadDynamicCSS();
   });
 });
   
@@ -48,15 +64,19 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'updatePopup') {
     const playerInfoContainer = document.getElementById('playerInfoContainer');
     playerInfoContainer.innerHTML = '';
-    message.names.forEach(name => {
+
+    // Ensure that there are always four players
+    for (let i = 0; i < 4; i++) {
+      const playerName = message.names[i] || '<no player>';
       const playerInfoDiv = document.createElement('div');
       playerInfoDiv.classList.add('player-info');
 
-      playerInfoDiv.textContent = `${name} - ${getPlayerStatus(name)}`;
+      playerInfoDiv.textContent = `${playerName} - ${getPlayerStatus(playerName)}`;
       playerInfoContainer.appendChild(playerInfoDiv);
-    });
+    }
   }
 });
+
 
 function getPlayerStatus(name) {
   if (nameDictionary[name]) {
