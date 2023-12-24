@@ -67,13 +67,17 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         namesOnPage = message.data;
         console.log('namesOnPage:', namesOnPage);
         loadDictionary(namesOnPage);
-        // log the message
-        console.log(message);
         // Send the data back to the content script
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            const currentTab = tabs[0];
-            chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
-        });
+        setTimeout(() => {
+            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                const currentTab = tabs[0];
+                chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
+            });
+        }, 250);
+        // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        //     const currentTab = tabs[0];
+        //     chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
+        // });
     }
     if (message.action === 'getNameDictPopup') {
         console.log(message);

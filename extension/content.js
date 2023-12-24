@@ -1,4 +1,5 @@
 let nameDictionary = {}; // Instantiate global variable
+let lastNamesOnPage = []; // Instantiate global variable
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'recieveNameDictContent') {
@@ -42,10 +43,16 @@ function main() {
     namesOnPage.push(name);
   });
 
-  // Check if the length of namesOnPage is not zero before calling the format function
+  // Check if there are any names on the page
   if (namesOnPage.length !== 0) {
+    // Check if the content of namesOnPage isn't the same as last run
+    if (JSON.stringify(namesOnPage) !== JSON.stringify(lastNamesOnPage)) {
+
     chrome.runtime.sendMessage({ action: 'getNameDictContent', data: namesOnPage});
+    }
   }
+
+  lastNamesOnPage = namesOnPage;
 }
 
 // Set up an interval to execute detectAndHighlight every 2 seconds
