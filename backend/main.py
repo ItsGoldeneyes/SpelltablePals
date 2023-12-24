@@ -24,11 +24,11 @@ class Spelltableblocked(db.Model):
     custom_format = db.Column(JSONB, nullable=True)
 
 # Route to get user profiles + blocked users
-@app.route('/user_profiles', methods=['GET'])
-def get_user_profile():
+@app.route('/user_profiles', methods=['POST'])
+def get_user_profile(input_player_names):
     print("Getting user profiles...")
     # Query the database for all blocked users
-    user_profiles = Spelltableblocked.query.all()
+    user_profiles = Spelltableblocked.query.filter(Spelltableblocked.username.in_(input_player_names)).all()
     
     # Convert the results to a list of dictionaries
     user_profiles_dict={}
