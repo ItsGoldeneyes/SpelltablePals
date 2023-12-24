@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 from flask_cors import CORS
+import request
 import os
 
 app = Flask(__name__)
@@ -25,10 +26,12 @@ class Spelltableblocked(db.Model):
 
 # Route to get user profiles + blocked users
 @app.route('/user_profiles', methods=['POST'])
-def get_user_profile(input_player_names):
+def get_user_profile():
+    data = request.json()
+    player_names = list(data.keys())
     print("Getting user profiles...")
     # Query the database for all blocked users
-    user_profiles = Spelltableblocked.query.filter(Spelltableblocked.username.in_(input_player_names)).all()
+    user_profiles = Spelltableblocked.query.filter(Spelltableblocked.username.in_(player_names)).all()
     
     # Convert the results to a list of dictionaries
     user_profiles_dict={}
