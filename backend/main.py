@@ -27,7 +27,8 @@ class Spelltableblocked(db.Model):
 @app.route('/user_profiles', methods=['POST'])
 def get_user_profile():
     print("POST: /user_profiles")
-    data = request.args.getlist()
+    data = request.args.items()
+    print(data)
     player_names = list(data)
     print("Getting user profiles for: ", ','.join(player_names))
     # Query the database for all players
