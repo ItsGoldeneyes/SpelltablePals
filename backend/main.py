@@ -26,6 +26,7 @@ class Spelltableblocked(db.Model):
 # Route to get user profiles + blocked users
 @app.route('/user_profiles', methods=['GET'])
 def get_user_profile():
+    print("Getting user profiles...")
     # Query the database for all blocked users
     user_profiles = Spelltableblocked.query.all()
     
@@ -57,6 +58,8 @@ def get_user_profile():
             'role':user.role, 
             'reason':user.reason, 
             'custom_format': user.custom_format}
+        
+        # Set custom format for specific roles
         if user.blocked:
             user_profiles_dict[user.username]['custom_format'] = {
                     "color": "red",
