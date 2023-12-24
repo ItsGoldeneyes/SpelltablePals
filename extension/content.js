@@ -1,68 +1,14 @@
 let useDefaultDictionary = false; // Set this to false when using the API
 
+chrome.runtime.sendMessage({ action: 'getNameDict' });
+
 let nameDictionary = {}; // Default empty dictionary
 
-// If using the test variable, set the default dictionary
-if (useDefaultDictionary) {
-  nameDictionary = {
-    "Goldeneyes": {
-      "blocked": true,
-      "role": "custom",
-      "reason": "Test",
-      "custom_format": {
-        "color": "#B8860B",
-        "fontSize": ".875rem",
-        "fontWeight": "",
-        "backgroundColor": "",
-        "textDecoration": "",
-        "textTransform": "",
-        "textShadow": "",
-        "textIndent": "",
-        "letterSpacing": "",
-        "lineHeight": "",
-        "wordSpacing": "",
-        "whiteSpace": ""
-      }
-    },
-    "blocked_format": {
-      "blocked": true,
-      "custom_format": {
-        "color": "red",
-        "fontSize": "1.6em",
-        "fontWeight": "bold",
-        "backgroundColor": "",
-        "textDecoration": "",
-        "textTransform": "",
-        "textShadow": "",
-        "textIndent": "",
-        "letterSpacing": "",
-        "lineHeight": "",
-        "wordSpacing": "",
-        "whiteSpace": ""
-      }
-    }
-  };
-} else {
-  fetch('https://backend-production-c33b.up.railway.app/user_profiles', {
-    method: 'GET',
-    headers: {
-      'Origin': 'chrome-extension://1'
-    }
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      nameDictionary = data;
-      console.log('Name dictionary fetched successfully:', nameDictionary);
-    })
-    .catch(error => {
-      console.error('Error fetching name dictionary:', error.message);
-    });
-}
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.action === 'recieveNameDict') {
+    nameDictionary = message.data;
+  }
+});
 
 function formatNames(nameDictionary) {
   const elements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
