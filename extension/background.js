@@ -78,13 +78,21 @@ try {
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.action === 'getNameDict') {
+    if (message.action === 'getNameDictPopup') {
         // log the message
         console.log(message);
-      // Send the data back to the content script
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        const currentTab = tabs[0];
-        chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDict', data: nameDictionary });
-      });
+        // Send the data back to the popup
+        chrome.runtime.sendMessage({ action: 'recieveNameDictPopup', data: nameDictionary });
+    }
+    if (message.action === 'getNameDictContent') {
+        // log the message
+        console.log(message);
+        // Send the data back to the content script
+        // chrome.runtime.sendMessage({ action: 'recieveNameDictContent', data: nameDictionary });
+
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            const currentTab = tabs[0];
+            chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
+        });
     }
   });

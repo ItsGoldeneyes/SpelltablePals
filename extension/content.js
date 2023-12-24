@@ -1,14 +1,12 @@
-let useDefaultDictionary = false; // Set this to false when using the API
-
-chrome.runtime.sendMessage({ action: 'getNameDict' });
-
-let nameDictionary = {}; // Default empty dictionary
+let nameDictionary = {}; // Instantiate global variable
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === 'recieveNameDict') {
+  if (message.action === 'recieveNameDictContent') {
     nameDictionary = message.data;
   }
 });
+
+chrome.runtime.sendMessage({ action: 'getNameDictContent' });
 
 function formatNames(nameDictionary) {
   const elements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
@@ -16,9 +14,8 @@ function formatNames(nameDictionary) {
   elements.forEach(element => {
     const elementText = element.textContent.trim();
 
-    // Check if the player name is in the name dictionary
+    // If the player has a record in the name dictionary, apply the custom format
     if (nameDictionary[elementText]) {
-      // If the player is flagged as blocked, use the default blocked format
         element.style.color = nameDictionary[elementText].custom_format.color;
         element.style.fontSize = nameDictionary[elementText].custom_format.fontSize;
         element.style.fontWeight = nameDictionary[elementText].custom_format.fontWeight;
