@@ -40,8 +40,10 @@ def get_user_profile():
     # Query the database of custom role formatting
     role_formatting = Roleformatting.query.all()
     
-    for username in player_names:
-        if username not in [user.username for user in user_profiles]:
+    users_not_found = [username for username in player_names if username not in [user.username for user in user_profiles]]
+    if users_not_found:
+        print("Users not found. Adding to database: ", ','.join(users_not_found))
+        for username in users_not_found:
             # Add a new entry to Spelltableusers table
             new_user = Spelltableusers(username=username, reason=None, role=None, custom_format=None)
             db.session.add(new_user)
