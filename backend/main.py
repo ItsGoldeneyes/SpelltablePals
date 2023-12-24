@@ -32,7 +32,7 @@ def get_user_profile():
     print("POST: /user_profiles")
     data = request.get_json(force=True)
     player_names = list(data)
-    print("Getting user profiles for: ", ','.join(player_names))
+    print("Getting user profiles for: ", ', '.join(player_names))
     
     # Query the database for all players
     user_profiles = Spelltableusers.query.filter(Spelltableusers.username.in_(player_names)).all()
@@ -42,7 +42,7 @@ def get_user_profile():
     
     users_not_found = [username for username in player_names if username not in [user.username for user in user_profiles]]
     if users_not_found:
-        print("Users not found. Adding to database: ", ','.join(users_not_found))
+        print("Users not found. Adding to database: ", ', '.join(users_not_found))
         for username in users_not_found:
             # Get the max id from Spelltableusers table
             max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
