@@ -25,6 +25,11 @@ function loadDictionary(inputNames) {
             }
         }
         };
+        // Send the data back to the content script
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            const currentTab = tabs[0];
+            chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
+        });
     } else {
         fetch('https://backend-production-c33b.up.railway.app/user_profiles', {
         method: 'POST',
@@ -42,11 +47,17 @@ function loadDictionary(inputNames) {
         .then(data => {
             nameDictionary = data;
             console.log('Name dictionary fetched successfully:', nameDictionary);
+            
+            // Send the data back to the content script
+            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                const currentTab = tabs[0];
+                chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
+            });
         })
         .catch(error => {
             console.error('Error fetching name dictionary:', error.message);
         });
-    }
+    } 
 }
 
 try {
@@ -67,18 +78,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         namesOnPage = message.data;
         console.log('namesOnPage:', namesOnPage);
         loadDictionary(namesOnPage);
-        // Send the data back to the content script
-        setTimeout(() => {
-            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                const currentTab = tabs[0];
-                chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
-            });
-        }, 250);
-        // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        //     const currentTab = tabs[0];
-        //     chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
-        // });
-    }
+    } else
     if (message.action === 'getNameDictPopup') {
         console.log(message);
         // Send the data back to the popup

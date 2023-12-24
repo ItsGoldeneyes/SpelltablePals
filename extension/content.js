@@ -45,10 +45,11 @@ function main() {
 
   // Check if there are any names on the page
   if (namesOnPage.length !== 0) {
-    // Check if the content of namesOnPage isn't the same as last run
-    if (JSON.stringify(namesOnPage) !== JSON.stringify(lastNamesOnPage)) {
-
-    chrome.runtime.sendMessage({ action: 'getNameDictContent', data: namesOnPage});
+    // Check if all elements in namesOnPage are contained within lastNamesOnPage
+    const allNamesOnPageAreContained = namesOnPage.every(name => lastNamesOnPage.includes(name));
+    
+    if (!allNamesOnPageAreContained) {
+      chrome.runtime.sendMessage({ action: 'getNameDictContent', data: namesOnPage});
     }
   }
 
