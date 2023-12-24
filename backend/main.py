@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize the SQLAlchemy extension
 db = SQLAlchemy(app)
 
-# Define the model for the blockedUsers table
+# Define the models for tables used
 class Spelltableusers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -26,7 +26,7 @@ class Roleformatting(db.Model):
     role = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     custom_format = db.Column(JSONB, nullable=True)
 
-# Route to get user profiles + blocked users
+# Route to get user profiles
 @app.route('/user_profiles', methods=['POST'])
 def get_user_profile():
     print("POST: /user_profiles")
@@ -45,7 +45,6 @@ def get_user_profile():
     
     for user in user_profiles:
         user_profiles_dict[user.username] = {
-            'blocked':user.blocked, 
             'role':user.role, 
             'reason':user.reason, 
             'custom_format': user.custom_format}
