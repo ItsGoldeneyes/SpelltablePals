@@ -15,12 +15,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Define the model for the blockedUsers table
-class Spelltableblocked(db.Model):
+class Spelltableusers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     blocked = db.Column(db.Boolean, nullable=False, default=False)
     reason = db.Column(db.String(200), nullable=True)
     role = db.Column(db.String(50), nullable=True)
+    custom_format = db.Column(JSONB, nullable=True)
+    
+class Roleformatting(db.Model):
+    role = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     custom_format = db.Column(JSONB, nullable=True)
 
 # Route to get user profiles + blocked users
@@ -30,8 +34,12 @@ def get_user_profile():
     data = request.get_json(force=True)
     player_names = list(data)
     print("Getting user profiles for: ", ','.join(player_names))
+    
     # Query the database for all players
-    user_profiles = Spelltableblocked.query.filter(Spelltableblocked.username.in_(player_names)).all()
+    user_profiles = Spelltableusers.query.filter(Spelltableusers.username.in_(player_names)).all()
+    
+    # Query the database of custom role formatting
+    role_formatting = Roleformatting.query.all()
     
     # Convert the results to a list of dictionaries
     user_profiles_dict={}
@@ -43,52 +51,10 @@ def get_user_profile():
             'reason':user.reason, 
             'custom_format': user.custom_format}
         
-        # Set custom format for specific roles
-        if user.blocked:
-            user_profiles_dict[user.username]['custom_format'] = {
-                    "color": "red",
-                    "fontSize": "1.6em",
-                    "fontWeight": "bold",
-                    "backgroundColor": "",
-                    "textDecoration": "underline",
-                    "textTransform": "",
-                    "textShadow": "",
-                    "textIndent": "",
-                    "letterSpacing": "",
-                    "lineHeight": "",
-                    "wordSpacing": "",
-                    "whiteSpace": ""
-                    }
-        elif user.role == "council":
-            user_profiles_dict[user.username]['custom_format'] = {
-                    "color": "#edc2f6",
-                    "fontSize": "",
-                    "fontWeight": "",
-                    "backgroundColor": "",
-                    "textDecoration": "",
-                    "textTransform": "",
-                    "textShadow": "",
-                    "textIndent": "",
-                    "letterSpacing": "",
-                    "lineHeight": "",
-                    "wordSpacing": "",
-                    "whiteSpace": ""
-                    }
-        elif user.role == "chill":
-            user_profiles_dict[user.username]['custom_format'] = {
-                    "color": "#89b0ff",
-                    "fontSize": "",
-                    "fontWeight": "",
-                    "backgroundColor": "",
-                    "textDecoration": "",
-                    "textTransform": "",
-                    "textShadow": "",
-                    "textIndent": "",
-                    "letterSpacing": "",
-                    "lineHeight": "",
-                    "wordSpacing": "",
-                    "whiteSpace": ""
-                    }
+        # Add custom role formatting if it exists
+        for role in role_formatting:
+            if user.role == role.role:
+                user_profiles_dict[user.username]['custom_format'] = role.custom_format
     
     # Return the user profiles as JSON
     return user_profiles_dict
