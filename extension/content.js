@@ -3,12 +3,11 @@ let nameDictionary = {}; // Instantiate global variable
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'recieveNameDictContent') {
     nameDictionary = message.data;
+    formatNames();
   }
 });
 
-chrome.runtime.sendMessage({ action: 'getNameDictContent' });
-
-function formatNames(nameDictionary) {
+function formatNames() {
   const elements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
 
   elements.forEach(element => {
@@ -32,7 +31,7 @@ function formatNames(nameDictionary) {
   });
 }
 
-function main(nameDictionary) {
+function main() {
 
   // Detect names on the webpage
   const textElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
@@ -45,9 +44,9 @@ function main(nameDictionary) {
 
   // Check if the length of namesOnPage is not zero before calling the format function
   if (namesOnPage.length !== 0) {
-    formatNames(nameDictionary);
+    chrome.runtime.sendMessage({ action: 'getNameDictContent', data: namesOnPage});
   }
 }
 
 // Set up an interval to execute detectAndHighlight every 2 seconds
-const intervalId = setInterval(() => main(nameDictionary), 2000);
+const intervalId = setInterval(() => main(), 2000);
