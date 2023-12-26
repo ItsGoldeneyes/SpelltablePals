@@ -173,12 +173,15 @@ START THE SERVER
 -----------------
 '''
 
-# Create the database tables before running the app
-with app.app_context():
-    db.create_all()
+if __name__ == '__main__':
+    # Create the database tables before running the app
+    with app.app_context():
+        db.create_all()
 
+    # Run the Flask app
+    app.run(debug=True)
+    
+
+    
 # Initialize the game tracker
 game_tracker = GameTracker()
-
-# Run the Flask app
-app.run(debug=True)
