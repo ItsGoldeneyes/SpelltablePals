@@ -5,8 +5,7 @@
   "description": "Warns you if you are about to play against a player the community has flagged.",
   "permissions": [
     "scripting",
-    "activeTab",
-    "storage"
+    "activeTab"
   ],
   "host_permissions": [
     "https://spelltable.wizards.com/game/*"

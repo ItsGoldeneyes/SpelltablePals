@@ -26,30 +26,14 @@ class Spelltableusers(db.Model):
 class Roleformatting(db.Model):
     role = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     custom_format = db.Column(JSONB, nullable=True)
-
-
-'''
------------------
-HELPER FUNCTIONS
------------------
-'''
-
-# class GameTracker:
-#     def __init__(self):
-#         self.pending_games = {}
-#         self.processed_games = {}
-        
-#     def add_game(self, players):
-#         for i in self.pending_games.keys():
-#             if set(players).issubset(set(self.pending_games[i][0])):
-#                 # Remove the pending game
-#                 del self.pending_games[i]
-#                 # Add the processed game
-#                 self.processed_games[i] = [players, time.time()]
-#                 return i
-        
-#         self.pending_games[uuid.uuid4] = [players, time.time()]
-        
+    
+class Trackedgames(db.Model):
+    id = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+    player_1 = db.Column(db.String(50), nullable=False)
+    player_2 = db.Column(db.String(50), nullable=False)
+    player_3 = db.Column(db.String(50), nullable=False)
+    player_4 = db.Column(db.String(50), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
 
 
 ''' 
@@ -59,18 +43,30 @@ API ENDPOINTS
 '''
 
 @app.route('/user_profiles', methods=['POST'])
-def get_user_profile():
+def get_user_profiles_endpoint():
     '''
     This function returns the user profiles for the given list of players.
     The request body should be a JSON object with the player names as keys.
     '''
 
-    print("POST: /user_profiles")
-    print("Request body:", request.get_json())
     data = request.get_json(force=True)
     player_names = data["players"]
-    print("Getting user profiles for:", ', '.join(player_names))
-    print("Session ID:", data["session_id"])
+    print(f"{data['session_id']}    POST: /user_profiles")
+    print(f"{data['session_id']}    Getting user profiles for:", ', '.join(player_names))
+    
+    game_tracker.add_game(player_names, data['session_id'])
+    
+    user_profiles = get_user_profiles_helper(player_names)
+
+    return user_profiles
+
+'''
+-----------------
+HELPER FUNCTIONS
+-----------------
+'''
+
+def get_user_profiles_helper(player_names):
     
     # Query the database for all players and role formats
     user_profiles = Spelltableusers.query.filter(Spelltableusers.username.in_(player_names)).all()
@@ -107,10 +103,84 @@ def get_user_profile():
     # Return the user profiles as JSON
     return user_profiles_dict
 
+
+class GameTracker:
+    def __init__(self):
+        # Dicts are of format {session_id: {start_time: time.time(), players: [player1, player2, ...]}
+        self.pending_games = {}
+        self.finished_games = {}
+    
+    def add_game(self, players, session_id):
+        '''
+        Logic to log a new game in pending_games. Games remain in pending_games for 10 mins.
+        '''
+        # If there is no game for this session, add the game to pending_games
+        if session_id not in self.pending_games.keys():
+            self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
+            print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
+            return True
+        else:
+            # If the new players are different, compare the start times
+            if not set(players).issubset(set(self.pending_games[session_id]['players'])):
+                # If the new start time is within 10 mins of the old start time, replace the old session with the new session
+                if time.time() - self.pending_games[session_id]['start_time'] < 600:
+                    print(f"{session_id}    Replacing game in pending_games: {', '.join(players)}")
+                    self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
+                    return True
+                # If the new start time is more than 10 mins from the old start time, add the new session as a new game and move the old session to finished_games
+                else:
+                    print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
+                    self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
+                    return True
+            # If the old players are a subset of new players, replace the old players with new
+            else:
+                print(f"{session_id}    Replacing game in pending_games: {', '.join(players)}")
+                self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
+                return True
+    
+    def process_games(self):
+        '''
+        Logic to move games from pending_games to finished_games.
+        '''
+        for session_id, game in self.pending_games.items():
+            # If the game has been in pending_games for more than 10 mins, move it to finished_games
+            if time.time() - game['start_time'] > 600:
+                print(f"{session_id}    Moving game to finished_games: {', '.join(game['players'])}")
+                self.finished_games[session_id] = game
+                del self.pending_games[session_id]
+        
+        for session_id, game in self.finished_games.items():
+            # For each game in finished games, add it to the database
+            print(f"{session_id}    Adding game to database: {', '.join(game['players'])}")
+            # Create a uuid for the game
+            game_id = str(uuid.uuid4())
+            # Fill the players list with None if there are less than 4 players
+            while len(game['players']) < 4:
+                game['players'].append(None)
+            # Add the game to the database
+            new_game = Trackedgames(id=game_id, 
+                                    player_1=game['players'][0], 
+                                    player_2=game['players'][1], 
+                                    player_3=game['players'][2], 
+                                    player_4=game['players'][3], 
+                                    timestamp=time.time())
+            db.session.add(new_game)
+            
+            
+'''
+-----------------
+START THE SERVER
+-----------------
+'''
+
 if __name__ == '__main__':
     # Create the database tables before running the app
     with app.app_context():
         db.create_all()
+    
+    # Initialize the game tracker
+    game_tracker = GameTracker()
 
     # Run the Flask app
     app.run(debug=True)
+    
