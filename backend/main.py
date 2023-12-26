@@ -66,6 +66,7 @@ def get_user_profile():
     '''
 
     print("POST: /user_profiles")
+    print("Request body:", request.get_json())
     data = request.get_json(force=True)
     player_names = data["players"]
     print("Getting user profiles for:", ', '.join(player_names))
