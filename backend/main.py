@@ -68,8 +68,8 @@ def get_user_profile():
     print("POST: /user_profiles")
     data = request.get_json(force=True)
     player_names = data["players"]
-    print("Getting user profiles for: ", ', '.join(player_names))
-    print("Session ID: ", data["session_id"])
+    print("Getting user profiles for:", ', '.join(player_names))
+    print("Session ID:", data["session_id"])
     
     # Query the database for all players and role formats
     user_profiles = Spelltableusers.query.filter(Spelltableusers.username.in_(player_names)).all()
