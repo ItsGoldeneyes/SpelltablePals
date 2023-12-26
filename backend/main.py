@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 from flask_cors import CORS
+import time
+import uuid
 import os
 
 app = Flask(__name__)
@@ -14,7 +16,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize the SQLAlchemy extension
 db = SQLAlchemy(app)
 
-# Define the models for tables used
 class Spelltableusers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -26,18 +27,52 @@ class Roleformatting(db.Model):
     role = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     custom_format = db.Column(JSONB, nullable=True)
 
-# Route to get user profiles
+
+'''
+-----------------
+HELPER FUNCTIONS
+-----------------
+'''
+
+# class GameTracker:
+#     def __init__(self):
+#         self.pending_games = {}
+#         self.processed_games = {}
+        
+#     def add_game(self, players):
+#         for i in self.pending_games.keys():
+#             if set(players).issubset(set(self.pending_games[i][0])):
+#                 # Remove the pending game
+#                 del self.pending_games[i]
+#                 # Add the processed game
+#                 self.processed_games[i] = [players, time.time()]
+#                 return i
+        
+#         self.pending_games[uuid.uuid4] = [players, time.time()]
+        
+
+
+''' 
+-----------------
+API ENDPOINTS 
+-----------------
+'''
+
 @app.route('/user_profiles', methods=['POST'])
 def get_user_profile():
+    '''
+    This function returns the user profiles for the given list of players.
+    The request body should be a JSON object with the player names as keys.
+    '''
+
     print("POST: /user_profiles")
     data = request.get_json(force=True)
-    player_names = list(data)
+    player_names = data["players"]
     print("Getting user profiles for: ", ', '.join(player_names))
+    print("Session ID: ", data["session_id"])
     
-    # Query the database for all players
+    # Query the database for all players and role formats
     user_profiles = Spelltableusers.query.filter(Spelltableusers.username.in_(player_names)).all()
-    
-    # Query the database of custom role formatting
     role_formatting = Roleformatting.query.all()
     
     users_not_found = [username for username in player_names if username not in [user.username for user in user_profiles]]
