@@ -5,6 +5,7 @@
   "description": "Warns you if you are about to play against a player the community has flagged.",
   "permissions": [
     "scripting",
+    "storage",
     "activeTab"
   ],
   "host_permissions": [

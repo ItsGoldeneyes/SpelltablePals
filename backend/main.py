@@ -179,6 +179,7 @@ if __name__ == '__main__':
         db.create_all()
     
     # Initialize the game tracker
+    global game_tracker 
     game_tracker = GameTracker()
 
     # Run the Flask app
