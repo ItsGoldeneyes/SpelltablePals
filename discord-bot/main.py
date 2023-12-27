@@ -77,7 +77,7 @@ async def ping_command(interaction):
     description="Submits a block request for a given SpellTable user",
     guild=discord.Object(id=1187847033596432394)
 )
-async def block_command(interaction, username, reason):
+async def block_command(interaction, username: str, reason: str):
     if username == None or reason == None:
         response = "Please provide a username and a reason."
         await interaction.response.send_message(response, ephemeral=True)
