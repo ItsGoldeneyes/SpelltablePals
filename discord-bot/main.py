@@ -16,12 +16,26 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 BACKEND_API = "https://backend-production-c33b.up.railway.app"
+OWNER_USER_ID = "744739465045737623"
 
 '''
 --------------
 SLASH COMMANDS
 --------------
 '''
+@tree.command(
+    name="sync",
+    description="Sync the bot's commands",
+    guild=discord.Object(id=1187847033596432394)
+)
+async def sync_command(interaction):
+    if interaction.user.id == OWNER_USER_ID:
+        await tree.sync(guild=discord.Object(id=1187847033596432394))
+        response = "Synced!"
+        await interaction.response.send_message(response, ephemeral=True)
+    else:
+        response = "You are not authorized to use this command."
+        await interaction.response.send_message(response, ephemeral=True)
 
 @tree.command(
     name="info",
