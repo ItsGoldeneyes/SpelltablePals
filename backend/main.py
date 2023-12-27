@@ -70,7 +70,6 @@ def process_games_endpoint():
 
     print("POST: /process_games")
     game_tracker.process_games()
-    print("Games processed")
     return {"success":"Success"}
 
 '''
