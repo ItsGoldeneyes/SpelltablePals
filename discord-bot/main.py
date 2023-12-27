@@ -16,8 +16,21 @@ intents.members = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
+# Set TEST_SERVER to True if testing bot on the Test Server
+TEST_SERVER = True
+if TEST_SERVER:
+    SPELLTABLE_PALS_GUILD_ID = 1187847033596432394 # Bot Test
+    USER_ROLES = {"chill": 1189712419996586055, "council": 1189712386509262948}
+    REPORT_CHANNEL = 1189700021009010840
+else:
+    SPELLTABLE_PALS_GUILD_ID = 1073654117475569784 # SpellTable Pals
+    USER_ROLES = {"chill": 1073656663518744586, "council": 1091947617476415498}
+    REPORT_CHANNEL = 1188131117035950160
+    
+
 BACKEND_API = "https://backend-production-c33b.up.railway.app"
-OWNER_USER_ID = "744739465045737623"
+OWNER_USER_ID = 744739465045737623
+BOT_ID = 1187847835920629881
 
 '''
 --------------
@@ -107,7 +120,7 @@ async def block_command(interaction, username: str, reason: str):
         return
         
     response = f"Block request submitted for {username} with reason: {reason}."        
-    await interaction.response.send_message(response, ephemeral=True)
+    await interaction.response.send_message(response)
     return
 
 '''
@@ -123,23 +136,19 @@ async def fetch_users():
     '''
     
     # Get all users in all servers bot is in
-    users = []
-    for guild in client.guilds:
-        for member in guild.members:
-            users.append(member)
-    
-    '''
-    Create request_body for api, replacing role ids with their names
-    Request_body is of format
-    
-        {"discord_id": {"role": "role", "username": "username"},
-        "discord_id": {"role": "role", "username": "username"},
-        '''
-        
-    
     request_body = {}
-    for user in users:
-        request_body[user.id] = {"role": user.top_role.name, "username": user.name}
+    guild = client.get_guild(SPELLTABLE_PALS_GUILD_ID)
+    for member in guild.members:
+        if member.id == BOT_ID:
+            continue
+        if USER_ROLES["council"] in member.roles:
+            role = "council"
+        elif USER_ROLES["chill"] in member.roles:
+            role = "chill"
+        else:
+            role = ''
+        
+        request_body[member.id] = {"role": role, "username": member.name}
         
     print(request_body)
 '''
