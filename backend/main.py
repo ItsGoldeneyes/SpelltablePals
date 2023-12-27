@@ -134,12 +134,12 @@ class GameTracker:
         else:
             # If the new players are different, compare the start times
             if not set(players).issubset(set(self.pending_games[session_id]['players'])):
-                # If the new start time is within 10 mins of the old start time, replace the old session with the new session
-                if time.time() - self.pending_games[session_id]['start_time'] < 600:
+                # If the new start time is within 20 mins of the old start time, replace the old session with the new session
+                if time.time() - self.pending_games[session_id]['start_time'] < 1200:
                     print(f"{session_id}    Replacing game in pending_games: {', '.join(players)}")
                     self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
                     return True
-                # If the new start time is more than 10 mins from the old start time, add the new session as a new game and move the old session to finished_games
+                # If the new start time is more than 20 mins from the old start time, add the new session as a new game and move the old session to finished_games
                 else:
                     print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
                     self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
@@ -156,9 +156,8 @@ class GameTracker:
         '''
         sessions_to_remove = []
         for session_id, game in self.pending_games.items():
-            # If the game has been in pending_games for more than 10 mins, move it to finished_games
-            # if time.time() - game['start_time'] > 600:
-            if time.time() - game['start_time'] > 5:
+            # If the game has been in pending_games for more than 30 mins, move it to finished_games
+            if time.time() - game['start_time'] > 1800:
                 print(f"{session_id}    Moving game to finished_games: {', '.join(game['players'])}")
                 self.finished_games[session_id] = game
                 sessions_to_remove.append(session_id)
