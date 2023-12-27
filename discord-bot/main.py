@@ -17,7 +17,7 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 # Set TEST_SERVER to True if testing bot on the Test Server
-TEST_SERVER = True
+TEST_SERVER = os.get_env("TEST_SERVER" | True)
 if TEST_SERVER:
     SPELLTABLE_PALS_GUILD_ID = 1187847033596432394 # Bot Test
     USER_ROLES = {"chill": 1189712419996586055, "council": 1189712386509262948}
@@ -41,11 +41,11 @@ SLASH COMMANDS
 @tree.command(
     name="sync",
     description="Sync the bot's commands",
-    guild=discord.Object(id=1187847033596432394)
+    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
 )
 async def sync_command(interaction):
     if interaction.user.id == OWNER_USER_ID:
-        await tree.sync(guild=discord.Object(id=1187847033596432394))
+        await tree.sync(guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID))
         response = "Synced!"
         await interaction.response.send_message(response, ephemeral=True)
     else:
@@ -56,7 +56,7 @@ async def sync_command(interaction):
 @tree.command(
     name="info",
     description="Get info about the bot",
-    guild=discord.Object(id=1187847033596432394)
+    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
 )
 async def info_command(interaction):
     response = "Hello! /n\
@@ -69,7 +69,7 @@ I'm here to help you curate the SpellTable Pals experience. \n\
 @tree.command(
     name="help",
     description="Get help with the bot",
-    guild=discord.Object(id=1187847033596432394)
+    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
 )
 async def help_command(interaction):
     response = "Here are my commands: \n\
@@ -84,7 +84,7 @@ If you have any questions, please contact @Goldeneyes."
 @tree.command(
     name="ping",
     description="Get the bot's latency",
-    guild=discord.Object(id=1187847033596432394)
+    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
 )
 async def ping_command(interaction):
     response = f"Pong! {round(client.latency * 1000)}ms"        
@@ -94,7 +94,7 @@ async def ping_command(interaction):
 @tree.command(
     name="block",
     description="Submits a block request for a given SpellTable user",
-    guild=discord.Object(id=1187847033596432394)
+    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
 )
 async def block_command(interaction, username: str, reason: str):
     if username == None or reason == None:
