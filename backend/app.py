@@ -241,7 +241,7 @@ def block_user(username, reason):
                                 changed_on=datetime.datetime.now())
         db.session.add(new_user)
         db.session.commit()
-        return "success"
+        return "Success"
 
     if user.role in ['custom', 'chill', 'council']:
         print(f"User {username} is certified chill, block failed")
