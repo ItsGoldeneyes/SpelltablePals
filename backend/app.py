@@ -23,6 +23,8 @@ class Spelltableusers(db.Model):
     reason = db.Column(db.String(200), nullable=True)
     role = db.Column(db.String(50), nullable=True)
     custom_format = db.Column(JSONB, nullable=True)
+    discord_id = db.Column(db.String(50), nullable=True)
+    changed_on = db.Column(db.DateTime, nullable=True)
     
 class Roleformatting(db.Model):
     role = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
@@ -72,6 +74,26 @@ def process_games_endpoint():
     game_tracker.process_games()
     return {"success":"Success"}
 
+
+@app.route('/update_pal_profiles', methods=['POST'])
+def update_pal_profiles_endpoint():
+    '''
+    This function updates the user profile for a given player.
+    Generally used by the Discord bot to add SpellTable Pals players.
+    Input format:
+    {"discord_id": {"role": "role", "username": "username"},
+     "discord_id": {"role": "role", "username": "username"},
+     ...}
+    '''
+    
+    data = request.get_json(force=True)
+    print("POST: /update_user_profiles")
+    print("Updating user profiles for:", ', '.join(data.keys()))
+    
+    status = update_pals(data)
+    
+    return {"status": status}
+
 '''
 -----------------
 HELPER FUNCTIONS
@@ -115,6 +137,52 @@ def get_user_profiles_helper(player_names):
     # Return the user profiles as JSON
     return user_profiles_dict
 
+
+def update_pals(user_profiles):
+    '''
+    This function updates the user profiles for the given SpellTable Pals players.
+    
+    user_profiles is a dict of dicts with the following format:
+    {discord_id: {role: role, username: username}, ...}
+    '''
+    
+    pals = Spelltableusers.query.filter(Spelltableusers.discord_id.in_(user_profiles.keys())).all()
+    
+    for user in user_profiles.keys():
+        # If the user is not in the database, add them
+        if user not in [pal.discord_id for pal in pals]:
+            print(f"User {user_profiles[user]['username']} not found in database. Adding them.")
+            max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
+            # Add a new entry to Spelltableusers table
+            new_user = Spelltableusers(id=max_id+1, 
+                                       username=user_profiles[user]['username'],
+                                       role=user_profiles[user]['role'], 
+                                       discord_id=user,
+                                       changed_on=datetime.datetime.now())
+            db.session.add(new_user)
+            db.session.commit()
+            continue
+        
+        db_user_profile = Spelltableusers.query.filter(Spelltableusers.discord_id == user).first()
+        
+        # If the user has a custom role or blocked status, don't update their role
+        if user_profiles[user]['role'] != db_user_profile.role:
+            if db_user_profile.role not in ['custom', 'blocked']:
+                db_user_profile.role = user_profiles[user]['role']
+        
+        # Usernames should be unique as they correspond to SpellTable usernames.
+        # If the username has changed and is not unique, don't update it
+        if db_user_profile.username != user_profiles[user]['username']:
+            if not Spelltableusers.query.filter(Spelltableusers.username == user_profiles[user]['username']).first():
+                db_user_profile.username = user_profiles[user]['username']
+        
+        # If any values were changed, update the changed_on timestamp
+        if db_user_profile.role != user_profiles[user]['role'] or db_user_profile.username != user_profiles[user]['username']:
+            db_user_profile.changed_on = datetime.datetime.now()
+            
+        db.session.commit()
+    
+    return "Success"
 
 class GameTracker:
     def __init__(self):
