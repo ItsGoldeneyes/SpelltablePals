@@ -181,6 +181,7 @@ def update_pals(user_profiles):
             if potential_user and potential_user.discord_id == '':
                 print(f"User {user_profiles[user]['username']}'s username found in database. Adding discord_id.")
                 potential_user.discord_id = user
+                potential_user.changed_on = datetime.datetime.now()
                 db.session.commit()
                 continue
             
@@ -201,20 +202,23 @@ def update_pals(user_profiles):
             continue
         
         db_user_profile = Spelltableusers.query.filter(Spelltableusers.discord_id == user).first()
+        changed_flag = False
         
         # If the user has a custom role or blocked status, don't update their role
         if user_profiles[user]['role'] != db_user_profile.role:
             if db_user_profile.role not in ['custom', 'blocked']:
                 db_user_profile.role = user_profiles[user]['role']
+                changed_flag=True
         
         # Usernames should be unique as they correspond to SpellTable usernames.
         # If the username has changed and is not unique, don't update it
         if db_user_profile.username != user_profiles[user]['username']:
             if not Spelltableusers.query.filter(Spelltableusers.username == user_profiles[user]['username']).first():
                 db_user_profile.username = user_profiles[user]['username']
+                changed_flag=True
         
         # If any values were changed, update the changed_on timestamp
-        if db_user_profile.role != user_profiles[user]['role'] or db_user_profile.username != user_profiles[user]['username']:
+        if changed_flag:
             db_user_profile.changed_on = datetime.datetime.now()
             
         db.session.commit()
@@ -240,7 +244,7 @@ def block_user(username, reason):
         return "success"
 
     if user.role in ['custom', 'chill', 'council']:
-        print(f"User {username} is certified chill, notifying mods")
+        print(f"User {username} is certified chill, block failed")
         return "Failed: chill"
     
     user.role = 'blocked'
@@ -332,7 +336,6 @@ if __name__ == '__main__':
     # Run the Flask app
     app.run(debug=True)
     
-
     
 # Initialize the game tracker
 game_tracker = GameTracker()
