@@ -120,7 +120,7 @@ async def block_command(interaction, username: str, reason: str):
         return
     
     report_channel = client.get_channel(REPORT_CHANNEL)
-    await report_channel.send(f"User {username} blocked by {interaction.username} for reason {reason}")
+    await report_channel.send(f"User {username} blocked by {interaction.user.display_name} for reason {reason}")
     
     response = f"Block request logged."        
     await interaction.response.send_message(response, ephemeral=True)
@@ -154,7 +154,10 @@ async def fetch_users():
         request_body[member.id] = {"role": role, "username": member.display_name}
         
     api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
-    print(api_response.json())
+    if api_response.json()["status"] != "Success":
+        print("Something went wrong. Please try again later.")
+        return
+    print("Users updated!")
     
 '''
 --------------
