@@ -56,7 +56,8 @@ API ENDPOINTS
 def get_user_profiles_endpoint():
     '''
     This function returns the user profiles for the given list of players.
-    The request body should be a JSON object with the player names as keys.
+    Request format:
+        {"players": ["player1", "player2", ...]}
     '''
 
     data = request.get_json(force=True)
@@ -75,6 +76,8 @@ def get_user_profiles_endpoint():
 def process_games_endpoint():
     '''
     This function processes the games in the game tracker and adds them to the database.
+    Request format:
+        {}
     '''
 
     print("POST: /process_games")
@@ -87,10 +90,10 @@ def update_pal_profiles_endpoint():
     '''
     This function updates the user profile for a given player.
     Generally used by the Discord bot to add SpellTable Pals players.
-    Input format:
-    {"discord_id": {"role": "role", "username": "username"},
-     "discord_id": {"role": "role", "username": "username"},
-     ...}
+    Request format:
+        {"discord_id": {"role": "role", "username": "username"},
+        "discord_id": {"role": "role", "username": "username"},
+        ...}
     '''
     
     data = request.get_json(force=True)
@@ -106,6 +109,8 @@ def update_pal_profiles_endpoint():
 def block_user_endpoint():
     '''
     This function submits a block request for a given player.
+    Request format:
+        {"username": "username", reason: "reason"}
     '''
     
     data = request.get_json(force=True)
