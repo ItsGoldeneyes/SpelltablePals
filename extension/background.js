@@ -1,12 +1,25 @@
 let useDefaultDictionary = false; // Set this to false when using the API
 let nameDictionary = {}; // Default empty dictionary
+let extensionID = chrome.runtime.id; // Extension ID for the API to check for valid requests
+
+function simpleUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0,
+          v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+}
+  
+let sessionID = simpleUUID(); // Session ID to be sent to the API for proper game processing
+
+console.log('Background script loaded');
+console.log('Session ID:', sessionID);
 
 function loadDictionary(inputNames) {
     // If using the test variable, set the default dictionary
     if (useDefaultDictionary) {
         nameDictionary = {
         "Goldeneyes": {
-            "blocked": true,
             "role": "custom",
             "reason": "Test",
             "custom_format": {
@@ -31,12 +44,18 @@ function loadDictionary(inputNames) {
             chrome.tabs.sendMessage(currentTab.id, { action: 'recieveNameDictContent', data: nameDictionary });
         });
     } else {
+        var requestBody = JSON.stringify({
+            session_id: sessionID,
+            players: inputNames
+          });
+
         fetch('https://backend-production-c33b.up.railway.app/user_profiles', {
         method: 'POST',
         headers: {
-            'Origin': 'chrome-extension://1'
+            'Origin': 'chrome-extension://' + extensionID,
+            'Content-Type': 'application/json'
             },
-        body: JSON.stringify(inputNames)
+            body: requestBody
         })
         .then(response => {
             if (!response.ok) {

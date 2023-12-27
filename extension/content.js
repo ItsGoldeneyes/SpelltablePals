@@ -1,5 +1,5 @@
-let nameDictionary = {}; // Instantiate global variable
-let lastNamesOnPage = []; // Instantiate global variable
+let nameDictionary = {};
+let lastNamesOnPage = [];
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'recieveNameDictContent') {
