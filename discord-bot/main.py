@@ -2,6 +2,7 @@ import os
 import requests
 import discord
 from discord import app_commands
+from discord.ext import tasks
 
 '''
 --------------
@@ -23,6 +24,7 @@ OWNER_USER_ID = "744739465045737623"
 SLASH COMMANDS
 --------------
 '''
+
 @tree.command(
     name="sync",
     description="Sync the bot's commands",
@@ -37,6 +39,7 @@ async def sync_command(interaction):
         response = "You are not authorized to use this command."
         await interaction.response.send_message(response, ephemeral=True)
 
+
 @tree.command(
     name="info",
     description="Get info about the bot",
@@ -48,6 +51,7 @@ I am a bot created by @Goldeneyes, \n\
 I'm here to help you curate the SpellTable Pals experience. \n\
 *For information about my commands, type /help.*"        
     await interaction.response.send_message(response, ephemeral=True)
+    
     
 @tree.command(
     name="help",
@@ -63,6 +67,7 @@ async def help_command(interaction):
 If you have any questions, please contact @Goldeneyes."       
     await interaction.response.send_message(response, ephemeral=True)
     
+    
 @tree.command(
     name="ping",
     description="Get the bot's latency",
@@ -71,6 +76,7 @@ If you have any questions, please contact @Goldeneyes."
 async def ping_command(interaction):
     response = f"Pong! {round(client.latency * 1000)}ms"        
     await interaction.response.send_message(response, ephemeral=True)
+    
     
 @tree.command(
     name="block",
@@ -103,11 +109,46 @@ async def block_command(interaction, username: str, reason: str):
     response = f"Block request submitted for {username} with reason: {reason}."        
     await interaction.response.send_message(response, ephemeral=True)
     return
+
+'''
+--------------
+LOOP TO UPDATE USERS
+--------------
+'''
+
+@tasks.loop(seconds = 100)
+async def fetch_users():
+    '''
+    Fetches all users in all servers bot is in and updates their roles through the api
+    '''
+    
+    # Get all users in all servers bot is in
+    users = []
+    for guild in client.guilds:
+        for member in guild.members:
+            users.append(member)
+
+    for i in users: 
+        print(i)
+        # Get user's roles
+        roles = []
+        for role in i.roles:
+            roles.append(role.name)
+        print(roles)
+        
+        # Print user id
+        print(i.id)
+'''
+--------------
+START BOT
+--------------
+'''
     
 @client.event
 async def on_ready():
     await tree.sync(guild=discord.Object(id=1187847033596432394))
     print("Ready!")
+    fetch_users.start()
     
     
 client.run(os.environ["DISCORD_TOKEN"])
