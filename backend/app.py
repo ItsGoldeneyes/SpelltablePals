@@ -153,7 +153,11 @@ def update_pals(user_profiles):
         if user not in [pal.discord_id for pal in pals]:
             print(f"User {user_profiles[user]['username']} not found in database. Adding them.")
             max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
-            # Add a new entry to Spelltableusers table
+            
+            # If user's username is not unique, add a number to the end of it
+            if Spelltableusers.query.filter(Spelltableusers.username == user_profiles[user]['username']).first():
+                user_profiles[user]['username'] = user_profiles[user]['username'] + str(max_id+1)
+            
             new_user = Spelltableusers(id=max_id+1, 
                                        username=user_profiles[user]['username'],
                                        role=user_profiles[user]['role'], 
