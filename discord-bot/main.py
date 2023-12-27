@@ -127,17 +127,21 @@ async def fetch_users():
     for guild in client.guilds:
         for member in guild.members:
             users.append(member)
-
-    for i in users: 
-        print(i)
-        # Get user's roles
-        roles = []
-        for role in i.roles:
-            roles.append(role.name)
-        print(roles)
+    
+    '''
+    Create request_body for api, replacing role ids with their names
+    Request_body is of format
+    
+        {"discord_id": {"role": "role", "username": "username"},
+        "discord_id": {"role": "role", "username": "username"},
+        '''
         
-        # Print user id
-        print(i.id)
+    
+    request_body = {}
+    for user in users:
+        request_body[user.id] = {"role": user.top_role.name, "username": user.name}
+        
+    print(request_body)
 '''
 --------------
 START BOT
