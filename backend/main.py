@@ -158,7 +158,8 @@ class GameTracker:
         sessions_to_remove = []
         for session_id, game in self.pending_games.items():
             # If the game has been in pending_games for more than 10 mins, move it to finished_games
-            if time.time() - game['start_time'] > 600:
+            # if time.time() - game['start_time'] > 600:
+            if time.time() - game['start_time'] > 5:
                 print(f"{session_id}    Moving game to finished_games: {', '.join(game['players'])}")
                 self.finished_games[session_id] = game
                 sessions_to_remove.append(session_id)
@@ -180,7 +181,7 @@ class GameTracker:
                                     player_2=game['players'][1], 
                                     player_3=game['players'][2], 
                                     player_4=game['players'][3], 
-                                    timestamp=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
+                                    timestamp=datetime.datetime.fromtimestamp(game['start_time']).strftime('%Y-%m-%d %H:%M:%S'))
             db.session.add(new_game)
         
         db.session.commit()
