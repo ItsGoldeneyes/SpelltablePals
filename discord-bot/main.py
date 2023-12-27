@@ -118,9 +118,12 @@ async def block_command(interaction, username: str, reason: str):
         response = "Something went wrong. Please try again later."
         await interaction.response.send_message(response, ephemeral=True)
         return
-        
-    response = f"Block request submitted for {username} with reason: {reason}."        
-    await interaction.response.send_message(response)
+    
+    report_channel = client.get_channel(REPORT_CHANNEL)
+    await report_channel.send(f"User {username} blocked by {interaction.username} for reason {reason}")
+    
+    response = f"Block request logged."        
+    await interaction.response.send_message(response, ephemeral=True)
     return
 
 '''
@@ -141,9 +144,9 @@ async def fetch_users():
     for member in guild.members:
         if member.id == BOT_ID:
             continue
-        if USER_ROLES["council"] in member.roles:
+        if USER_ROLES["council"] in [member_role.id for member_role in member.roles]:
             role = "council"
-        elif USER_ROLES["chill"] in member.roles:
+        elif USER_ROLES["chill"] in [member_role.id for member_role in member.roles]:
             role = "chill"
         else:
             role = ''
