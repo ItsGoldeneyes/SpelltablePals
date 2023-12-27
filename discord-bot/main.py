@@ -1,26 +1,26 @@
-# This example requires the 'message_content' privileged intents
-
 import os
 import discord
-from discord.ext import commands
+from discord import app_commands
 
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+intents.members = True
+client = discord.Client(intents=intents)
+tree = app_commands.CommandTree(client)
 
-
-@bot.event
+@tree.command(
+    name="commandname",
+    description="My first application Command",
+    guild=discord.Object(id=1187847033596432394)
+)
+async def first_command(interaction):
+    await interaction.response.send_message("Hello!")
+    
+@client.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
-
-@bot.command()
-async def ping(ctx):
-    await ctx.send('pong')
-
-@bot.command()
-async def hello(ctx):
-    await ctx.send("Choo choo! 🚅")
-
-
-bot.run(os.environ["DISCORD_TOKEN"])
+    await tree.sync(guild=discord.Object(id=1187847033596432394))
+    print("Ready!")
+    
+    
+client.run(os.environ["DISCORD_TOKEN"])
