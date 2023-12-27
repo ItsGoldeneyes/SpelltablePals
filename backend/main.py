@@ -28,7 +28,7 @@ class Roleformatting(db.Model):
     custom_format = db.Column(JSONB, nullable=True)
     
 class Trackedgames(db.Model):
-    id = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+    game_id = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     player_1 = db.Column(db.String(50), nullable=False)
     player_2 = db.Column(db.String(50), nullable=False)
     player_3 = db.Column(db.String(50), nullable=False)
@@ -69,8 +69,8 @@ def process_games_endpoint():
 
     print("POST: /process_games")
     game_tracker.process_games()
-
-    return "Success"
+    print("Games processed")
+    return {"success":"Success"}
 
 '''
 -----------------
