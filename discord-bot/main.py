@@ -151,9 +151,11 @@ async def fetch_users():
         else:
             role = ''
         
-        request_body[member.id] = {"role": role, "username": member.name}
+        request_body[member.id] = {"role": role, "username": member.display_name}
         
-    print(request_body)
+    api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
+    print(api_response.json())
+    
 '''
 --------------
 START BOT
