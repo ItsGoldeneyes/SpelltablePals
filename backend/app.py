@@ -183,23 +183,23 @@ def update_pals(user_profiles):
                 potential_user.discord_id = user
                 potential_user.changed_on = datetime.datetime.now()
                 db.session.commit()
+            
+            else:
+                print(f"User {user_profiles[user]['username']} not found in database. Adding them.")
+                max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
+                
+                # If user's username is not unique, add a number to the end of it
+                if Spelltableusers.query.filter(Spelltableusers.username == user_profiles[user]['username']).first():
+                    user_profiles[user]['username'] = user_profiles[user]['username'] + str(max_id+1)
+                
+                new_user = Spelltableusers(id=max_id+1, 
+                                        username=user_profiles[user]['username'],
+                                        role=user_profiles[user]['role'], 
+                                        discord_id=user,
+                                        changed_on=datetime.datetime.now())
+                db.session.add(new_user)
+                db.session.commit()
                 continue
-            
-            print(f"User {user_profiles[user]['username']} not found in database. Adding them.")
-            max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
-            
-            # If user's username is not unique, add a number to the end of it
-            if Spelltableusers.query.filter(Spelltableusers.username == user_profiles[user]['username']).first():
-                user_profiles[user]['username'] = user_profiles[user]['username'] + str(max_id+1)
-            
-            new_user = Spelltableusers(id=max_id+1, 
-                                       username=user_profiles[user]['username'],
-                                       role=user_profiles[user]['role'], 
-                                       discord_id=user,
-                                       changed_on=datetime.datetime.now())
-            db.session.add(new_user)
-            db.session.commit()
-            continue
         
         db_user_profile = Spelltableusers.query.filter(Spelltableusers.discord_id == user).first()
         changed_flag = False
