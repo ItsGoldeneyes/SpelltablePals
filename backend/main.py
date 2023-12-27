@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 from flask_cors import CORS
 import time
+import datetime
 import uuid
 import os
 
@@ -179,7 +180,7 @@ class GameTracker:
                                     player_2=game['players'][1], 
                                     player_3=game['players'][2], 
                                     player_4=game['players'][3], 
-                                    timestamp=time.time())
+                                    timestamp=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
             db.session.add(new_game)
         
         db.session.commit()
