@@ -7,6 +7,13 @@ import datetime
 import uuid
 import os
 
+
+'''
+-----------------
+SETUP AND DATABASE CONFIGURATION
+-----------------
+'''
+
 app = Flask(__name__)
 CORS(app)
 
@@ -94,6 +101,20 @@ def update_pal_profiles_endpoint():
     
     return {"status": status}
 
+
+@app.route('/block_user', methods=['POST'])
+def block_user_endpoint():
+    '''
+    This function submits a block request for a given player.
+    '''
+    
+    data = request.get_json(force=True)
+    print("POST: /block_user")
+    
+    status = block_user(data['username'], data['reason'])
+    
+    return {"status": status}
+
 '''
 -----------------
 HELPER FUNCTIONS
@@ -145,7 +166,6 @@ def update_pals(user_profiles):
     user_profiles is a dict of dicts with the following format:
     {discord_id: {role: role, username: username}, ...}
     '''
-    
     pals = Spelltableusers.query.filter(Spelltableusers.discord_id.in_(user_profiles.keys())).all()
     
     for user in user_profiles.keys():
@@ -195,6 +215,34 @@ def update_pals(user_profiles):
         db.session.commit()
     
     return "Success"
+
+
+def block_user(username, reason):
+    '''
+    This function blocks a user from using the bot.
+    '''
+    user = Spelltableusers.query.filter(Spelltableusers.username == username).first()
+    if not user:
+        print(f"User {username} not found, adding to database")
+        max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
+        new_user = Spelltableusers(id=max_id+1, 
+                                username=username,
+                                role='blocked', 
+                                reason=reason,
+                                changed_on=datetime.datetime.now())
+        db.session.add(new_user)
+        db.session.commit()
+        return "success"
+
+    if user.role in ['custom', 'chill', 'council']:
+        print(f"User {username} is certified chill, notifying mods")
+        return "Failed: chill"
+    
+    user.role = 'blocked'
+    user.reason = reason
+    db.session.commit()
+    return "Success"
+
 
 class GameTracker:
     def __init__(self):
