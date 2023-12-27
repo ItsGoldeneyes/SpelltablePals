@@ -154,12 +154,16 @@ class GameTracker:
         '''
         Logic to move games from pending_games to finished_games.
         '''
+        sessions_to_remove = []
         for session_id, game in self.pending_games.items():
             # If the game has been in pending_games for more than 10 mins, move it to finished_games
             if time.time() - game['start_time'] > 600:
                 print(f"{session_id}    Moving game to finished_games: {', '.join(game['players'])}")
                 self.finished_games[session_id] = game
-                del self.pending_games[session_id]
+                sessions_to_remove.append(session_id)
+        # Remove the games from pending_games
+        for session_id in sessions_to_remove:
+            del self.pending_games[session_id]
         
         for session_id, game in self.finished_games.items():
             # For each game in finished games, add it to the database
@@ -177,7 +181,9 @@ class GameTracker:
                                     player_4=game['players'][3], 
                                     timestamp=time.time())
             db.session.add(new_game)
-            
+        
+        db.session.commit()
+        self.finished_games = {}
             
 '''
 -----------------
