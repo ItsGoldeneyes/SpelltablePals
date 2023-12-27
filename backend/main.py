@@ -60,6 +60,18 @@ def get_user_profiles_endpoint():
 
     return user_profiles
 
+
+@app.route('/process_games', methods=['POST'])
+def process_games_endpoint():
+    '''
+    This function processes the games in the game tracker and adds them to the database.
+    '''
+
+    print("POST: /process_games")
+    game_tracker.process_games()
+
+    return "Success"
+
 '''
 -----------------
 HELPER FUNCTIONS
