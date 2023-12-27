@@ -170,7 +170,7 @@ class GameTracker:
             while len(game['players']) < 4:
                 game['players'].append(None)
             # Add the game to the database
-            new_game = Trackedgames(id=game_id, 
+            new_game = Trackedgames(game_id=game_id, 
                                     player_1=game['players'][0], 
                                     player_2=game['players'][1], 
                                     player_3=game['players'][2], 
