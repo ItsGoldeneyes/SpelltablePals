@@ -121,7 +121,7 @@ def block_user_endpoint():
     return {"status": status}
 
 
-@app.route('/unblock_user', methods=['GET'])
+@app.route('/unblock_user', methods=['POST'])
 def unblock_user_endpoint():
     '''
     This function submits an unblock request for a given player.
