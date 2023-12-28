@@ -40,7 +40,6 @@ SLASH COMMANDS
     )
 async def sync_command(interaction):
     if interaction.user.id == OWNER_USER_ID:
-        await tree.sync(guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID))
         response = "Synced!"
         await interaction.response.send_message(response, ephemeral=True)
     else:
