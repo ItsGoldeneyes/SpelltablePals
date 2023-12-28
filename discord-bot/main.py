@@ -127,7 +127,7 @@ LOOP TO UPDATE USERS
 --------------
 '''
 
-@tasks.loop(seconds = 100)
+@tasks.loop(seconds = 30000)
 async def fetch_users():
     '''
     Fetches all users in all servers bot is in and updates their roles through the api
