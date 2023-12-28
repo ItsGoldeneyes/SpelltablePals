@@ -41,12 +41,17 @@ SLASH COMMANDS
     description="Sync the bot's commands"
     )
 async def sync_command(interaction):
+    
+    
     if interaction.user.id == OWNER_USER_ID:
         response = "Synced!"
+        await tree.sync()
         await interaction.response.send_message(response, ephemeral=True)
     else:
         response = "You are not authorized to use this command."
         await interaction.response.send_message(response, ephemeral=True)
+        
+    
 
 
 @tree.command(
