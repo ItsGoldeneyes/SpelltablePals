@@ -41,8 +41,6 @@ SLASH COMMANDS
     description="Sync the bot's commands"
     )
 async def sync_command(interaction):
-    
-    
     if interaction.user.id == OWNER_USER_ID:
         response = "Synced!"
         await tree.sync()
@@ -50,8 +48,6 @@ async def sync_command(interaction):
     else:
         response = "You are not authorized to use this command."
         await interaction.response.send_message(response, ephemeral=True)
-        
-    
 
 
 @tree.command(
@@ -132,6 +128,45 @@ async def block_command(interaction, username: str, reason: str):
     
     
     response = f"Block request logged."        
+    await interaction.response.send_message(response, ephemeral=True)
+    return
+
+@tree.command(
+    name="unblock",
+    description="Submits an unblock request for a given SpellTable user"
+    )
+async def unblock_command(interaction, username: str):
+    user_roles = SERVER_INFO[interaction.guild.id]["roles"]
+    if user_roles["council"] not in [role.id for role in interaction.user.roles]:
+        response = "You are not authorized to use this command."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if username == None:
+        response = "Please provide a username."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    api_response = requests.post(f"{BACKEND_API}/unblock_user", json={"username": username})
+    
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if api_response.json()["status"] != "Success":
+        response = f"Error unblocking user: {api_response.json()['status']}"
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    for guild in client.guilds:
+        report_channel = client.get_channel(SERVER_INFO[guild.id]["mod_report_channel"])
+        if report_channel == None:
+            continue
+        else:
+            await report_channel.send(f"User {username} unblocked by {interaction.user.display_name}")
+    
+    response = f"Unblock request logged."        
     await interaction.response.send_message(response, ephemeral=True)
     return
 

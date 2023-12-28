@@ -120,6 +120,22 @@ def block_user_endpoint():
     
     return {"status": status}
 
+
+@app.route('/unblock_user', methods=['GET'])
+def unblock_user_endpoint():
+    '''
+    This function submits an unblock request for a given player.
+    Request format:
+        {"username": "username"}
+    '''
+    
+    username = request.get_json(force=True)['username']
+    print("POST: /unblock_user")
+    
+    status = unblock_user(username)
+    
+    return {"status": status}
+
 '''
 -----------------
 HELPER FUNCTIONS
@@ -228,7 +244,7 @@ def update_pals(user_profiles):
 
 def block_user(username, reason):
     '''
-    This function blocks a user from using the bot.
+    This function blocks a user on SpellTable
     '''
     user = Spelltableusers.query.filter(Spelltableusers.username == username).first()
     if not user:
@@ -249,6 +265,25 @@ def block_user(username, reason):
     
     user.role = 'blocked'
     user.reason = reason
+    db.session.commit()
+    return "Success"
+
+
+def unblock_user(username):
+    '''
+    This function unblocks a user on SpellTable
+    '''
+    user = Spelltableusers.query.filter(Spelltableusers.username == username).first()
+    if not user:
+        print(f"User {username} not found, can't unblock")
+        return "User not found"
+
+    if user.role not in ['blocked']:
+        print(f"User {username} is not blocked, can't unblock")
+        return "User not blocked"
+    
+    user.role = None
+    user.reason = None
     db.session.commit()
     return "Success"
 
