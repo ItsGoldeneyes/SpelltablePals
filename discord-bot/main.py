@@ -16,17 +16,13 @@ intents.members = True
 client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
-# Set TEST_SERVER to True if testing bot on the Test Server
-TEST_SERVER = os.get_env("TEST_SERVER" | True)
-if TEST_SERVER:
-    SPELLTABLE_PALS_GUILD_ID = 1187847033596432394 # Bot Test
-    USER_ROLES = {"chill": 1189712419996586055, "council": 1189712386509262948}
-    REPORT_CHANNEL = 1189700021009010840
-else:
-    SPELLTABLE_PALS_GUILD_ID = 1073654117475569784 # SpellTable Pals
-    USER_ROLES = {"chill": 1073656663518744586, "council": 1091947617476415498}
-    REPORT_CHANNEL = 1188131117035950160
-    
+SERVER_INFO = {}
+SERVER_INFO[1187847033596432394] = {"guild_name": "Bot Test", 
+                                      "roles": {"chill": 1189712419996586055, "council": 1189712386509262948}, 
+                                      "report_channel": 1189700021009010840}
+SERVER_INFO[1073654117475569784] = {"guild_name": "SpellTable Pals",
+                                        "roles": {"chill": 1073656663518744586, "council": 1091947617476415498},
+                                        "report_channel": 1188131117035950160}
 
 BACKEND_API = "https://backend-production-c33b.up.railway.app"
 OWNER_USER_ID = 744739465045737623
@@ -40,9 +36,8 @@ SLASH COMMANDS
 
 @tree.command(
     name="sync",
-    description="Sync the bot's commands",
-    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
-)
+    description="Sync the bot's commands"
+    )
 async def sync_command(interaction):
     if interaction.user.id == OWNER_USER_ID:
         await tree.sync(guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID))
@@ -55,9 +50,8 @@ async def sync_command(interaction):
 
 @tree.command(
     name="info",
-    description="Get info about the bot",
-    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
-)
+    description="Get info about the bot"
+    )
 async def info_command(interaction):
     response = "Hello! /n\
 I am a bot created by @Goldeneyes, \n\
@@ -68,9 +62,8 @@ I'm here to help you curate the SpellTable Pals experience. \n\
     
 @tree.command(
     name="help",
-    description="Get help with the bot",
-    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
-)
+    description="Get help with the bot"
+    )
 async def help_command(interaction):
     response = "Here are my commands: \n\
 */info* - Get info about the bot \n\
@@ -83,9 +76,8 @@ If you have any questions, please contact @Goldeneyes."
     
 @tree.command(
     name="ping",
-    description="Get the bot's latency",
-    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
-)
+    description="Get the bot's latency"
+    )
 async def ping_command(interaction):
     response = f"Pong! {round(client.latency * 1000)}ms"        
     await interaction.response.send_message(response, ephemeral=True)
@@ -93,9 +85,8 @@ async def ping_command(interaction):
     
 @tree.command(
     name="block",
-    description="Submits a block request for a given SpellTable user",
-    guild=discord.Object(id=SPELLTABLE_PALS_GUILD_ID)
-)
+    description="Submits a block request for a given SpellTable user"
+    )
 async def block_command(interaction, username: str, reason: str):
     if username == None or reason == None:
         response = "Please provide a username and a reason."
@@ -118,9 +109,13 @@ async def block_command(interaction, username: str, reason: str):
         response = "Something went wrong. Please try again later."
         await interaction.response.send_message(response, ephemeral=True)
         return
+    for guild in client.guilds:
+        report_channel = SERVER_INFO[guild.id]["report_channel"]
+        if report_channel == None:
+            continue
+        else:
+            await report_channel.send(f"User {username} blocked by {interaction.user.display_name} for reason {reason}")
     
-    report_channel = client.get_channel(REPORT_CHANNEL)
-    await report_channel.send(f"User {username} blocked by {interaction.user.display_name} for reason {reason}")
     
     response = f"Block request logged."        
     await interaction.response.send_message(response, ephemeral=True)
@@ -140,18 +135,19 @@ async def fetch_users():
     
     # Get all users in all servers bot is in
     request_body = {}
-    guild = client.get_guild(SPELLTABLE_PALS_GUILD_ID)
-    for member in guild.members:
-        if member.id == BOT_ID:
-            continue
-        if USER_ROLES["council"] in [member_role.id for member_role in member.roles]:
-            role = "council"
-        elif USER_ROLES["chill"] in [member_role.id for member_role in member.roles]:
-            role = "chill"
-        else:
-            role = ''
-        
-        request_body[member.id] = {"role": role, "username": member.display_name}
+    for guild in client.guilds:
+        user_roles = SERVER_INFO[guild.id]["roles"]
+        for member in guild.members:
+            if member.id == BOT_ID:
+                continue
+            if user_roles["council"] in [member_role.id for member_role in member.roles]:
+                role = "council"
+            elif user_roles["chill"] in [member_role.id for member_role in member.roles]:
+                role = "chill"
+            else:
+                role = ''
+            
+            request_body[member.id] = {"role": role, "username": member.display_name}
         
     api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
     if api_response.json()["status"] != "Success":
@@ -167,7 +163,6 @@ START BOT
     
 @client.event
 async def on_ready():
-    await tree.sync(guild=discord.Object(id=1187847033596432394))
     print("Ready!")
     fetch_users.start()
     
