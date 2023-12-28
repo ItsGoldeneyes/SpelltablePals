@@ -19,10 +19,12 @@ tree = app_commands.CommandTree(client)
 SERVER_INFO = {}
 SERVER_INFO[1187847033596432394] = {"guild_name": "Bot Test", 
                                       "roles": {"chill": 1189712419996586055, "council": 1189712386509262948}, 
-                                      "report_channel": 1189700021009010840}
+                                      "report_channel": 1189700021009010840,
+                                      "mod_report_channel": 1189971481170563195}
 SERVER_INFO[1073654117475569784] = {"guild_name": "SpellTable Pals",
                                         "roles": {"chill": 1073656663518744586, "council": 1091947617476415498},
-                                        "report_channel": 1188131117035950160}
+                                        "report_channel": 1188131117035950160,
+                                        "mod_report_channel": 1186943235470405692}
 
 BACKEND_API = "https://backend-production-c33b.up.railway.app"
 OWNER_USER_ID = 744739465045737623
@@ -101,6 +103,14 @@ async def block_command(interaction, username: str, reason: str):
     
     if api_response.json()["status"] != "Success":
         if api_response.json()["status"] == "Failed: chill":
+            
+            for guild in client.guilds:
+                report_channel = SERVER_INFO[guild.id]["mod_report_channel"]
+                if report_channel == None:
+                    continue
+                else:
+                    await report_channel.send(f"{interaction.user.display_name} attempted to block {username} for reason {reason}, but {username} is a Certified Chill user.")
+            
             response = "User is Certified Chill, please contact a moderator if you would like to proceed."
             await interaction.response.send_message(response, ephemeral=True)
             return
