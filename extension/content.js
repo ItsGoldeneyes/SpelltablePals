@@ -49,7 +49,7 @@ function main() {
     const allNamesOnPageAreContained = namesOnPage.every(name => lastNamesOnPage.includes(name));
     
     if (!allNamesOnPageAreContained) {
-      chrome.runtime.sendMessage({ action: 'getNameDictContent', data: namesOnPage});
+      chrome.runtime.sendMessage({ action: 'getNameDictContent', data: { "namesOnPage": namesOnPage, "sessionID": window.location.pathname } });
     }
   }
 

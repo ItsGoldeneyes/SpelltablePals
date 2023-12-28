@@ -15,7 +15,7 @@ let sessionID = simpleUUID(); // Session ID to be sent to the API for proper gam
 console.log('Background script loaded');
 console.log('Session ID:', sessionID);
 
-function loadDictionary(inputNames) {
+function loadDictionary(inputNames, sessionID) {
     // If using the test variable, set the default dictionary
     if (useDefaultDictionary) {
         nameDictionary = {
@@ -94,9 +94,11 @@ try {
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.action === 'getNameDictContent') {
-        namesOnPage = message.data;
+        namesOnPage = message.data.namesOnPage;
+        sessionID = message.data.sessionID;
         console.log('namesOnPage:', namesOnPage);
-        loadDictionary(namesOnPage);
+        console.log('sessionID:', sessionID);
+        loadDictionary(namesOnPage, sessionID);
     } else
     if (message.action === 'getNameDictPopup') {
         console.log(message);
