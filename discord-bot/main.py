@@ -105,7 +105,7 @@ async def block_command(interaction, username: str, reason: str):
         if api_response.json()["status"] == "Failed: chill":
             
             for guild in client.guilds:
-                report_channel = SERVER_INFO[guild.id]["mod_report_channel"]
+                report_channel = client.get_channel(SERVER_INFO[guild.id]["mod_report_channel"])
                 if report_channel == None:
                     continue
                 else:
@@ -119,7 +119,7 @@ async def block_command(interaction, username: str, reason: str):
         await interaction.response.send_message(response, ephemeral=True)
         return
     for guild in client.guilds:
-        report_channel = SERVER_INFO[guild.id]["report_channel"]
+        report_channel = client.get_channel(SERVER_INFO[guild.id]["report_channel"])
         if report_channel == None:
             continue
         else:
