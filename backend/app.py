@@ -103,6 +103,9 @@ def update_pal_profiles_endpoint():
     print("POST: /update_user_profiles")
     print("Updating user profiles for:", ', '.join(data.keys()))
     
+    for discord_id in data.keys():
+        data[discord_id]['username'] = data[discord_id]['username'].lower()
+    
     status = update_pals(data)
     
     return {"status": status}
@@ -119,7 +122,7 @@ def block_user_endpoint():
     data = request.get_json(force=True)
     print("POST: /block_user")
     
-    status = block_user(data['username'], data['reason'])
+    status = block_user(data['username'].lower(), data['reason'])
     
     return {"status": status}
 
@@ -132,7 +135,7 @@ def unblock_user_endpoint():
         {"username": "username"}
     '''
     
-    username = request.get_json(force=True)['username']
+    username = request.get_json(force=True)['username'].lower()
     print("POST: /unblock_user")
     
     status = unblock_user(username)
