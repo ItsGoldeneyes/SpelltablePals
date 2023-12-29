@@ -70,7 +70,7 @@ def get_user_profiles_endpoint():
     user_profiles = get_user_profiles_helper(player_names)
 
     for username in user_profiles.keys():
-        user_profiles[username]['username_lower'] = username.lower()
+        user_profiles[username.lower()] = user_profiles[username]
 
     return user_profiles
 
