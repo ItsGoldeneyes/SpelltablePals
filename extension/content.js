@@ -1,6 +1,30 @@
 let nameDictionary = {};
 let lastNamesOnPage = [];
 
+function main() {
+
+  // Detect names on the webpage
+  const textElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
+  const namesOnPage = [];
+
+  textElements.forEach(element => {
+    const name = element.textContent.trim().toLowerCase();
+    namesOnPage.push(name);
+  });
+
+  // Check if there are any names on the page
+  if (namesOnPage.length !== 0) {
+    // Check if all elements in namesOnPage are contained within lastNamesOnPage
+    const allNamesOnPageAreContained = namesOnPage.every(name => lastNamesOnPage.includes(name));
+    
+    if (!allNamesOnPageAreContained) {
+      chrome.runtime.sendMessage({ action: 'getNameDictContent', data: { "namesOnPage": namesOnPage, "sessionID": window.location.pathname } });
+    }
+  }
+
+  lastNamesOnPage = namesOnPage;
+}
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === 'recieveNameDictContent') {
     nameDictionary = message.data;
@@ -8,11 +32,20 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+// Convert all keys in an object to lowercase
+const lowerize = obj =>
+  Object.keys(obj).reduce((acc, k) => {
+    acc[k.toLowerCase()] = obj[k];
+    return acc;
+  }, {});
+
+// Format names on the page
 function formatNames() {
+  lowerize(nameDictionary);
   const elements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
 
   elements.forEach(element => {
-    const elementText = element.textContent.trim();
+    const elementText = element.textContent.trim().toLowerCase();
 
     // If the player has a record in the name dictionary, apply the custom format
     if (nameDictionary[elementText]) {
@@ -32,29 +65,5 @@ function formatNames() {
   });
 }
 
-function main() {
-
-  // Detect names on the webpage
-  const textElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
-  const namesOnPage = [];
-
-  textElements.forEach(element => {
-    const name = element.textContent.trim();
-    namesOnPage.push(name);
-  });
-
-  // Check if there are any names on the page
-  if (namesOnPage.length !== 0) {
-    // Check if all elements in namesOnPage are contained within lastNamesOnPage
-    const allNamesOnPageAreContained = namesOnPage.every(name => lastNamesOnPage.includes(name));
-    
-    if (!allNamesOnPageAreContained) {
-      chrome.runtime.sendMessage({ action: 'getNameDictContent', data: { "namesOnPage": namesOnPage, "sessionID": window.location.pathname } });
-    }
-  }
-
-  lastNamesOnPage = namesOnPage;
-}
-
-// Set up an interval to execute detectAndHighlight every 2 seconds
+// Set up an interval to execute main function every 2 seconds
 const intervalId = setInterval(() => main(), 2000);
