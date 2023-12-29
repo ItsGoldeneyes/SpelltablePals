@@ -69,8 +69,11 @@ def get_user_profiles_endpoint():
     
     user_profiles = get_user_profiles_helper(player_names)
 
+    dict2 = {}
     for username in user_profiles.keys():
-        user_profiles[username.lower()] = user_profiles[username]
+        dict2[username.lower()] = user_profiles[username]
+        
+    user_profiles = {**dict2, **user_profiles}
 
     return user_profiles
 
