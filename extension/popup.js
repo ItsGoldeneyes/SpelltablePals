@@ -71,7 +71,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       const playerInfoDiv = document.createElement('div');
       playerInfoDiv.classList.add('player-info');
 
-      playerInfoDiv.textContent = `${playerName} - ${getPlayerStatus(playerName)}`;
+      playerInfoDiv.textContent = `${playerName} - ${getPlayerStatus(playerName.lower())}`;
       playerInfoContainer.appendChild(playerInfoDiv);
     }
   }
