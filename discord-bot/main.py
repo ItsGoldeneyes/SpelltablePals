@@ -124,7 +124,7 @@ async def block_command(interaction, username: str, reason: str):
         if report_channel == None:
             continue
         else:
-            await report_channel.send(f"User *{username}* blocked by {interaction.user.display_name} for reason {reason}")
+            await report_channel.send(f"User **{username}** blocked by {interaction.user.display_name} for reason {reason}")
     
     
     response = f"Block request logged."        
@@ -164,7 +164,7 @@ async def unblock_command(interaction, username: str):
         if report_channel == None:
             continue
         else:
-            await report_channel.send(f"User *{username}* unblocked by {interaction.user.display_name}")
+            await report_channel.send(f"User **{username}** unblocked by {interaction.user.display_name}")
     
     response = f"Unblock request logged."        
     await interaction.response.send_message(response, ephemeral=True)
