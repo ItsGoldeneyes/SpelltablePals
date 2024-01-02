@@ -172,11 +172,11 @@ async def unblock_command(interaction, username: str):
 
 '''
 --------------
-LOOP TO UPDATE USERS
+LOOPS
 --------------
 '''
 
-@tasks.loop(seconds = 30000)
+@tasks.loop(seconds = 21600)
 async def fetch_users():
     '''
     Fetches all users in all servers bot is in and updates their roles through the api
@@ -203,6 +203,23 @@ async def fetch_users():
         print("Something went wrong. Please try again later.")
         return
     print("Users updated!")
+    
+    
+@tasks.loop(seconds = 600)
+async def update_games():
+    '''
+    Triggers the backend to process the active games
+    '''
+    
+    url = "https://backend-production-c33b.up.railway.app/process_games"
+
+    payload={}
+
+    api_response = requests.request("POST", url, data=payload)    
+    if api_response.json()["status"] != "Success":
+        print("Something went wrong. Please try again later.")
+        return
+    print("Games updated!")
     
 '''
 --------------
