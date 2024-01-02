@@ -257,7 +257,8 @@ def update_pals(user_profiles):
             user.role = None
             user.changed_on = datetime.datetime.now()
             db.session.commit()
-    
+            
+    print("Discord User Profiles Updated")
     return "Success"
 
 
