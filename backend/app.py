@@ -248,6 +248,16 @@ def update_pals(user_profiles):
             
         db.session.commit()
     
+    # If there are users that are in the database with a discord_id, but not in the user_profiles list, remove their associated roles.
+    # They may have left the server or been kicked.
+    for user in pals:
+        if user.discord_id not in user_profiles.keys():
+            print(f"User {user.username} not found in user_profiles. They may have left the server or been kicked.")
+            user.discord_id = ''
+            user.role = None
+            user.changed_on = datetime.datetime.now()
+            db.session.commit()
+    
     return "Success"
 
 
