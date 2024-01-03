@@ -157,7 +157,7 @@ def get_user_profiles_helper(player_names):
     user_profiles = Spelltableusers.query.filter(Spelltableusers.username.in_(player_names)).all()
     role_formatting = Roleformatting.query.all()
     
-    users_not_found = [username for username in player_names if username not in [user.username for user in user_profiles]]
+    users_not_found = [username.lower() for username in player_names if username not in [user.username for user in user_profiles]]
     if users_not_found:
         print("Users not found. Adding to database: ", ', '.join(users_not_found))
         for username in users_not_found:
