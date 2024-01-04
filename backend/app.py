@@ -62,8 +62,10 @@ def get_user_profiles_endpoint():
 
     data = request.get_json(force=True)
     player_names = data["players"]
+    player_commanders = data["commanders"]
     print(f"{data['session_id']}    POST: /user_profiles")
     print(f"{data['session_id']}    Getting user profiles for:", ', '.join(player_names))
+    print(f"{data['session_id']}    Player Commanders are:", ', '.join(player_commanders))
     
     game_tracker.add_game(player_names, data['session_id'])
     
