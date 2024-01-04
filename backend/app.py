@@ -236,7 +236,7 @@ def update_pals(user_profiles):
         
         # If the user has a custom role or blocked status, don't update their role
         if user_profiles[user]['role'] != db_user_profile.role:
-            if db_user_profile.role not in ['custom', 'blocked']:
+            if db_user_profile.role not in ['custom', 'blocked']: 
                 db_user_profile.role = user_profiles[user]['role']
                 changed_flag=True
         
