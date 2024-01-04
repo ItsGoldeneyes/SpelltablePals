@@ -1,28 +1,41 @@
 let nameDictionary = {};
 let lastNamesOnPage = [];
+let lastCommandersOnPage = [];
 
 function main() {
 
   // Detect names on the webpage
-  const textElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
+  const nameElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
   const namesOnPage = [];
+  const commanderElements = document.querySelectorAll('.text-xs.italic.text-gray-400.truncate.leading-snug.flex > div');
+  const commandersOnPage = [];
 
-  textElements.forEach(element => {
+  nameElements.forEach(element => {
     const name = element.textContent.trim().toLowerCase();
     namesOnPage.push(name);
   });
 
-  // Check if there are any names on the page
+  commanderElements.forEach(element => {
+    const commanderName = element.textContent.trim();
+    commandersOnPage.push(commanderName);
+  });
+
+  // If there are no names on the page, the active page is probably the start page
   if (namesOnPage.length !== 0) {
-    // Check if all elements in namesOnPage are contained within lastNamesOnPage
+    // Check if all elements in namesOnPage and commandersOnPage are contained in the last page
     const allNamesOnPageAreContained = namesOnPage.every(name => lastNamesOnPage.includes(name));
-    
-    if (!allNamesOnPageAreContained) {
-      chrome.runtime.sendMessage({ action: 'getNameDictContent', data: { "namesOnPage": namesOnPage, "sessionID": window.location.pathname } });
+    const allCommandersAreContained = commandersOnPage.every(commander => lastCommandersOnPage.includes(commander));
+
+    if (!allNamesOnPageAreContained || !allCommandersAreContained) {
+      chrome.runtime.sendMessage({
+        action: 'getNameDictContent',
+        data: { "namesOnPage": namesOnPage, "commandersOnPage": commandersOnPage, "sessionID": window.location.pathname }
+      });
     }
   }
 
   lastNamesOnPage = namesOnPage;
+  lastCommandersOnPage = commandersOnPage;
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {

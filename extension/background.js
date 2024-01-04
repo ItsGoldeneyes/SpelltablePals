@@ -15,7 +15,7 @@ let sessionID = simpleUUID(); // Session ID to be sent to the API for proper gam
 console.log('Background script loaded');
 console.log('Session ID:', sessionID);
 
-function loadDictionary(inputNames, sessionID) {
+function loadDictionary(inputNames, inputCommanders, sessionID) {
     // If using the test variable, set the default dictionary
     if (useDefaultDictionary) {
         nameDictionary = {
@@ -46,7 +46,8 @@ function loadDictionary(inputNames, sessionID) {
     } else {
         var requestBody = JSON.stringify({
             session_id: sessionID,
-            players: inputNames
+            players: inputNames,
+            commanders: inputCommanders
           });
 
         fetch('https://backend-production-c33b.up.railway.app/user_profiles', {
@@ -94,11 +95,13 @@ try {
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.action === 'getNameDictContent') {
-        namesOnPage = message.data.namesOnPage;
         sessionID = message.data.sessionID;
-        console.log('namesOnPage:', namesOnPage);
+        namesOnPage = message.data.namesOnPage;
+        commandersOnPage = message.data.commandersOnPage;
         console.log('sessionID:', sessionID);
-        loadDictionary(namesOnPage, sessionID);
+        console.log('namesOnPage:', namesOnPage);
+        console.log('commandersOnPage:', commandersOnPage);
+        loadDictionary(namesOnPage, commandersOnPage, sessionID);
     } else
     if (message.action === 'getNameDictPopup') {
         console.log(message);
