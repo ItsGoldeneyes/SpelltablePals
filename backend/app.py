@@ -59,8 +59,11 @@ def get_user_profiles_endpoint():
     Request format:
         {"players": ["player1", "player2", ...]}
     '''
-
     data = request.get_json(force=True)
+    # If user is using beta v1, commanders won't be included
+    if "commanders" not in data.keys():
+        data["commanders"] = []
+        
     player_names = data["players"]
     player_commanders = data["commanders"]
     print(f"{data['session_id']}    POST: /user_profiles")
