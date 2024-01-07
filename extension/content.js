@@ -4,27 +4,28 @@ let lastCommandersOnPage = [];
 
 function main() {
 
-  // Detect names on the webpage
+  // Retrieve the player names
   const nameElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
   const namesOnPage = [];
-  const commanderElements = document.querySelectorAll('.text-xs.italic.text-gray-400.truncate.leading-snug.flex > div');
-  const commandersOnPage = [];
 
   nameElements.forEach(element => {
     const name = element.textContent.trim().toLowerCase();
     namesOnPage.push(name);
   });
 
+  // Retrieve the player's commanders
+  const commanderElements = document.querySelectorAll('.text-xs.italic.text-gray-400.truncate.leading-snug.flex > div');
+  const commandersOnPage = [];
+
   commanderElements.forEach(element => {
     const commanderName = element.textContent.trim();
     commandersOnPage.push(commanderName);
   });
 
-  // If there are no names on the page, the active page is probably the start page
+  // If there are no names on the page, the active page is probably the game start page
   if (namesOnPage.length !== 0) {
-    // Check if all elements in namesOnPage and commandersOnPage are contained in the last page
-    const allNamesOnPageAreContained = namesOnPage.every(name => lastNamesOnPage.includes(name));
-    const allCommandersAreContained = commandersOnPage.every(commander => lastCommandersOnPage.includes(commander));
+    const allNamesOnPageAreContained = lastNamesOnPage.join(',') === namesOnPage.join(',');
+    const allCommandersAreContained = lastCommandersOnPage.join(',') === commandersOnPage.join(',');
 
     if (!allNamesOnPageAreContained || !allCommandersAreContained) {
       chrome.runtime.sendMessage({
@@ -74,6 +75,20 @@ function formatNames() {
         element.style.lineHeight = nameDictionary[elementText].custom_format.lineHeight;
         element.style.wordSpacing = nameDictionary[elementText].custom_format.wordSpacing;
         element.style.whiteSpace = nameDictionary[elementText].custom_format.whiteSpace;
+    } else {
+      // If the player does not have a record in the name dictionary, reset the format
+      element.style.color = '';
+      element.style.fontSize = '';
+      element.style.fontWeight = '';
+      element.style.backgroundColor = '';
+      element.style.textDecoration = '';
+      element.style.textTransform = '';
+      element.style.textShadow = '';
+      element.style.textIndent = '';
+      element.style.letterSpacing = '';
+      element.style.lineHeight = '';
+      element.style.wordSpacing = '';
+      element.style.whiteSpace = '';
     }
   });
 }
