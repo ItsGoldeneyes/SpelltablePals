@@ -110,7 +110,7 @@ async def block_command(interaction, username: str, reason: str):
                 if report_channel == None:
                     continue
                 else:
-                    await report_channel.send(f"{interaction.user.nick} attempted to block {username} for reason {reason}, but {username} is a Certified Chill user.")
+                    await report_channel.send(f"{interaction.user.display_name} attempted to block {username} for reason {reason}, but {username} is a Certified Chill user.")
             
             response = "User is Certified Chill, please contact a moderator if you would like to proceed."
             await interaction.response.send_message(response, ephemeral=True)
@@ -124,7 +124,7 @@ async def block_command(interaction, username: str, reason: str):
         if report_channel == None:
             continue
         else:
-            await report_channel.send(f"User **{username}** blocked by {interaction.user.nick} for reason {reason}")
+            await report_channel.send(f"User **{username}** blocked by {interaction.user.display_name} for reason {reason}")
     
     
     response = f"Block request logged."        
@@ -165,7 +165,7 @@ async def unblock_command(interaction, username: str):
         if report_channel == None:
             continue
         else:
-            await report_channel.send(f"User **{username}** unblocked by {interaction.user.nick}")
+            await report_channel.send(f"User **{username}** unblocked by {interaction.user.display_name}")
     
     response = f"Unblock request logged."        
     await interaction.response.send_message(response, ephemeral=True)
@@ -178,7 +178,7 @@ async def unblock_command(interaction, username: str):
 )
 async def stats_command(interaction, username: str):
     if not username:
-        username = interaction.user.nick
+        username = interaction.user.display_name
     
     api_response = requests.post(f"{BACKEND_API}/get_user_stats", json={"username": username})
     
@@ -228,8 +228,7 @@ async def fetch_users():
                 role = "chill"
             else:
                 role = ''
-            
-            request_body[member.id] = {"role": role, "username": member.nick}
+            request_body[member.id] = {"role": role, "username": member.display_name}
         
     api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
     if api_response.json()["status"] != "Success":
