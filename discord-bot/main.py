@@ -38,8 +38,7 @@ SLASH COMMANDS
 
 @tree.command(
     name="sync",
-    description="Sync the bot's commands",
-    guild=discord.Object(id=1187847033596432394)
+    description="Sync the bot's commands"
     )
 async def sync_command(interaction):
     if interaction.user.id == OWNER_USER_ID:
