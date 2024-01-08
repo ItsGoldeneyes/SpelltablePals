@@ -56,8 +56,7 @@ async def sync_command(interaction):
     )
 async def info_command(interaction):
     response = "Hello! \n\
-I am a bot created by @Goldeneyes, \n\
-I'm here to help you curate the SpellTable Pals experience. \n\
+I'm here to help you have a better SpellTable experience! \n\
 *For information about my commands, type /help.*"        
     await interaction.response.send_message(response, ephemeral=True)
     
@@ -72,6 +71,7 @@ async def help_command(interaction):
 */help* - Get help with the bot \n\
 */ping* - Get the bot's latency \n\
 */block* - Submits a block request for a given SpellTable user. \n\
+*/stats* - Get your SpellTable stats! \n\
 If you have any questions, please contact @Goldeneyes."       
     await interaction.response.send_message(response, ephemeral=True)
     
