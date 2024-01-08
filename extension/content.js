@@ -1,28 +1,42 @@
 let nameDictionary = {};
 let lastNamesOnPage = [];
+let lastCommandersOnPage = [];
 
 function main() {
 
-  // Detect names on the webpage
-  const textElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
+  // Retrieve the player names
+  const nameElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
   const namesOnPage = [];
 
-  textElements.forEach(element => {
+  nameElements.forEach(element => {
     const name = element.textContent.trim().toLowerCase();
     namesOnPage.push(name);
   });
 
-  // Check if there are any names on the page
+  // Retrieve the player's commanders
+  const commanderElements = document.querySelectorAll('.text-xs.italic.text-gray-400.truncate.leading-snug.flex > div');
+  const commandersOnPage = [];
+
+  commanderElements.forEach(element => {
+    const commanderName = element.textContent.trim();
+    commandersOnPage.push(commanderName);
+  });
+
+  // If there are no names on the page, the active page is probably the game start page
   if (namesOnPage.length !== 0) {
-    // Check if all elements in namesOnPage are contained within lastNamesOnPage
-    const allNamesOnPageAreContained = namesOnPage.every(name => lastNamesOnPage.includes(name));
-    
-    if (!allNamesOnPageAreContained) {
-      chrome.runtime.sendMessage({ action: 'getNameDictContent', data: { "namesOnPage": namesOnPage, "sessionID": window.location.pathname } });
+    const allNamesOnPageAreContained = lastNamesOnPage.join(',') === namesOnPage.join(',');
+    const allCommandersAreContained = lastCommandersOnPage.join(',') === commandersOnPage.join(',');
+
+    if (!allNamesOnPageAreContained || !allCommandersAreContained) {
+      chrome.runtime.sendMessage({
+        action: 'getNameDictContent',
+        data: { "namesOnPage": namesOnPage, "commandersOnPage": commandersOnPage, "sessionID": window.location.pathname }
+      });
     }
   }
 
   lastNamesOnPage = namesOnPage;
+  lastCommandersOnPage = commandersOnPage;
 }
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -61,6 +75,20 @@ function formatNames() {
         element.style.lineHeight = nameDictionary[elementText].custom_format.lineHeight;
         element.style.wordSpacing = nameDictionary[elementText].custom_format.wordSpacing;
         element.style.whiteSpace = nameDictionary[elementText].custom_format.whiteSpace;
+    } else {
+      // If the player does not have a record in the name dictionary, reset the format
+      element.style.color = '';
+      element.style.fontSize = '';
+      element.style.fontWeight = '';
+      element.style.backgroundColor = '';
+      element.style.textDecoration = '';
+      element.style.textTransform = '';
+      element.style.textShadow = '';
+      element.style.textIndent = '';
+      element.style.letterSpacing = '';
+      element.style.lineHeight = '';
+      element.style.wordSpacing = '';
+      element.style.whiteSpace = '';
     }
   });
 }

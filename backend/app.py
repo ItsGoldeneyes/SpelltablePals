@@ -59,13 +59,18 @@ def get_user_profiles_endpoint():
     Request format:
         {"players": ["player1", "player2", ...]}
     '''
-
     data = request.get_json(force=True)
+    # If user is using beta v1, commanders won't be included
+    if "commanders" not in data.keys():
+        data["commanders"] = []
+        
     player_names = data["players"]
+    player_commanders = data["commanders"]
     print(f"{data['session_id']}    POST: /user_profiles")
     print(f"{data['session_id']}    Getting user profiles for:", ', '.join(player_names))
+    print(f"{data['session_id']}    Player Commanders are:", ', '.join(player_commanders))
     
-    game_tracker.add_game(player_names, data['session_id'])
+    game_tracker.add_game(player_names, player_commanders, data['session_id'])
     
     user_profiles = get_user_profiles_helper(player_names)
 
@@ -167,11 +172,14 @@ HELPER FUNCTIONS
 
 def get_user_profiles_helper(player_names):
     
+    # Make player_names lowercase
+    player_names = [username.lower() for username in player_names]
+    
     # Query the database for all players and role formats
     user_profiles = Spelltableusers.query.filter(Spelltableusers.username.in_(player_names)).all()
     role_formatting = Roleformatting.query.all()
     
-    users_not_found = [username.lower() for username in player_names if username not in [user.username for user in user_profiles]]
+    users_not_found = [username for username in player_names if username not in [user.username.lower() for user in user_profiles]]
     if users_not_found:
         print("Users not found. Adding to database: ", ', '.join(users_not_found))
         for username in users_not_found:
@@ -245,7 +253,7 @@ def update_pals(user_profiles):
         
         # If the user has a custom role or blocked status, don't update their role
         if user_profiles[user]['role'] != db_user_profile.role:
-            if db_user_profile.role not in ['custom', 'blocked']:
+            if db_user_profile.role not in ['custom', 'blocked']: 
                 db_user_profile.role = user_profiles[user]['role']
                 changed_flag=True
         
@@ -349,13 +357,13 @@ class GameTracker:
         self.pending_games = {}
         self.finished_games = {}
     
-    def add_game(self, players, session_id):
+    def add_game(self, players, commanders, session_id):
         '''
         Logic to log a new game in pending_games. Games remain in pending_games for 10 mins.
         '''
         # If there is no game for this session, add the game to pending_games
         if session_id not in self.pending_games.keys():
-            self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
+            self.pending_games[session_id] = {'start_time': time.time(), 'players': players, 'commanders': commanders}
             print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
             return True
         else:
@@ -364,17 +372,18 @@ class GameTracker:
                 # If the new start time is within 20 mins of the old start time, replace the old session with the new session
                 if time.time() - self.pending_games[session_id]['start_time'] < 1200:
                     print(f"{session_id}    Replacing game in pending_games: {', '.join(players)}")
-                    self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
+                    self.pending_games[session_id] = {'start_time': time.time(), 'players': players, 'commanders': commanders}
                     return True
                 # If the new start time is more than 20 mins from the old start time, add the new session as a new game and move the old session to finished_games
                 else:
+                    self.finished_games[session_id] = self.pending_games[session_id]
                     print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
-                    self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
+                    self.pending_games[session_id] = {'start_time': time.time(), 'players': players, 'commanders': commanders}
                     return True
             # If the old players are a subset of new players, replace the old players with new
             else:
                 print(f"{session_id}    Replacing game in pending_games: {', '.join(players)}")
-                self.pending_games[session_id] = {'start_time': time.time(), 'players': players}
+                self.pending_games[session_id] = {'start_time': time.time(), 'players': players, 'commanders': commanders}
                 return True
     
     def process_games(self):
@@ -388,24 +397,32 @@ class GameTracker:
                 print(f"{session_id}    Moving game to finished_games: {', '.join(game['players'])}")
                 self.finished_games[session_id] = game
                 sessions_to_remove.append(session_id)
+                
         # Remove the games from pending_games
         for session_id in sessions_to_remove:
             del self.pending_games[session_id]
         
         for session_id, game in self.finished_games.items():
             # For each game in finished games, add it to the database
-            print(f"{session_id}    Adding game to database: {', '.join(game['players'])}")
-            # Create a uuid for the game
-            game_id = str(uuid.uuid4())
-            # Fill the players list with None if there are less than 4 players
+            print(f"{session_id}    Moving game to database: {', '.join(game['players'])}")
+
+            # Fill the players list and commanders list with None if there are less than 4 players
             while len(game['players']) < 4:
                 game['players'].append(None)
+            while len(game['commanders']) < 4:
+                game['commanders'].append(None)
+                
+            game_id = str(uuid.uuid4())
             # Add the game to the database
             new_game = Trackedgames(game_id=game_id, 
                                     player_1=game['players'][0], 
                                     player_2=game['players'][1], 
                                     player_3=game['players'][2], 
                                     player_4=game['players'][3], 
+                                    commander_1=game['commanders'][0],
+                                    commander_2=game['commanders'][1],
+                                    commander_3=game['commanders'][2],
+                                    commander_4=game['commanders'][3],
                                     timestamp=datetime.datetime.fromtimestamp(game['start_time']).strftime('%Y-%m-%d %H:%M:%S'))
             db.session.add(new_game)
         
