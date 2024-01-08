@@ -43,6 +43,10 @@ class Trackedgames(db.Model):
     player_2 = db.Column(db.String(50), nullable=False)
     player_3 = db.Column(db.String(50), nullable=False)
     player_4 = db.Column(db.String(50), nullable=False)
+    commander_1 = db.Column(db.String(50), nullable=True)
+    commander_2 = db.Column(db.String(50), nullable=True)
+    commander_3 = db.Column(db.String(50), nullable=True)
+    commander_4 = db.Column(db.String(50), nullable=True)
     timestamp = db.Column(db.DateTime, nullable=False)
 
 
