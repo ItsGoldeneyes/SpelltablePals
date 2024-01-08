@@ -39,7 +39,7 @@ SLASH COMMANDS
 @tree.command(
     name="sync",
     description="Sync the bot's commands",
-    guild=1187847033596432394
+    guild="1187847033596432394"
     )
 async def sync_command(interaction):
     if interaction.user.id == OWNER_USER_ID:
@@ -79,8 +79,7 @@ If you have any questions, please contact @Goldeneyes."
     
 @tree.command(
     name="ping",
-    description="Get the bot's latency",
-    guild_ids=[1187847033596432394, 1073654117475569784]
+    description="Get the bot's latency"
     )
 async def ping_command(interaction):
     response = f"Pong! {round(client.latency * 1000)}ms"        
@@ -177,7 +176,7 @@ async def unblock_command(interaction, username: str):
 @tree.command(
     name="stats",
     description="Get your SpellTable stats!",
-    guilds=[1187847033596432394, 1073654117475569784]
+    guilds=["1187847033596432394", "1073654117475569784"]
 )
 async def stats_command(interaction, username: str):
     if not username:
@@ -208,7 +207,7 @@ async def stats_command(interaction, username: str):
 @tree.command(
     name="fetch",
     description="Fetches all users in bot's servers",
-    guild=1187847033596432394
+    guild="1187847033596432394"
 )
 async def fetch_command(interaction):
     
