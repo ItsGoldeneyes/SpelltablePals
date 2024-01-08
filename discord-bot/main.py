@@ -39,7 +39,7 @@ SLASH COMMANDS
 @tree.command(
     name="sync",
     description="Sync the bot's commands",
-    guild="1187847033596432394"
+    guild=discord.Object(id=1187847033596432394)
     )
 async def sync_command(interaction):
     if interaction.user.id == OWNER_USER_ID:
@@ -176,7 +176,7 @@ async def unblock_command(interaction, username: str):
 @tree.command(
     name="stats",
     description="Get your SpellTable stats!",
-    guilds=["1187847033596432394", "1073654117475569784"]
+    guilds=[discord.Object(id=1187847033596432394), discord.Object(id=1073654117475569784)]
 )
 async def stats_command(interaction, username: str):
     if not username:
@@ -207,7 +207,7 @@ async def stats_command(interaction, username: str):
 @tree.command(
     name="fetch",
     description="Fetches all users in bot's servers",
-    guild="1187847033596432394"
+    guild=discord.Object(id=1187847033596432394)
 )
 async def fetch_command(interaction):
     
