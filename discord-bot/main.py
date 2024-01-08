@@ -38,7 +38,8 @@ SLASH COMMANDS
 
 @tree.command(
     name="sync",
-    description="Sync the bot's commands"
+    description="Sync the bot's commands",
+    guild_ids=[1187847033596432394, 1073654117475569784]
     )
 async def sync_command(interaction):
     if interaction.user.id == OWNER_USER_ID:
@@ -52,7 +53,8 @@ async def sync_command(interaction):
 
 @tree.command(
     name="info",
-    description="Get info about the bot"
+    description="Get info about the bot",
+    guild_ids=[1187847033596432394, 1073654117475569784]
     )
 async def info_command(interaction):
     response = "Hello! /n\
@@ -64,7 +66,8 @@ I'm here to help you curate the SpellTable Pals experience. \n\
     
 @tree.command(
     name="help",
-    description="Get help with the bot"
+    description="Get help with the bot",
+    guild_ids=[1187847033596432394, 1073654117475569784]
     )
 async def help_command(interaction):
     response = "Here are my commands: \n\
@@ -78,7 +81,8 @@ If you have any questions, please contact @Goldeneyes."
     
 @tree.command(
     name="ping",
-    description="Get the bot's latency"
+    description="Get the bot's latency",
+    guild_ids=[1187847033596432394, 1073654117475569784]
     )
 async def ping_command(interaction):
     response = f"Pong! {round(client.latency * 1000)}ms"        
@@ -87,7 +91,8 @@ async def ping_command(interaction):
     
 @tree.command(
     name="block",
-    description="Submits a block request for a given SpellTable user"
+    description="Submits a block request for a given SpellTable user",
+    guild_ids=[1187847033596432394, 1073654117475569784]
     )
 async def block_command(interaction, username: str, reason: str):
     if username == None or reason == None:
@@ -134,7 +139,8 @@ async def block_command(interaction, username: str, reason: str):
 
 @tree.command(
     name="unblock",
-    description="Submits an unblock request for a given SpellTable user"
+    description="Submits an unblock request for a given SpellTable user",
+    guild_ids=[1187847033596432394, 1073654117475569784]
     )
 async def unblock_command(interaction, username: str):
     user_roles = SERVER_INFO[interaction.guild.id]["roles"]
@@ -174,7 +180,8 @@ async def unblock_command(interaction, username: str):
 
 @tree.command(
     name="stats",
-    description="Get your SpellTable stats!"
+    description="Get your SpellTable stats!",
+    guild_ids=[1187847033596432394, 1073654117475569784]
 )
 async def stats_command(interaction, username: str):
     if not username:
@@ -202,6 +209,33 @@ async def stats_command(interaction, username: str):
     await interaction.response.send_message(response, ephemeral=False)
     return
 
+@tree.command(
+    name="fetch",
+    description="Fetches all users in bot's servers",
+    guild_ids=[1187847033596432394, 1073654117475569784]
+)
+async def fetch_command(interaction):
+    
+    # Get all users in all servers bot is in
+    request_body = {}
+    for guild in client.guilds:
+        user_roles = SERVER_INFO[guild.id]["roles"]
+        for member in guild.members:
+            if member.id == BOT_ID:
+                continue
+            if user_roles["council"] in [member_role.id for member_role in member.roles]:
+                role = "council"
+            elif user_roles["chill"] in [member_role.id for member_role in member.roles]:
+                role = "chill"
+            else:
+                role = ''
+            request_body[member.id] = {"role": role, "username": member.display_name}
+        
+    api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
+    if api_response.json()["status"] != "Success":
+        print("Something went wrong. Please try again later.")
+        return
+    print("Users updated!")
 
 '''
 --------------
