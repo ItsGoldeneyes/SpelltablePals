@@ -55,7 +55,7 @@ async def sync_command(interaction):
     description="Get info about the bot"
     )
 async def info_command(interaction):
-    response = "Hello! /n\
+    response = "Hello! \n\
 I am a bot created by @Goldeneyes, \n\
 I'm here to help you curate the SpellTable Pals experience. \n\
 *For information about my commands, type /help.*"        
@@ -134,7 +134,8 @@ async def block_command(interaction, username: str, reason: str):
 
 @tree.command(
     name="unblock",
-    description="Submits an unblock request for a given SpellTable user"
+    description="Submits an unblock request for a given SpellTable user",
+    guilds=[discord.Object(id=1187847033596432394), discord.Object(id=1073654117475569784)]
     )
 async def unblock_command(interaction, username: str):
     user_roles = SERVER_INFO[interaction.guild.id]["roles"]
@@ -205,8 +206,7 @@ async def stats_command(interaction, username: str):
 
 @tree.command(
     name="fetch",
-    description="Fetches all users in bot's servers",
-    guild=discord.Object(id=1187847033596432394)
+    description="Fetches all users in bot's servers"
 )
 async def fetch_command(interaction):
     
