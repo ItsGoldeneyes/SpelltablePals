@@ -176,7 +176,8 @@ async def unblock_command(interaction, username: str):
 
 @tree.command(
     name="stats",
-    description="Get your SpellTable stats!"
+    description="Get your SpellTable stats!",
+    guilds=[1187847033596432394, 1073654117475569784]
 )
 async def stats_command(interaction, username: str):
     if not username:
@@ -207,7 +208,7 @@ async def stats_command(interaction, username: str):
 @tree.command(
     name="fetch",
     description="Fetches all users in bot's servers",
-    guild_id=1187847033596432394
+    guild=1187847033596432394
 )
 async def fetch_command(interaction):
     
