@@ -110,7 +110,7 @@ async def block_command(interaction, username: str, reason: str):
                 if report_channel == None:
                     continue
                 else:
-                    await report_channel.send(f"{interaction.user.display_name} attempted to block {username} for reason {reason}, but {username} is a Certified Chill user.")
+                    await report_channel.send(f"{interaction.user.nick} attempted to block {username} for reason {reason}, but {username} is a Certified Chill user.")
             
             response = "User is Certified Chill, please contact a moderator if you would like to proceed."
             await interaction.response.send_message(response, ephemeral=True)
@@ -124,12 +124,13 @@ async def block_command(interaction, username: str, reason: str):
         if report_channel == None:
             continue
         else:
-            await report_channel.send(f"User **{username}** blocked by {interaction.user.display_name} for reason {reason}")
+            await report_channel.send(f"User **{username}** blocked by {interaction.user.nick} for reason {reason}")
     
     
     response = f"Block request logged."        
     await interaction.response.send_message(response, ephemeral=True)
     return
+
 
 @tree.command(
     name="unblock",
@@ -164,11 +165,43 @@ async def unblock_command(interaction, username: str):
         if report_channel == None:
             continue
         else:
-            await report_channel.send(f"User **{username}** unblocked by {interaction.user.display_name}")
+            await report_channel.send(f"User **{username}** unblocked by {interaction.user.nick}")
     
     response = f"Unblock request logged."        
     await interaction.response.send_message(response, ephemeral=True)
     return
+
+
+@tree.command(
+    name="stats",
+    description="Get your SpellTable stats!"
+)
+async def stats_command(interaction, username: str):
+    if not username:
+        username = interaction.user.nick
+    
+    api_response = requests.post(f"{BACKEND_API}/get_user_stats", json={"username": username})
+    
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if api_response.json()["status"] != "Success":
+        response = f"Error getting stats: {api_response.json()['status']}"
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    stats = api_response.json()["stats"]
+    response = f"Stats for {username}: \n\
+    **{stats['total_games']}** Games Played \n\
+    Most Played Commander: {stats['most_played_commander']} \n\
+    Most Played Color: {stats['most_played_color']} \n\
+    Most Played Opponent: {stats['most_played_opponent']} \n\
+    "
+    await interaction.response.send_message(response, ephemeral=False)
+    return
+
 
 '''
 --------------
@@ -196,7 +229,7 @@ async def fetch_users():
             else:
                 role = ''
             
-            request_body[member.id] = {"role": role, "username": member.display_name}
+            request_body[member.id] = {"role": role, "username": member.nick}
         
     api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
     if api_response.json()["status"] != "Success":

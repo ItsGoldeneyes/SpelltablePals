@@ -145,6 +145,20 @@ def unblock_user_endpoint():
     
     return {"status": status}
 
+@app.route('/get_user_stats', methods=['POST'])
+def get_user_stats_endpoint():
+    '''
+    This function returns the stats for a given player.
+    Request format:
+        {"username": "username"}
+    '''
+    
+    username = request.get_json(force=True)['username'].lower()
+    print(f"POST: /get_user_stats {username}")
+    
+    
+    
+
 '''
 -----------------
 HELPER FUNCTIONS
@@ -306,6 +320,27 @@ def unblock_user(username):
     user.reason = None
     db.session.commit()
     return "Success"
+
+
+def get_user_stats(username):
+    '''
+    This function returns the stats for a given player.
+    
+    
+    
+    response = f"Stats for {username}: \n\
+    **{stats['total_games']}** Games Played \n\
+    Most Played Commander: {stats['most_played_commander']} \n\
+    Most Played Color: {stats['most_played_color']} \n\
+    Most Played Opponent: {stats['most_played_opponent']} \n\
+    '''
+    # Query games database for all games with username in player_1, player_2, player_3, or player_4
+    games = Trackedgames.query.filter(Trackedgames.player_1 == username).all()
+    games += Trackedgames.query.filter(Trackedgames.player_2 == username).all()
+    games += Trackedgames.query.filter(Trackedgames.player_3 == username).all()
+    games += Trackedgames.query.filter(Trackedgames.player_4 == username).all()
+    
+    print(games)
 
 
 class GameTracker:
