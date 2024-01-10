@@ -269,7 +269,7 @@ async def update_games():
     Triggers the backend to process the active games
     '''
 
-    api_response = requests.requests(f"{BACKEND_API}/process_games" url, data={})    
+    api_response = requests.requests(f"{BACKEND_API}/process_games" , data={})    
     if api_response.json()["status"] != "Success":
         print("Something went wrong. Please try again later.")
         return
