@@ -256,7 +256,7 @@ async def fetch_users():
                 role = ''
             request_body[member.id] = {"role": role, "username": member.display_name}
         
-    api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
+    api_response = requests.post(url=f"{BACKEND_API}/update_pal_profiles", json=request_body)
     if api_response.json()["status"] != "Success":
         print("Something went wrong. Please try again later.")
         return
