@@ -271,7 +271,7 @@ async def update_games():
 
     payload={}
 
-    api_response = requests.post(f"{BACKEND_API}/process_games" url, json=payload)    
+    api_response = requests.post(f"{BACKEND_API}/process_games", json=payload)
     if api_response.json()["status"] != "Success":
         print("Something went wrong. Please try again later.")
         return
