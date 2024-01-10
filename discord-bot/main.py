@@ -185,12 +185,12 @@ async def stats_command(interaction, username: str):
     
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."
-        await interaction.response.send_message(response, ephemeral=True)
+        await interaction.followup.send(response)
         return
     
     if api_response.json()["status"] != "Success":
         response = f"Error getting stats: {api_response.json()['status']}"
-        await interaction.response.send_message(response, ephemeral=True)
+        await interaction.followup.send(response)
         return
     
     stats = api_response.json()["stats"]
@@ -200,7 +200,7 @@ async def stats_command(interaction, username: str):
     Most Played Color: {stats['most_played_color']} \n\
     Most Played Opponent: {stats['most_played_opponent']} \n\
     "
-    await interaction.followup.send(response, ephemeral=True)
+    await interaction.followup.send(response)
     return
 
 
