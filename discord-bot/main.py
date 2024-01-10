@@ -268,12 +268,10 @@ async def update_games():
     '''
     Triggers the backend to process the active games
     '''
-    
-    url = "https://backend-production-c33b.up.railway.app/process_games"
 
     payload={}
 
-    api_response = requests.request("POST", url, data=payload)    
+    api_response = requests.post(f"{BACKEND_API}/process_games" url, json=payload)    
     if api_response.json()["status"] != "Success":
         print("Something went wrong. Please try again later.")
         return
