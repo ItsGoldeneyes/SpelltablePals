@@ -285,7 +285,6 @@ START BOT
 async def on_ready():
     print("Ready!")
     fetch_users.start()
-    update_games.start()
     
     
 client.run(os.environ["DISCORD_TOKEN"])
