@@ -78,8 +78,7 @@ If you have any questions, please contact @Goldeneyes."
     
 @tree.command(
     name="ping",
-    description="Get the bot's latency",
-    guilds=[discord.Object(id=key) for key in SERVER_INFO.keys()]
+    description="Get the bot's latency"
     )
 async def ping_command(interaction):
     response = f"Pong! {round(client.latency * 1000)}ms"        
@@ -88,8 +87,7 @@ async def ping_command(interaction):
     
 @tree.command(
     name="block",
-    description="Submits a block request for a given SpellTable user",
-    guilds=[discord.Object(id=key) for key in SERVER_INFO.keys()]
+    description="Submits a block request for a given SpellTable user"
     )
 async def block_command(interaction, username: str, reason: str):
     if username == None or reason == None:
@@ -136,8 +134,7 @@ async def block_command(interaction, username: str, reason: str):
 
 @tree.command(
     name="unblock",
-    description="Submits an unblock request for a given SpellTable user",
-    guilds=[discord.Object(id=key) for key in SERVER_INFO.keys()]
+    description="Submits an unblock request for a given SpellTable user"
     )
 async def unblock_command(interaction, username: str):
     user_roles = SERVER_INFO[interaction.guild.id]["roles"]
@@ -177,8 +174,7 @@ async def unblock_command(interaction, username: str):
 
 @tree.command(
     name="stats",
-    description="Get your SpellTable stats!",
-    guilds=[discord.Object(id=key) for key in SERVER_INFO.keys()]
+    description="Get your SpellTable stats!"
 )
 async def stats_command(interaction, username: str):
     if not username:
@@ -208,8 +204,7 @@ async def stats_command(interaction, username: str):
 
 @tree.command(
     name="fetch",
-    description="Fetches all users in bot's servers",
-    guilds=[discord.Object(id=key) for key in SERVER_INFO.keys()]
+    description="Fetches all users in bot's servers"
 )
 async def fetch_command(interaction):
     
