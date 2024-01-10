@@ -263,19 +263,19 @@ async def fetch_users():
     print("Users updated!")
     
     
-@tasks.loop(seconds = 600)
-async def update_games():
-    '''
-    Triggers the backend to process the active games
-    '''
+# @tasks.loop(seconds = 600)
+# async def update_games():
+#     '''
+#     Triggers the backend to process the active games
+#     '''
 
-    payload={}
+#     payload={}
 
-    api_response = requests.post(f"{BACKEND_API}/process_games", json=payload)
-    if api_response.json()["status"] != "Success":
-        print("Something went wrong. Please try again later.")
-        return
-    print("Games updated!")
+#     api_response = requests.post(f"{BACKEND_API}/process_games", json=payload)
+#     if api_response.json()["status"] != "Success":
+#         print("Something went wrong. Please try again later.")
+#         return
+#     print("Games updated!")
     
 '''
 --------------
