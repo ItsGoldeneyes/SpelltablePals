@@ -177,6 +177,7 @@ async def unblock_command(interaction, username: str):
     description="Get your SpellTable stats!"
 )
 async def stats_command(interaction, username: str):
+    await interaction.response.defer()
     if not username:
         username = interaction.user.display_name
     
@@ -199,7 +200,7 @@ async def stats_command(interaction, username: str):
     Most Played Color: {stats['most_played_color']} \n\
     Most Played Opponent: {stats['most_played_opponent']} \n\
     "
-    await interaction.response.send_message(response, ephemeral=False)
+    await interaction.followup.send(response, ephemeral=True)
     return
 
 
@@ -208,6 +209,7 @@ async def stats_command(interaction, username: str):
     description="Fetches all users in bot's servers"
 )
 async def fetch_command(interaction):
+    await interaction.response.defer()
     # Get all users in all servers bot is in
     request_body = {}
     for guild in client.guilds:
@@ -228,6 +230,8 @@ async def fetch_command(interaction):
         print("Something went wrong. Please try again later.")
         return
     print("Users updated!")
+    response = "Users updated!"
+    await interaction.followup.send(response, ephemeral=True)
 
 '''
 --------------
