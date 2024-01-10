@@ -202,12 +202,12 @@ async def stats_command(interaction, username: str):
     await interaction.response.send_message(response, ephemeral=False)
     return
 
+
 @tree.command(
     name="fetch",
     description="Fetches all users in bot's servers"
 )
 async def fetch_command(interaction):
-    
     # Get all users in all servers bot is in
     request_body = {}
     for guild in client.guilds:
@@ -263,17 +263,17 @@ async def fetch_users():
     print("Users updated!")
     
     
-@tasks.loop(seconds = 600)
-async def update_games():
-    '''
-    Triggers the backend to process the active games
-    '''
+# @tasks.loop(seconds = 600)
+# async def update_games():
+#     '''
+#     Triggers the backend to process the active games
+#     '''
 
-    api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})    
-    if api_response.json()["status"] != "Success":
-        print("Something went wrong. Please try again later.")
-        return
-    print("Games updated!")
+#     api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})    
+#     if api_response.json()["status"] != "Success":
+#         print("Something went wrong. Please try again later.")
+#         return
+#     print("Games updated!")
     
 '''
 --------------
