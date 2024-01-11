@@ -363,6 +363,7 @@ def add_game(players, commanders, session_id):
     '''
     # Select games from trackedgames table where status = pending
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
+    print(len(players), len(commanders))
     
     # If the gameid is not in pending_games, add it and return
     if session_id not in [game.game_id for game in pending_games]:
@@ -389,8 +390,6 @@ def add_game(players, commanders, session_id):
         print(f"{session_id}    Game finished")
         game.status = 'finished'
         game.game_id = str(uuid.uuid4())
-        
-        print(len(players), len(commanders))
         print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
         # create new game with the input players and commanders
         new_game = Trackedgames(game_id=session_id,
