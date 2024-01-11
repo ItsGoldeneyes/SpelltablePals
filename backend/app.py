@@ -235,15 +235,15 @@ def update_pals(user_profiles):
             print(potential_user.discord_id == None)
             print('-------------')
             
-            if potential_user and potential_user.discord_id == '(NULL)':
+            if potential_user.discord_id == None:
                 print(f"User {user_profiles[user]['username']}'s username found in database. Adding discord_id.")
                 potential_user.discord_id = user
                 potential_user.changed_on = datetime.datetime.now()
                 db.session.commit()
             
             else:
-                print(f"User {user_profiles[user]['username']+str(max_id+1)} not found in database.")
                 max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
+                print(f"User {user_profiles[user]['username']+str(max_id+1)} not found in database.")
                 
                 # If user's username is not unique, add a number to the end of it
                 if Spelltableusers.query.filter(Spelltableusers.username == user_profiles[user]['username']).first():
