@@ -443,16 +443,19 @@ def process_games():
     # Select games from trackedgames table where status = pending
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
     
-    # If the game has been in pending_games for more than 10 mins, change status to 'finished' and change game_id to a new uuid
     for game in pending_games:
+        # If the game has been in pending games for more than 30 mins and no commanders have been added, delete the game
+        if time.time() - game.start_time.timestamp() > 1200 and game.commander_1 == None:
+            print(f"{game.game_id}    Game deleted")
+            db.session.delete(game)
+            db.session.commit()
+        
+        # If the game has been in pending_games for more than 10 mins, change status to 'finished' and change game_id to a new uuid
         if time.time() - game.start_time.timestamp() > 600:
             print(f"{game.game_id}    Game finished")
             game.status = 'finished'
             game.game_id = str(uuid.uuid4())
             db.session.commit()
-            return
-        
-    print("No games to process")
             
             
 '''
