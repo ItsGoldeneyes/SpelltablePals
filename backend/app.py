@@ -77,7 +77,7 @@ def get_user_profiles_endpoint():
     
     add_game(player_names, player_commanders, data['session_id'])
     
-    user_profiles = get_user_profiles_helper(player_names)
+    user_profiles = get_user_profiles(player_names)
 
     dict2 = {}
     for username in user_profiles.keys():
@@ -175,7 +175,7 @@ HELPER FUNCTIONS
 -----------------
 '''
 
-def get_user_profiles_helper(player_names):
+def get_user_profiles(player_names):
     
     # Make player_names lowercase
     player_names = [username.lower() for username in player_names]
@@ -361,6 +361,9 @@ def add_game(players, commanders, session_id):
     '''
     Logic to log a new game in pending_games. Games remain pending for 20 mins.
     '''
+    players += [None] * (4 - len(players))
+    commanders += [None] * (4 - len(commanders))
+    
     # Select games from trackedgames table where status = pending
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
     print(len(players), len(commanders))
