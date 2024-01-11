@@ -98,7 +98,7 @@ def process_games_endpoint():
 
     print("POST: /process_games")
     process_games()
-    return {"success":"Success"}
+    return {"status":"Success"}
 
 
 @app.route('/update_pal_profiles', methods=['POST'])
@@ -456,6 +456,7 @@ def process_games():
             game.status = 'finished'
             game.game_id = str(uuid.uuid4())
             db.session.commit()
+    print("Games processed")
             
             
 '''
