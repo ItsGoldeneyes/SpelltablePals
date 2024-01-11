@@ -237,6 +237,21 @@ async def fetch_command(interaction):
     print("Users updated!")
     response = "Users updated!"
     await interaction.followup.send(response, ephemeral=True)
+    
+
+@tree.command(
+    name="update",
+    description="Triggers the backend to process the active games"
+)
+async def update_command(interaction):
+    await interaction.response.defer()
+    api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})    
+    if api_response.json()["status"] != "Success":
+        print("Something went wrong. Please try again later.")
+        return
+    print("Games updated!")
+    response = "Games updated!"
+    await interaction.followup.send(response, ephemeral=True)
 
 '''
 --------------
@@ -272,17 +287,17 @@ async def fetch_users():
     print("Users updated!")
     
     
-# @tasks.loop(seconds = 600)
-# async def update_games():
-#     '''
-#     Triggers the backend to process the active games
-#     '''
+@tasks.loop(seconds = 600)
+async def update_games():
+    '''
+    Triggers the backend to process the active games
+    '''
 
-#     api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})    
-#     if api_response.json()["status"] != "Success":
-#         print("Something went wrong. Please try again later.")
-#         return
-#     print("Games updated!")
+    api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})    
+    if api_response.json()["status"] != "Success":
+        print("Something went wrong. Please try again later.")
+        return
+    print("Games updated!")
     
 '''
 --------------
