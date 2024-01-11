@@ -227,7 +227,6 @@ async def fetch_command(interaction):
                 role = ''
             request_body[member.id] = {"role": role, "username": member.display_name}
             print(member.display_name)
-            print(member.username)
             print(member.nick)
             print("----")
         
