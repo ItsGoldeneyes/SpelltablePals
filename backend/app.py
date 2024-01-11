@@ -361,8 +361,8 @@ def add_game(players, commanders, session_id):
     '''
     Logic to log a new game in pending_games. Games remain pending for 20 mins.
     '''
-    players += [None] * (4 - len(players))
-    commanders += [None] * (4 - len(commanders))
+    players += [''] * (4 - len(players))
+    commanders += [''] * (4 - len(commanders))
     
     # Select games from trackedgames table where status = pending
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
