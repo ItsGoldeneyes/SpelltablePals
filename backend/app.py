@@ -357,7 +357,7 @@ def get_user_stats(username):
 
 
 
-def add_game(self, players, commanders, session_id):
+def add_game(players, commanders, session_id):
     '''
     Logic to log a new game in pending_games. Games remain pending for 20 mins.
     '''
@@ -427,7 +427,7 @@ def add_game(self, players, commanders, session_id):
         return
 
 
-def process_games(self):
+def process_games():
     '''
     Logic to change the status of games in pending_games to finished.
     '''
