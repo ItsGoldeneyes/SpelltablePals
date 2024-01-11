@@ -380,7 +380,7 @@ def add_game(players, commanders, session_id):
                                 commander_2=commanders[1],
                                 commander_3=commanders[2],
                                 commander_4=commanders[3],
-                                start_time=time.time(),
+                                start_time=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
                                 status='pending')
         db.session.add(new_game)
         db.session.commit()
@@ -404,7 +404,7 @@ def add_game(players, commanders, session_id):
                                 commander_2=commanders[1],
                                 commander_3=commanders[2],
                                 commander_4=commanders[3],
-                                start_time=time.time(),
+                                start_time=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
                                 status='pending')
         db.session.add(new_game)
         db.session.commit()
@@ -421,7 +421,7 @@ def add_game(players, commanders, session_id):
         game.commander_2 = commanders[1]
         game.commander_3 = commanders[2]
         game.commander_4 = commanders[3]
-        game.start_time = time.time()
+        game.start_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         db.session.commit()
         return
     else:
