@@ -231,7 +231,10 @@ def update_pals(user_profiles):
             # If the user's username exists in the database, but does not have a discord_id associated with it, assume this is them
             potential_user = Spelltableusers.query.filter(Spelltableusers.username == user_profiles[user]['username']).first()
             
-            if potential_user.discord_id == None:
+            if potential_user == None:
+                continue
+            
+            elif potential_user.discord_id == None:
                 print(f"User {user_profiles[user]['username']}'s username found in database. Adding discord_id.")
                 potential_user.discord_id = user
                 potential_user.changed_on = datetime.datetime.now()
