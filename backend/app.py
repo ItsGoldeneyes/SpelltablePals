@@ -365,6 +365,9 @@ def add_game(players, commanders, session_id):
     '''
     Logic to log a new game. Games remain pending for 10 mins.
     '''
+    players_padded = players + [None]*(4-len(players))
+    commanders_padded = commanders + [None]*(4-len(commanders))
+    
     
     # Select games from trackedgames table where status = pending
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
@@ -373,14 +376,14 @@ def add_game(players, commanders, session_id):
     if session_id not in [game.game_id for game in pending_games]:
         print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
         new_game = Trackedgames(game_id=session_id, 
-                                player_1=players[0], 
-                                player_2=players[1], 
-                                player_3=players[2], 
-                                player_4=players[3], 
-                                commander_1=commanders[0],
-                                commander_2=commanders[1],
-                                commander_3=commanders[2],
-                                commander_4=commanders[3],
+                                player_1=players_padded[0], 
+                                player_2=players_padded[1], 
+                                player_3=players_padded[2], 
+                                player_4=players_padded[3], 
+                                commander_1=commanders_padded[0],
+                                commander_2=commanders_padded[1],
+                                commander_3=commanders_padded[2],
+                                commander_4=commanders_padded[3],
                                 start_time=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
                                 status='pending')
         db.session.add(new_game)
@@ -397,14 +400,14 @@ def add_game(players, commanders, session_id):
         print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
         # create new game with the input players and commanders
         new_game = Trackedgames(game_id=session_id,
-                                player_1=players[0], 
-                                player_2=players[1], 
-                                player_3=players[2], 
-                                player_4=players[3], 
-                                commander_1=commanders[0],
-                                commander_2=commanders[1],
-                                commander_3=commanders[2],
-                                commander_4=commanders[3],
+                                player_1=players_padded[0], 
+                                player_2=players_padded[1], 
+                                player_3=players_padded[2], 
+                                player_4=players_padded[3], 
+                                commander_1=commanders_padded[0],
+                                commander_2=commanders_padded[1],
+                                commander_3=commanders_padded[2],
+                                commander_4=commanders_padded[3],
                                 start_time=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
                                 status='pending')
         db.session.add(new_game)
