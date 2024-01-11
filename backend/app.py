@@ -363,17 +363,13 @@ def get_user_stats(username):
 
 def add_game(players, commanders, session_id):
     '''
-    Logic to log a new game in pending_games. Games remain pending for 10 mins.
+    Logic to log a new game. Games remain pending for 10 mins.
     '''
-    new_players  = players 
-    new_players += [''] * (4 - len(players))
-    new_commanders = commanders
-    new_commanders += [''] * (4 - len(commanders))
     
     # Select games from trackedgames table where status = pending
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
     
-    # If the gameid is not in pending_games, add it and return
+    # If there is no game for this session, add the game
     if session_id not in [game.game_id for game in pending_games]:
         print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
         new_game = Trackedgames(game_id=session_id, 
@@ -415,20 +411,20 @@ def add_game(players, commanders, session_id):
         db.session.commit()
         return
     
-    # If the game has been in pending_games for less than 10 mins and the new players or commanders are contained within the set of old players and commanders, replace the old game with the new game
+    # If the new players or commanders are contained within the set of old players and commanders, replace the old game with the new game
     elif set(players).issubset(set([game.player_1, game.player_2, game.player_3, game.player_4])) and set(commanders).issubset(set([game.commander_1, game.commander_2, game.commander_3, game.commander_4])):
         print(f"{session_id}    Players and commanders are subsets of old players and commanders. Doing nothing.")
         return
     else:
         print(f"{session_id}    Replacing with new game.")
-        game.player_1 = players[0]
-        game.player_2 = players[1]
-        game.player_3 = players[2]
-        game.player_4 = players[3]
-        game.commander_1 = commanders[0]
-        game.commander_2 = commanders[1]
-        game.commander_3 = commanders[2]
-        game.commander_4 = commanders[3]
+        game.player_1 = players_padded[0]
+        game.player_2 = players_padded[1]
+        game.player_3 = players_padded[2]
+        game.player_4 = players_padded[3]
+        game.commander_1 = commanders_padded[0]
+        game.commander_2 = commanders_padded[1]
+        game.commander_3 = commanders_padded[2]
+        game.commander_4 = commanders_padded[3]
         game.start_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         db.session.commit()
         return
