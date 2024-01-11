@@ -411,8 +411,11 @@ def add_game(players, commanders, session_id):
         db.session.commit()
         return
     
-    # If the game has been in pending_games for less than 20 mins and the players or commanders are different, replace the old game with the new game
-    if players != [game.player_1, game.player_2, game.player_3, game.player_4] or commanders != [game.commander_1, game.commander_2, game.commander_3, game.commander_4]:
+    # If the game has been in pending_games for less than 20 mins and the new players or commanders are contained within the set of old players, replace the old game with the new game
+    if set(players).issubset(set([game.player_1, game.player_2, game.player_3, game.player_4])) and set(commanders).issubset(set([game.commander_1, game.commander_2, game.commander_3, game.commander_4])):
+        print(f"{session_id}    Players and commanders are subsets of old players and commanders. Doing nothing.")
+        return
+    else:
         print(f"{session_id}    Replacing with new game.")
         game.player_1 = players[0]
         game.player_2 = players[1]
@@ -424,9 +427,6 @@ def add_game(players, commanders, session_id):
         game.commander_4 = commanders[3]
         game.start_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         db.session.commit()
-        return
-    else:
-        print(f"{session_id}    Players and commanders are the same. Doing nothing.")
         return
 
 
