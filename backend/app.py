@@ -361,12 +361,13 @@ def add_game(players, commanders, session_id):
     '''
     Logic to log a new game in pending_games. Games remain pending for 20 mins.
     '''
-    players += [''] * (4 - len(players))
-    commanders += [''] * (4 - len(commanders))
+    new_players  = players 
+    new_players += [''] * (4 - len(players))
+    new_commanders = commanders
+    new_commanders += [''] * (4 - len(commanders))
     
     # Select games from trackedgames table where status = pending
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
-    print(len(players), len(commanders))
     
     # If the gameid is not in pending_games, add it and return
     if session_id not in [game.game_id for game in pending_games]:
@@ -389,7 +390,7 @@ def add_game(players, commanders, session_id):
     game = Trackedgames.query.filter(Trackedgames.game_id == session_id).first()
     
     # If the game has been in pending_games for more than 20 mins, change status to 'finished' and change game_id to a new uuid
-    if time.time() - game.start_time > 1200:
+    if time.time() - game.start_time.timestamp() > 1200:
         print(f"{session_id}    Game finished")
         game.status = 'finished'
         game.game_id = str(uuid.uuid4())
@@ -440,7 +441,7 @@ def process_games():
     
     # If the game has been in pending_games for more than 20 mins, change status to 'finished' and change game_id to a new uuid
     for game in pending_games:
-        if time.time() - game.start_time > 1200:
+        if time.time() - game.start_time.timestamp() > 1200:
             print(f"{game.game_id}    Game finished")
             game.status = 'finished'
             game.game_id = str(uuid.uuid4())
