@@ -390,7 +390,7 @@ def add_game(players, commanders, session_id):
         game.status = 'finished'
         game.game_id = str(uuid.uuid4())
         
-        
+        print(len(players), len(commanders))
         print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
         # create new game with the input players and commanders
         new_game = Trackedgames(game_id=session_id,
