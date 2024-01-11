@@ -177,30 +177,32 @@ async def unblock_command(interaction, username: str):
     description="Get your SpellTable stats!"
 )
 async def stats_command(interaction, username: str):
-    await interaction.response.defer()
-    if not username:
-        username = interaction.user.display_name
+    response = "This command is currently disabled."
+    await interaction.response.send_message(response, ephemeral=True)
+    # await interaction.response.defer()
+    # if not username:
+    #     username = interaction.user.display_name
     
-    api_response = requests.post(f"{BACKEND_API}/get_user_stats", json={"username": username})
+    # api_response = requests.post(f"{BACKEND_API}/get_user_stats", json={"username": username})
     
-    if api_response.status_code != 200:
-        response = "Something went wrong. Please try again later."
-        await interaction.followup.send(response)
-        return
+    # if api_response.status_code != 200:
+    #     response = "Something went wrong. Please try again later."
+    #     await interaction.followup.send(response)
+    #     return
     
-    if api_response.json()["status"] != "Success":
-        response = f"Error getting stats: {api_response.json()['status']}"
-        await interaction.followup.send(response)
-        return
+    # if api_response.json()["status"] != "Success":
+    #     response = f"Error getting stats: {api_response.json()['status']}"
+    #     await interaction.followup.send(response)
+    #     return
     
-    stats = api_response.json()["stats"]
-    response = f"Stats for {username}: \n\
-    **{stats['total_games']}** Games Played \n\
-    Most Played Commander: {stats['most_played_commander']} \n\
-    Most Played Color: {stats['most_played_color']} \n\
-    Most Played Opponent: {stats['most_played_opponent']} \n\
-    "
-    await interaction.followup.send(response)
+    # stats = api_response.json()["stats"]
+    # response = f"Stats for {username}: \n\
+    # **{stats['total_games']}** Games Played \n\
+    # Most Played Commander: {stats['most_played_commander']} \n\
+    # Most Played Color: {stats['most_played_color']} \n\
+    # Most Played Opponent: {stats['most_played_opponent']} \n\
+    # "
+    # await interaction.followup.send(response)
     return
 
 

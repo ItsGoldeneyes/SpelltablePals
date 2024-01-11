@@ -36,7 +36,7 @@ class Spelltableusers(db.Model):
 class Roleformatting(db.Model):
     role = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     custom_format = db.Column(JSONB, nullable=True)
-    
+
 class Trackedgames(db.Model):
     game_id = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     player_1 = db.Column(db.String(50), nullable=False)
@@ -47,7 +47,8 @@ class Trackedgames(db.Model):
     commander_2 = db.Column(db.String(50), nullable=True)
     commander_3 = db.Column(db.String(50), nullable=True)
     commander_4 = db.Column(db.String(50), nullable=True)
-    timestamp = db.Column(db.DateTime, nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String(50), nullable=True)
 
 
 ''' 
@@ -74,7 +75,7 @@ def get_user_profiles_endpoint():
     print(f"{data['session_id']}    Getting user profiles for:", ', '.join(player_names))
     print(f"{data['session_id']}    Player Commanders are:", ', '.join(player_commanders))
     
-    game_tracker.add_game(player_names, player_commanders, data['session_id'])
+    add_game(player_names, player_commanders, data['session_id'])
     
     user_profiles = get_user_profiles_helper(player_names)
 
@@ -96,7 +97,7 @@ def process_games_endpoint():
     '''
 
     print("POST: /process_games")
-    game_tracker.process_games()
+    process_games()
     return {"success":"Success"}
 
 
@@ -355,83 +356,97 @@ def get_user_stats(username):
     print(games)
 
 
-class GameTracker:
-    def __init__(self):
-        # Dicts are of format {session_id: {start_time: time.time(), players: [player1, player2, ...]}
-        self.pending_games = {}
-        self.finished_games = {}
-    
-    def add_game(self, players, commanders, session_id):
-        '''
-        Logic to log a new game in pending_games. Games remain in pending_games for 10 mins.
-        '''
-        # If there is no game for this session, add the game to pending_games
-        if session_id not in self.pending_games.keys():
-            self.pending_games[session_id] = {'start_time': time.time(), 'players': players, 'commanders': commanders}
-            print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
-            return True
-        else:
-            # If the new players are different, compare the start times
-            if not set(players).issubset(set(self.pending_games[session_id]['players'])):
-                # If the new start time is within 20 mins of the old start time, replace the old session with the new session
-                if time.time() - self.pending_games[session_id]['start_time'] < 1200:
-                    print(f"{session_id}    Replacing game in pending_games: {', '.join(players)}")
-                    self.pending_games[session_id] = {'start_time': time.time(), 'players': players, 'commanders': commanders}
-                    return True
-                # If the new start time is more than 20 mins from the old start time, add the new session as a new game and move the old session to finished_games
-                else:
-                    self.finished_games[session_id] = self.pending_games[session_id]
-                    print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
-                    self.pending_games[session_id] = {'start_time': time.time(), 'players': players, 'commanders': commanders}
-                    return True
-            # If the old players are a subset of new players, replace the old players with new
-            else:
-                print(f"{session_id}    Replacing game in pending_games: {', '.join(players)}")
-                self.pending_games[session_id] = {'start_time': time.time(), 'players': players, 'commanders': commanders}
-                return True
-    
-    def process_games(self):
-        '''
-        Logic to move games from pending_games to finished_games.
-        '''
-        sessions_to_remove = []
-        for session_id, game in self.pending_games.items():
-            # If the game has been in pending_games for more than 30 mins, move it to finished_games
-            if time.time() - game['start_time'] > 1800:
-                print(f"{session_id}    Moving game to finished_games: {', '.join(game['players'])}")
-                self.finished_games[session_id] = game
-                sessions_to_remove.append(session_id)
-                
-        # Remove the games from pending_games
-        for session_id in sessions_to_remove:
-            del self.pending_games[session_id]
-        
-        for session_id, game in self.finished_games.items():
-            # For each game in finished games, add it to the database
-            print(f"{session_id}    Moving game to database: {', '.join(game['players'])}")
 
-            # Fill the players list and commanders list with None if there are less than 4 players
-            while len(game['players']) < 4:
-                game['players'].append(None)
-            while len(game['commanders']) < 4:
-                game['commanders'].append(None)
-                
-            game_id = str(uuid.uuid4())
-            # Add the game to the database
-            new_game = Trackedgames(game_id=game_id, 
-                                    player_1=game['players'][0], 
-                                    player_2=game['players'][1], 
-                                    player_3=game['players'][2], 
-                                    player_4=game['players'][3], 
-                                    commander_1=game['commanders'][0],
-                                    commander_2=game['commanders'][1],
-                                    commander_3=game['commanders'][2],
-                                    commander_4=game['commanders'][3],
-                                    timestamp=datetime.datetime.fromtimestamp(game['start_time']).strftime('%Y-%m-%d %H:%M:%S'))
-            db.session.add(new_game)
-        
+def add_game(self, players, commanders, session_id):
+    '''
+    Logic to log a new game in pending_games. Games remain pending for 20 mins.
+    '''
+    # Select games from trackedgames table where status = pending
+    pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
+    
+    # If the gameid is not in pending_games, add it and return
+    if session_id not in [game.game_id for game in pending_games]:
+        print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
+        new_game = Trackedgames(game_id=session_id, 
+                                player_1=players[0], 
+                                player_2=players[1], 
+                                player_3=players[2], 
+                                player_4=players[3], 
+                                commander_1=commanders[0],
+                                commander_2=commanders[1],
+                                commander_3=commanders[2],
+                                commander_4=commanders[3],
+                                start_time=time.time(),
+                                status='pending')
+        db.session.add(new_game)
         db.session.commit()
-        self.finished_games = {}
+        return
+    
+    game = Trackedgames.query.filter(Trackedgames.game_id == session_id).first()
+    
+    # If the game has been in pending_games for more than 20 mins, change status to 'finished' and change game_id to a new uuid
+    if time.time() - game.start_time > 1200:
+        print(f"{session_id}    Game finished")
+        game.status = 'finished'
+        game.game_id = str(uuid.uuid4())
+        
+        
+        print(f"{session_id}    Adding game to pending_games: {', '.join(players)}")
+        # create new game with the input players and commanders
+        new_game = Trackedgames(game_id=session_id,
+                                player_1=players[0], 
+                                player_2=players[1], 
+                                player_3=players[2], 
+                                player_4=players[3], 
+                                commander_1=commanders[0],
+                                commander_2=commanders[1],
+                                commander_3=commanders[2],
+                                commander_4=commanders[3],
+                                start_time=time.time(),
+                                status='pending')
+        db.session.add(new_game)
+        db.session.commit()
+        return
+    
+    # If the game has been in pending_games for less than 20 mins and the players or commanders are different, replace the old game with the new game
+    if players != [game.player_1, game.player_2, game.player_3, game.player_4] or commanders != [game.commander_1, game.commander_2, game.commander_3, game.commander_4]:
+        print(f"{session_id}    Replacing with new game.")
+        game.player_1 = players[0]
+        game.player_2 = players[1]
+        game.player_3 = players[2]
+        game.player_4 = players[3]
+        game.commander_1 = commanders[0]
+        game.commander_2 = commanders[1]
+        game.commander_3 = commanders[2]
+        game.commander_4 = commanders[3]
+        game.start_time = time.time()
+        db.session.commit()
+        return
+    else:
+        print(f"{session_id}    Players and commanders are the same. Doing nothing.")
+        return
+
+
+def process_games(self):
+    '''
+    Logic to change the status of games in pending_games to finished.
+    '''
+    print("Processing games")
+    
+    # Select games from trackedgames table where status = pending
+    pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
+    
+    # If the game has been in pending_games for more than 20 mins, change status to 'finished' and change game_id to a new uuid
+    for game in pending_games:
+        if time.time() - game.start_time > 1200:
+            print(f"{game.game_id}    Game finished")
+            game.status = 'finished'
+            game.game_id = str(uuid.uuid4())
+            db.session.commit()
+            return
+        
+    print("No games to process")
+            
             
 '''
 -----------------
@@ -446,7 +461,3 @@ if __name__ == '__main__':
 
     # Run the Flask app
     app.run(debug=True)
-    
-    
-# Initialize the game tracker
-game_tracker = GameTracker()
