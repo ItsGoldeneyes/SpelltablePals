@@ -4,6 +4,8 @@ let lastCommandersOnPage = [];
 
 function main() {
 
+  addSpectatorButton();
+
   // Retrieve the player names
   const nameElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
   const namesOnPage = [];
@@ -93,5 +95,33 @@ function formatNames() {
   });
 }
 
-// Set up an interval to execute main function every 2 seconds
-const intervalId = setInterval(() => main(), 2000);
+// Function to add the "Join as Spectator" button
+function addSpectatorButton() {
+  // Check if the URL already contains "/?spectate=true"
+  if (window.location.href.includes('/?spectate=true')) {
+    return; // Do not add the button if it's already present in the URL
+  }
+
+  const targetDiv = document.querySelector('.flex.py-6');
+
+  if (targetDiv && !document.getElementById('spectatorButton')) {
+    const spectatorButton = document.createElement('button');
+    spectatorButton.textContent = 'Spectate';
+    spectatorButton.id = 'spectatorButton';
+
+    // Copy styling from the provided button class
+    spectatorButton.className = 'flex justify-center px-4 rounded items-center hover:no-underline bg-st-purple-light hover:bg-st-purple-normal text-white h-10';
+    spectatorButton.style.lineHeight = '100%';
+    spectatorButton.style.marginLeft = '0.75rem';
+
+    spectatorButton.addEventListener('click', function () {
+      // Reload the page with "?spectate=true" appended to the URL
+      window.location.href = window.location.href + '/?spectate=true';
+    });
+
+    targetDiv.appendChild(spectatorButton);
+  }
+}
+
+// Set up an interval to execute main function every second
+const intervalId = setInterval(() => main(), 1000);
