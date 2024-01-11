@@ -284,7 +284,7 @@ async def fetch_users():
     print("Users updated!")
     
     
-@tasks.loop(seconds = 1200)
+@tasks.loop(seconds = 600)
 async def update_games():
     '''
     Triggers the backend to process the active games
