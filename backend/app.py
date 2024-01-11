@@ -363,7 +363,7 @@ def get_user_stats(username):
 
 def add_game(players, commanders, session_id):
     '''
-    Logic to log a new game in pending_games. Games remain pending for 20 mins.
+    Logic to log a new game in pending_games. Games remain pending for 10 mins.
     '''
     new_players  = players 
     new_players += [''] * (4 - len(players))
@@ -393,8 +393,8 @@ def add_game(players, commanders, session_id):
     
     game = Trackedgames.query.filter(Trackedgames.game_id == session_id).first()
     
-    # If the game has been in pending_games for more than 20 mins, change status to 'finished' and change game_id to a new uuid
-    if time.time() - game.start_time.timestamp() > 1200:
+    # If the game has been in pending_games for more than 10 mins, change status to 'finished' and change game_id to a new uuid
+    if time.time() - game.start_time.timestamp() > 600:
         print(f"{session_id}    Game finished")
         game.status = 'finished'
         game.game_id = str(uuid.uuid4())
@@ -443,9 +443,9 @@ def process_games():
     # Select games from trackedgames table where status = pending
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
     
-    # If the game has been in pending_games for more than 20 mins, change status to 'finished' and change game_id to a new uuid
+    # If the game has been in pending_games for more than 10 mins, change status to 'finished' and change game_id to a new uuid
     for game in pending_games:
-        if time.time() - game.start_time.timestamp() > 1200:
+        if time.time() - game.start_time.timestamp() > 600:
             print(f"{game.game_id}    Game finished")
             game.status = 'finished'
             game.game_id = str(uuid.uuid4())

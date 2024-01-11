@@ -226,9 +226,6 @@ async def fetch_command(interaction):
             else:
                 role = ''
             request_body[member.id] = {"role": role, "username": member.display_name}
-            print(member.display_name)
-            print(member.nick)
-            print("----")
         
     api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
     if api_response.json()["status"] != "Success":
@@ -287,7 +284,7 @@ async def fetch_users():
     print("Users updated!")
     
     
-@tasks.loop(seconds = 600)
+@tasks.loop(seconds = 1200)
 async def update_games():
     '''
     Triggers the backend to process the active games
