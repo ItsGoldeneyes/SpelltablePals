@@ -448,6 +448,19 @@ def process_games():
             print(f"{game.game_id}    Game deleted")
             db.session.delete(game)
             db.session.commit()
+            continue
+        
+        games_with_same_player_within_10_mins = Trackedgames.query.filter(Trackedgames.status == 'pending').filter(Trackedgames.start_time > game.start_time).filter(Trackedgames.start_time < game.start_time + datetime.timedelta(minutes=10)).filter(Trackedgames.game_id != game.game_id).filter(Trackedgames.player_1.in_([game.player_1, game.player_2, game.player_3, game.player_4])).all()
+        games_with_same_player_within_10_mins += Trackedgames.query.filter(Trackedgames.status == 'pending').filter(Trackedgames.start_time > game.start_time).filter(Trackedgames.start_time < game.start_time + datetime.timedelta(minutes=10)).filter(Trackedgames.game_id != game.game_id).filter(Trackedgames.player_2.in_([game.player_1, game.player_2, game.player_3, game.player_4])).all()
+        games_with_same_player_within_10_mins += Trackedgames.query.filter(Trackedgames.status == 'pending').filter(Trackedgames.start_time > game.start_time).filter(Trackedgames.start_time < game.start_time + datetime.timedelta(minutes=10)).filter(Trackedgames.game_id != game.game_id).filter(Trackedgames.player_3.in_([game.player_1, game.player_2, game.player_3, game.player_4])).all()
+        games_with_same_player_within_10_mins += Trackedgames.query.filter(Trackedgames.status == 'pending').filter(Trackedgames.start_time > game.start_time).filter(Trackedgames.start_time < game.start_time + datetime.timedelta(minutes=10)).filter(Trackedgames.game_id != game.game_id).filter(Trackedgames.player_4.in_([game.player_1, game.player_2, game.player_3, game.player_4])).all()
+        
+        # If there are other games with at least one of the same players with a start time within 10 mins after the start time, delete the game
+        if games_with_same_player_within_10_mins:
+            print(f"{game.game_id}    Game deleted")
+            db.session.delete(game)
+            db.session.commit()
+            continue
         
         # If the game has been in pending_games for more than 10 mins, change status to 'finished' and change game_id to a new uuid
         if time.time() - game.start_time.timestamp() > 600:
@@ -455,6 +468,7 @@ def process_games():
             game.status = 'finished'
             game.game_id = str(uuid.uuid4())
             db.session.commit()
+            continue
     print("Games processed")
             
             
