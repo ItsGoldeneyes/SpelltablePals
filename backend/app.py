@@ -167,7 +167,19 @@ def get_user_stats_endpoint():
     print(f"POST: /get_user_stats {username}")
     
     
+@app.route("/set_user_colour", methods=['POST'])
+def set_user_colour_endpoint():
+    '''
+    This function sets the colour for a given user.
+    Request format:
+        {"username": "username", "colour": "colour"}
+    '''
     
+    data = request.get_json(force=True)
+    print(f"POST: /set_user_colour {data['username']} {data['colour']}")
+    status = set_user_colour(data['username'], data['colour'])
+    
+    return {"status": status}
 
 '''
 -----------------
@@ -470,8 +482,35 @@ def process_games():
             db.session.commit()
             continue
     print("Games processed")
+    
+
+def set_user_colour(username, colour):
+    '''
+    This function sets the colour for a given user.
+    '''
+    user = Spelltableusers.query.filter(Spelltableusers.username == username).first()
+    if not user:
+        print(f"User {username} not found, can't set colour")
+        return "User not found"
+    
+    if user.role in ['blocked']:
+        print(f"User {username} is blocked, can't set colour")
+        return "User blocked"
+    
+    if colour[0] != '#':
+        colour = '#' + colour
+        
+    if not all(c in '0123456789abcdef' for c in colour[1:]) and len(colour) == 7:
+        print(f"Colour {colour} is not a valid hex code, can't set colour")
+        return "Invalid colour code"
+    
+    user.role = 'custom'
+    user.custom_format = {'colour': colour}
+    db.session.commit()
             
-            
+    return "Success"
+
+
 '''
 -----------------
 START THE SERVER

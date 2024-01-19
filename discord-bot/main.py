@@ -249,6 +249,34 @@ async def update_command(interaction):
     print("Games updated!")
     response = "Games updated!"
     await interaction.followup.send(response, ephemeral=True)
+    
+    
+@tree.command(
+    name="set_colour",
+    description="Update your username colour on Spelltable!"
+)
+async def set_colour_command(interaction, colour: str):
+    await interaction.response.defer()
+    if colour == None:
+        response = "Please provide a colour."
+        await interaction.followup.send(response, ephemeral=True)
+        return
+    
+    api_response = requests.post(f"{BACKEND_API}/set_colour", json={"username": interaction.user.display_name, "colour": colour})
+    
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.followup.send(response, ephemeral=True)
+        return
+    
+    if api_response.json()["status"] != "Success":
+        response = f"Error setting colour: {api_response.json()['status']}"
+        await interaction.followup.send(response, ephemeral=True)
+        return
+    
+    response = f"Colour set!"        
+    await interaction.followup.send(response, ephemeral=True)
+    return
 
 '''
 --------------
