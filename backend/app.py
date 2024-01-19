@@ -36,6 +36,23 @@ class Spelltableusers(db.Model):
 class Roleformatting(db.Model):
     role = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
     custom_format = db.Column(JSONB, nullable=True)
+    ''' 
+    Custom format: 
+    {
+        "color":"pink",
+    "fontSize":"",
+    "fontWeight":"",
+    "backgroundColor":"",
+    "textDecoration":"",
+    "textTransform":"",
+    "textShadow":"",
+    "textIndent":"",
+    "letterSpacing":"",
+    "lineHeight":"",
+    "wordSpacing":"",
+    "whiteSpace":""
+    }
+    '''
 
 class Trackedgames(db.Model):
     game_id = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
