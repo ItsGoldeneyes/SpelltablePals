@@ -505,7 +505,7 @@ def set_user_colour(username, colour):
         return "Invalid colour code"
     
     user.role = 'custom'
-    user.custom_format = {'colour': colour}
+    user.custom_format = {'color': colour}
     db.session.commit()
             
     return "Success"
