@@ -41,6 +41,7 @@ SLASH COMMANDS
     description="Sync the bot's commands"
     )
 async def sync_command(interaction):
+    print("sync_command")
     if interaction.user.id == OWNER_USER_ID:
         response = "Synced!"
         await tree.sync()
@@ -55,6 +56,7 @@ async def sync_command(interaction):
     description="Get info about the bot"
     )
 async def info_command(interaction):
+    print("info_command")
     response = "Hello! \n\
 I'm here to help you have a better SpellTable experience! \n\
 *For information about my commands, type /help.*"        
@@ -66,6 +68,7 @@ I'm here to help you have a better SpellTable experience! \n\
     description="Get help with the bot"
     )
 async def help_command(interaction):
+    print("help_command")
     response = "Here are my commands: \n\
 */info* - Get info about the bot \n\
 */help* - Get help with the bot \n\
@@ -81,6 +84,7 @@ If you have any questions, please contact @Goldeneyes."
     description="Get the bot's latency"
     )
 async def ping_command(interaction):
+    print("ping_command")
     response = f"Pong! {round(client.latency * 1000)}ms"        
     await interaction.response.send_message(response, ephemeral=True)
     
@@ -90,6 +94,7 @@ async def ping_command(interaction):
     description="Submits a block request for a given SpellTable user"
     )
 async def block_command(interaction, username: str, reason: str):
+    print("block_command")
     if username == None or reason == None:
         response = "Please provide a username and a reason."
         await interaction.response.send_message(response, ephemeral=True)
@@ -137,6 +142,7 @@ async def block_command(interaction, username: str, reason: str):
     description="Submits an unblock request for a given SpellTable user"
     )
 async def unblock_command(interaction, username: str):
+    print("unblock_command")
     user_roles = SERVER_INFO[interaction.guild.id]["roles"]
     if user_roles["council"] not in [role.id for role in interaction.user.roles]:
         response = "You are not authorized to use this command."
@@ -177,6 +183,7 @@ async def unblock_command(interaction, username: str):
     description="Get your SpellTable stats!"
 )
 async def stats_command(interaction, username: str):
+    print("stats_command")
     response = "This command is currently disabled."
     await interaction.response.send_message(response, ephemeral=True)
     # await interaction.response.defer()
@@ -211,6 +218,7 @@ async def stats_command(interaction, username: str):
     description="Fetches all users in bot's servers"
 )
 async def fetch_command(interaction):
+    print("fetch_command")
     await interaction.response.defer()
     # Get all users in all servers bot is in
     request_body = {}
@@ -241,6 +249,7 @@ async def fetch_command(interaction):
     description="Triggers the backend to process the active games"
 )
 async def update_command(interaction):
+    print("update_command")
     await interaction.response.defer()
     api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})    
     if api_response.json()["status"] != "Success":
@@ -256,6 +265,7 @@ async def update_command(interaction):
     description="Update your username colour on Spelltable!"
 )
 async def set_colour_command(interaction, colour: str):
+    print("set_colour_command")
     await interaction.response.defer()
     if colour == None:
         response = "Please provide a colour."
