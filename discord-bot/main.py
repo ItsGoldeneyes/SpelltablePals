@@ -272,7 +272,7 @@ async def set_colour_command(interaction, colour: str):
         await interaction.followup.send(response, ephemeral=True)
         return
     
-    api_response = requests.post(f"{BACKEND_API}/set_colour", json={"username": interaction.user.display_name, "colour": colour})
+    api_response = requests.post(f"{BACKEND_API}/set_user_colour", json={"username": interaction.user.display_name, "colour": colour})
     
     if api_response.status_code != 200:
         print(api_response.status_code, api_response.json())
