@@ -177,7 +177,7 @@ def set_user_colour_endpoint():
     
     data = request.get_json(force=True)
     print(f"POST: /set_user_colour {data['username']} {data['colour']}")
-    status = set_user_colour(data['username'], data['colour'])
+    status = set_user_colour(data['username'].lower(), data['colour'].lower())
     
     return {"status": status}
 
