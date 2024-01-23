@@ -108,4 +108,32 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         // Send the data back to the popup
         chrome.runtime.sendMessage({ action: 'recieveNameDictPopup', data: nameDictionary });
     }
+    if(message.action === "reportUser") {
+        const reason = message.reason;
+        const username = message.reportedUser;
+        const sessionId = message.sessionId;
+        const requestBody = JSON.stringify({
+            username, reason
+        });
+        fetch('https://backend-production-c33b.up.railway.app/block_user', {
+            method: 'POST',
+            headers: {
+                'Origin': 'chrome-extension://' + extensionID,
+                'Content-Type': 'application/json'
+                },
+                body: requestBody
+            }).then(response => {
+                if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+            }
+            ).catch(error => {
+                console.error('Error reporting user:', error.message);
+            }
+            );
+    }
   });
