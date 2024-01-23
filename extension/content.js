@@ -26,8 +26,10 @@ function main() {
 
   // If there are no names on the page, the active page is probably the game start page
   if (namesOnPage.length !== 0) {
-    const allNamesOnPageAreContained = lastNamesOnPage.join(',') === namesOnPage.join(',');
-    const allCommandersAreContained = lastCommandersOnPage.join(',') === commandersOnPage.join(',');
+
+
+    const allNamesOnPageAreContained = JSON.stringify(lastNamesOnPage) === JSON.stringify(namesOnPage);
+    const allCommandersAreContained = JSON.stringify(lastCommandersOnPage) === JSON.stringify(commandersOnPage);
 
     if (!allNamesOnPageAreContained || !allCommandersAreContained) {
       chrome.runtime.sendMessage({
@@ -62,9 +64,8 @@ function formatNames() {
 
   elements.forEach(element => {
     const elementText = element.textContent.trim().toLowerCase();
-
     // If the player has a record in the name dictionary, apply the custom format
-    if (nameDictionary[elementText]) {
+    if (nameDictionary[elementText] && nameDictionary[elementText].custom_format !== null) {
         element.style.color = nameDictionary[elementText].custom_format.color;
         element.style.fontSize = nameDictionary[elementText].custom_format.fontSize;
         element.style.fontWeight = nameDictionary[elementText].custom_format.fontWeight;
