@@ -26,8 +26,6 @@ function main() {
 
   // If there are no names on the page, the active page is probably the game start page
   if (namesOnPage.length !== 0) {
-
-
     const allNamesOnPageAreContained = JSON.stringify(lastNamesOnPage) === JSON.stringify(namesOnPage);
     const allCommandersAreContained = JSON.stringify(lastCommandersOnPage) === JSON.stringify(commandersOnPage);
 
