@@ -9,7 +9,7 @@ let APILink = '';
 if (ENVIRONMENT == 'production') {
     APILink = 'https://backend-production-c33b.up.railway.app/';
 } else {
-    APILink = 'https://extension-backend-annoying-pencil.up.railway.app/';
+    APILink = 'https://extension-backend-preproduction.up.railway.app';
 }
 
 function simpleUUID() {
