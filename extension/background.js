@@ -108,13 +108,16 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         // Send the data back to the popup
         chrome.runtime.sendMessage({ action: 'recieveNameDictPopup', data: nameDictionary });
     }
-    if(message.action === "reportUser") {
-        const reason = message.reason;
-        const username = message.reportedUser;
-        const sessionId = message.sessionId;
+    if(message.action === "reportPlayer") {
+        console.log(message);
+        const reason = message.data.reason;
+        const username = message.data.reportedUser.trim();
+        const sessionId = message.data.sessionId;
         const requestBody = JSON.stringify({
             username, reason
         });
+        console.log(requestBody);
+        console.log('reporting user...')
         fetch('https://backend-production-c33b.up.railway.app/block_user', {
             method: 'POST',
             headers: {
@@ -123,12 +126,14 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                 },
                 body: requestBody
             }).then(response => {
+                console.log("getting a response...")
                 if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('done')
                 console.log(data);
             }
             ).catch(error => {
