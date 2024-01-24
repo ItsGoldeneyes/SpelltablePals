@@ -27,9 +27,9 @@ function main() {
       if (element.children[0]) {
         child = element.children[0].textContent.trim();
         commandersOnPage.push(child);
-      }
-      if (element.children[1]) {
-        child = element.children[1].textContent.trim();
+      } // child 1 is a / character
+      if (element.children[2]) {
+        child = element.children[2].textContent.trim();
         commandersOnPage.push(child);
       } else {
         commandersOnPage.push('');
