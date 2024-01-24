@@ -25,7 +25,7 @@ function main() {
       child = element.children[0].textContent.trim();
       commandersOnPage.push(child);
     }
-    if (element.children[0]) {
+    if (element.children[1]) {
       child = element.children[1].textContent.trim();
       commandersOnPage.push(child);
     }
