@@ -9,7 +9,7 @@ let APILink = '';
 if (ENVIRONMENT == 'production') {
     APILink = 'https://backend-production-c33b.up.railway.app/';
 } else {
-    APILink = 'https://extension-backend-preproduction.up.railway.app';
+    APILink = 'https://extension-backend-preproduction.up.railway.app/';
 }
 
 function simpleUUID() {
@@ -128,7 +128,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         });
         console.log(requestBody);
         console.log('reporting user...')
-        fetch('https://backend-production-c33b.up.railway.app/block_user', {
+        fetch(APILink+'block_user', {
             method: 'POST',
             headers: {
                 'Origin': 'chrome-extension://' + extensionID,
