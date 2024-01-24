@@ -60,10 +60,14 @@ class Trackedgames(db.Model):
     player_2 = db.Column(db.String(50), nullable=False)
     player_3 = db.Column(db.String(50), nullable=False)
     player_4 = db.Column(db.String(50), nullable=False)
-    commander_1 = db.Column(db.String(50), nullable=True)
-    commander_2 = db.Column(db.String(50), nullable=True)
-    commander_3 = db.Column(db.String(50), nullable=True)
-    commander_4 = db.Column(db.String(50), nullable=True)
+    commander_1_1 = db.Column(db.String(50), nullable=True)
+    commander_1_2 = db.Column(db.String(50), nullable=True)
+    commander_2_1 = db.Column(db.String(50), nullable=True)
+    commander_2_2 = db.Column(db.String(50), nullable=True)
+    commander_3_1 = db.Column(db.String(50), nullable=True)
+    commander_3_2 = db.Column(db.String(50), nullable=True)
+    commander_4_1 = db.Column(db.String(50), nullable=True)
+    commander_4_2 = db.Column(db.String(50), nullable=True)
     start_time = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.String(50), nullable=True)
 
@@ -389,13 +393,18 @@ def get_user_stats(username):
     print(games)
 
 
+'''
+-----------------
+GAME LOGIC
+-----------------
+'''
 
 def add_game(players, commanders, session_id):
     '''
     Logic to log a new game. Games remain pending for 10 mins.
     '''
     players_padded = players + [None]*(4-len(players))
-    commanders_padded = commanders + [None]*(4-len(commanders))
+    commanders_padded = commanders + [None]*(8-len(commanders))
     
     
     # Select games from trackedgames table where status = pending
@@ -409,10 +418,14 @@ def add_game(players, commanders, session_id):
                                 player_2=players_padded[1], 
                                 player_3=players_padded[2], 
                                 player_4=players_padded[3], 
-                                commander_1=commanders_padded[0],
-                                commander_2=commanders_padded[1],
-                                commander_3=commanders_padded[2],
-                                commander_4=commanders_padded[3],
+                                commander_1_1=commanders_padded[0],
+                                commander_1_2=commanders_padded[1],
+                                commander_2_1=commanders_padded[2],
+                                commander_2_2=commanders_padded[3],
+                                commander_3_1=commanders_padded[4],
+                                commander_3_2=commanders_padded[5],
+                                commander_4_1=commanders_padded[6],
+                                commander_4_2=commanders_padded[7],
                                 start_time=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
                                 status='pending')
         db.session.add(new_game)
@@ -432,11 +445,15 @@ def add_game(players, commanders, session_id):
                                 player_1=players_padded[0], 
                                 player_2=players_padded[1], 
                                 player_3=players_padded[2], 
-                                player_4=players_padded[3], 
-                                commander_1=commanders_padded[0],
-                                commander_2=commanders_padded[1],
-                                commander_3=commanders_padded[2],
-                                commander_4=commanders_padded[3],
+                                player_4=players_padded[3],
+                                commander_1_1=commanders_padded[0],
+                                commander_1_2=commanders_padded[1],
+                                commander_2_1=commanders_padded[2],
+                                commander_2_2=commanders_padded[3],
+                                commander_3_1=commanders_padded[4],
+                                commander_3_2=commanders_padded[5],
+                                commander_4_1=commanders_padded[6],
+                                commander_4_2=commanders_padded[7],
                                 start_time=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
                                 status='pending')
         db.session.add(new_game)
@@ -444,7 +461,17 @@ def add_game(players, commanders, session_id):
         return
     
     # If the new players or commanders are contained within the set of old players and commanders, replace the old game with the new game
-    elif set(players).issubset(set([game.player_1, game.player_2, game.player_3, game.player_4])) and set(commanders).issubset(set([game.commander_1, game.commander_2, game.commander_3, game.commander_4])):
+    elif set(players).issubset(set([game.player_1,
+                                    game.player_2, 
+                                    game.player_3, 
+                                    game.player_4])) and set(commanders).issubset(set([game.commander_1_1, 
+                                                                                       game.commander_1_2,
+                                                                                       game.commander_2_1, 
+                                                                                       game.commander_2_2,
+                                                                                       game.commander_3_1, 
+                                                                                       game.commander_3_2,
+                                                                                       game.commander_4_1,
+                                                                                       game.commander_4_2])):
         print(f"{session_id}    Players and commanders are subsets of old players and commanders. Doing nothing.")
         return
     else:
@@ -453,10 +480,14 @@ def add_game(players, commanders, session_id):
         game.player_2 = players_padded[1]
         game.player_3 = players_padded[2]
         game.player_4 = players_padded[3]
-        game.commander_1 = commanders_padded[0]
-        game.commander_2 = commanders_padded[1]
-        game.commander_3 = commanders_padded[2]
-        game.commander_4 = commanders_padded[3]
+        game.commander_1_1=commanders_padded[0],
+        game.commander_1_2=commanders_padded[1],
+        game.commander_2_1=commanders_padded[2],
+        game.commander_2_2=commanders_padded[3],
+        game.commander_3_1=commanders_padded[4],
+        game.commander_3_2=commanders_padded[5],
+        game.commander_4_1=commanders_padded[6],
+        game.commander_4_2=commanders_padded[7],
         game.start_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         db.session.commit()
         return
@@ -472,8 +503,8 @@ def process_games():
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
     
     for game in pending_games:
-        # If the game has been in pending games for more than 30 mins and no commanders have been added, delete the game
-        if time.time() - game.start_time.timestamp() > 1200 and game.commander_1 == None:
+        # If the game has been in pending games for more than 30 mins and there is only one player, delete the game
+        if time.time() - game.start_time.timestamp() > 1200 and game.player_2 == None:
             print(f"{game.game_id}    Game deleted")
             db.session.delete(game)
             db.session.commit()
