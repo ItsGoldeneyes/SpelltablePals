@@ -1,10 +1,23 @@
 let nameDictionary = {};
 let lastNamesOnPage = [];
 let lastCommandersOnPage = [];
+let playerDropdownButtonListeners = [];
+
+let currentReportedPlayer = null;
 
 function main() {
-
   addSpectatorButton();
+  const playerDropdownButtons = document.querySelectorAll("button.p-1.shadow-md.rounded.text-white.transition-all.ease-in-out.duration-200.bg-surface-high");
+  for(const dropdown of Array.from(playerDropdownButtons.values()).filter((dropdown) => !playerDropdownButtonListeners.includes(dropdown))) {
+    playerDropdownButtonListeners.push(dropdown);
+    dropdown.addEventListener('click', () => {
+      setTimeout(() => {
+        addReportButton();
+      }, 10);
+      currentReportedPlayer = dropdown.parentElement.parentElement.parentElement.querySelector('div.flex-1.overflow-hidden').querySelector('div.flex-1').querySelector('div.cursor-pointer.text-white.w-full.overflow-hidden').querySelector('div.flex.items-center.w-full').querySelector('div.font-bold.truncate.leading-snug.text-sm').innerHTML;
+      console.log(currentReportedPlayer)
+    })
+  }
 
   // Retrieve the player names
   const nameElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
@@ -120,6 +133,35 @@ function addSpectatorButton() {
     });
 
     targetDiv.appendChild(spectatorButton);
+  }
+}
+
+function addReportButton() {
+  const playerDropdownDiv = document.querySelectorAll('div .bg-surface-high.rounded.text-sm.shadow-lg.py-1.w-40');
+  if(playerDropdownDiv && !document.getElementById("ReportButton")) {
+    const reportButton = document.createElement('button');
+    reportButton.textContent = 'Pals Report';
+    reportButton.id = 'ReportButton';
+    reportButton.className = 'text-left w-full px-4 cursor-pointer transition-all ease-in-out duration-200 hover:bg-red-700 hover:text-white py-1 text-xs';
+    reportButton.style.color = 'red';
+    reportButton.onmouseover = () => {
+      reportButton.style.color = 'white';
+    }
+    reportButton.onmouseout = () => {
+      reportButton.style.color = 'red';
+    }
+    reportButton.addEventListener('click', () => {
+      const reason = prompt(`Please enter the reason for reporting ${currentReportedPlayer}.`);
+      if(reason !== null) {
+        chrome.runtime.sendMessage({
+          action: 'reportPlayer',
+          data: { reportedUser: currentReportedPlayer, "reason": reason, "sessionID": window.location.pathname }
+        });
+      }
+    });
+    for(const div of playerDropdownDiv) {
+      div.appendChild(reportButton);
+    }
   }
 }
 
