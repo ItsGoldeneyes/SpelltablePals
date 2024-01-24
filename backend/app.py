@@ -404,7 +404,7 @@ def add_game(players, commanders, session_id):
     Logic to log a new game. Games remain pending for 10 mins.
     '''
     players_padded = players + [None]*(4-len(players))
-    commanders_padded = commanders + [None]*(4-len(commanders))
+    commanders_padded = commanders + [None]*(8-len(commanders))
     
     
     # Select games from trackedgames table where status = pending

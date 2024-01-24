@@ -21,16 +21,19 @@ function main() {
 
   commanderElements.forEach(element => {
     // If there are no child divs, add two empty strings to the array
-    if (element.children[0]) {
-      child = element.children[0].textContent.trim();
-      commandersOnPage.push(child);
-    }
-    if (element.children[1]) {
-      child = element.children[1].textContent.trim();
-      commandersOnPage.push(child);
-    }
     if (!element.children) {
       commandersOnPage.push('', '');
+    } else {
+      if (element.children[0]) {
+        child = element.children[0].textContent.trim();
+        commandersOnPage.push(child);
+      }
+      if (element.children[1]) {
+        child = element.children[1].textContent.trim();
+        commandersOnPage.push(child);
+      } else {
+        commandersOnPage.push('');
+      }
     }
   });
 
