@@ -224,7 +224,7 @@ def get_user_profiles(player_names):
             # Get the max id from Spelltableusers table
             max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
             # Add a new entry to Spelltableusers table
-            new_user = Spelltableusers(id=max_id+1, username=username, reason=None, role=None, custom_format=None)
+            new_user = Spelltableusers(id=max_id+1, username=username, reason=None, role=None, custom_format=None, changed_on=datetime.datetime.now())
             db.session.add(new_user)
             db.session.commit()
             
