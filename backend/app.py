@@ -461,7 +461,17 @@ def add_game(players, commanders, session_id):
         return
     
     # If the new players or commanders are contained within the set of old players and commanders, replace the old game with the new game
-    elif set(players).issubset(set([game.player_1, game.player_2, game.player_3, game.player_4])) and set(commanders).issubset(set([game.commander_1, game.commander_2, game.commander_3, game.commander_4])):
+    elif set(players).issubset(set([game.player_1,
+                                    game.player_2, 
+                                    game.player_3, 
+                                    game.player_4])) and set(commanders).issubset(set([game.commander_1_1, 
+                                                                                       game.commander_1_2,
+                                                                                       game.commander_2_1, 
+                                                                                       game.commander_2_2,
+                                                                                       game.commander_3_1, 
+                                                                                       game.commander_3_2,
+                                                                                       game.commander_4_1,
+                                                                                       game.commander_4_2])):
         print(f"{session_id}    Players and commanders are subsets of old players and commanders. Doing nothing.")
         return
     else:
