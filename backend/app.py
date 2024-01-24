@@ -418,7 +418,7 @@ def add_game(players, commanders, session_id):
                                 player_2=players_padded[1], 
                                 player_3=players_padded[2], 
                                 player_4=players_padded[3], 
-                                commander_1=commanders_padded[0],
+                                commander_1_1=commanders_padded[0],
                                 commander_1_2=commanders_padded[1],
                                 commander_2_1=commanders_padded[2],
                                 commander_2_2=commanders_padded[3],
@@ -445,11 +445,15 @@ def add_game(players, commanders, session_id):
                                 player_1=players_padded[0], 
                                 player_2=players_padded[1], 
                                 player_3=players_padded[2], 
-                                player_4=players_padded[3], 
-                                commander_1=commanders_padded[0],
-                                commander_2=commanders_padded[1],
-                                commander_3=commanders_padded[2],
-                                commander_4=commanders_padded[3],
+                                player_4=players_padded[3],
+                                commander_1_1=commanders_padded[0],
+                                commander_1_2=commanders_padded[1],
+                                commander_2_1=commanders_padded[2],
+                                commander_2_2=commanders_padded[3],
+                                commander_3_1=commanders_padded[4],
+                                commander_3_2=commanders_padded[5],
+                                commander_4_1=commanders_padded[6],
+                                commander_4_2=commanders_padded[7],
                                 start_time=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
                                 status='pending')
         db.session.add(new_game)
@@ -466,10 +470,14 @@ def add_game(players, commanders, session_id):
         game.player_2 = players_padded[1]
         game.player_3 = players_padded[2]
         game.player_4 = players_padded[3]
-        game.commander_1 = commanders_padded[0]
-        game.commander_2 = commanders_padded[1]
-        game.commander_3 = commanders_padded[2]
-        game.commander_4 = commanders_padded[3]
+        game.commander_1_1=commanders_padded[0],
+        game.commander_1_2=commanders_padded[1],
+        game.commander_2_1=commanders_padded[2],
+        game.commander_2_2=commanders_padded[3],
+        game.commander_3_1=commanders_padded[4],
+        game.commander_3_2=commanders_padded[5],
+        game.commander_4_1=commanders_padded[6],
+        game.commander_4_2=commanders_padded[7],
         game.start_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         db.session.commit()
         return
@@ -485,8 +493,8 @@ def process_games():
     pending_games = Trackedgames.query.filter(Trackedgames.status == 'pending').all()
     
     for game in pending_games:
-        # If the game has been in pending games for more than 30 mins and no commanders have been added, delete the game
-        if time.time() - game.start_time.timestamp() > 1200 and game.commander_1 == None:
+        # If the game has been in pending games for more than 30 mins and there is only one player, delete the game
+        if time.time() - game.start_time.timestamp() > 1200 and game.player_2 == None:
             print(f"{game.game_id}    Game deleted")
             db.session.delete(game)
             db.session.commit()
