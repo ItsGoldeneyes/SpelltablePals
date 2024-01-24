@@ -16,12 +16,22 @@ function main() {
   });
 
   // Retrieve the player's commanders
-  const commanderElements = document.querySelectorAll('.text-xs.italic.text-gray-400.truncate.leading-snug.flex > div');
+  const commanderElements = document.querySelectorAll('.text-xs.italic.text-gray-400.truncate.leading-snug.flex');  
   const commandersOnPage = [];
 
   commanderElements.forEach(element => {
-    const commanderName = element.textContent.trim();
-    commandersOnPage.push(commanderName);
+    // If there are no child divs, add two empty strings to the array
+    if (element.children[0]) {
+      child = element.children[0].textContent.trim();
+      commandersOnPage.push(child);
+    }
+    if (element.children[0]) {
+      child = element.children[1].textContent.trim();
+      commandersOnPage.push(child);
+    }
+    if (!element.children) {
+      commandersOnPage.push('', '');
+    }
   });
 
   // If there are no names on the page, the active page is probably the game start page

@@ -389,6 +389,11 @@ def get_user_stats(username):
     print(games)
 
 
+'''
+-----------------
+GAME LOGIC
+-----------------
+'''
 
 def add_game(players, commanders, session_id):
     '''
