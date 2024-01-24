@@ -415,9 +415,13 @@ def add_game(players, commanders, session_id):
                                 player_3=players_padded[2], 
                                 player_4=players_padded[3], 
                                 commander_1=commanders_padded[0],
-                                commander_2=commanders_padded[1],
-                                commander_3=commanders_padded[2],
-                                commander_4=commanders_padded[3],
+                                commander_1_2=commanders_padded[1],
+                                commander_2_1=commanders_padded[2],
+                                commander_2_2=commanders_padded[3],
+                                commander_3_1=commanders_padded[4],
+                                commander_3_2=commanders_padded[5],
+                                commander_4_1=commanders_padded[6],
+                                commander_4_2=commanders_padded[7],
                                 start_time=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
                                 status='pending')
         db.session.add(new_game)
