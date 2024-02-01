@@ -176,6 +176,21 @@ def unblock_user_endpoint():
     
     return {"status": status}
 
+
+@app.route("/get_blocked_users", methods=['POST'])
+def get_blocked_users_endpoint():
+    '''
+    This function returns the list of blocked users.
+    Request format:
+        {}
+    '''
+    
+    print("POST: /get_blocked_users")
+    blocked_users = Spelltableusers.query.filter(Spelltableusers.role == 'blocked').all()
+    blocked_users = {user.username : user.reason for user in blocked_users}
+    
+    return {"blocked_users": blocked_users}
+
 @app.route('/get_user_stats', methods=['POST'])
 def get_user_stats_endpoint():
     '''
