@@ -181,11 +181,9 @@ def unblock_user_endpoint():
 def get_blocked_users_endpoint():
     '''
     This function returns a dict containing blocked users.
-    Request format:
-        {}
     '''
     
-    print("POST: /get_blocked_users")
+    print("GET: /get_blocked_users")
     blocked_users = Spelltableusers.query.filter(Spelltableusers.role == 'blocked').all()
     blocked_users = {user.username : {"reason" : user.reason, "changed_on" : user.changed_on} for user in blocked_users}
     
