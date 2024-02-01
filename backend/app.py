@@ -180,7 +180,7 @@ def unblock_user_endpoint():
 @app.route("/get_blocked_users", methods=['POST'])
 def get_blocked_users_endpoint():
     '''
-    This function returns the list of blocked users.
+    This function returns a dict containing blocked users.
     Request format:
         {}
     '''
