@@ -187,7 +187,7 @@ def get_blocked_users_endpoint():
     
     print("POST: /get_blocked_users")
     blocked_users = Spelltableusers.query.filter(Spelltableusers.role == 'blocked').all()
-    blocked_users = {user.username : user.reason for user in blocked_users}
+    blocked_users = {user.username : {"reason" : user.reason, "changed_on" : user.changed_on} for user in blocked_users}
     
     return {"blocked_users": blocked_users}
 
