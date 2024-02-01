@@ -177,7 +177,7 @@ def unblock_user_endpoint():
     return {"status": status}
 
 
-@app.route("/get_blocked_users", methods=['POST'])
+@app.route("/get_blocked_users", methods=['GET'])
 def get_blocked_users_endpoint():
     '''
     This function returns a dict containing blocked users.
