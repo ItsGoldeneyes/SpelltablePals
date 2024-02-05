@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 from flask_cors import CORS
-import time
 import datetime
+import time
 import uuid
 import os
 
@@ -185,9 +185,14 @@ def get_blocked_users_endpoint():
     
     print("GET: /get_blocked_users")
     blocked_users = Spelltableusers.query.filter(Spelltableusers.role == 'blocked').all()
-    blocked_users = {user.username : {"reason" : user.reason, "changed_on" : user.changed_on} for user in blocked_users}
+    blocked_users = [
+        {"username": user.username, 
+         "reason" : user.reason, 
+         "changed_on" : int(time.mktime(user.changed_on.timetuple())) if user.changed_on else None}
+        for user in blocked_users
+        ]
     
-    return {"blocked_users": blocked_users}
+    return blocked_users
 
 @app.route('/get_user_stats', methods=['POST'])
 def get_user_stats_endpoint():
