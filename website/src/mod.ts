@@ -1,1 +1,2 @@
-export { fetchList } from "./fetchList.ts";
+export { fetchBlockList } from "./fetchList.ts";
+export type { BlockedUser } from "./fetchList.ts";
