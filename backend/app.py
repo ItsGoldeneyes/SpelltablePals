@@ -184,7 +184,7 @@ def get_blocked_users_endpoint():
     blocked_users = [
         {"username": user.username, 
          "reason" : user.reason, 
-         "changed_on" : datetime(user.changedon.year, user.changedon.month, user.changedon.day).timestamp()}
+         "changed_on" : datetime(user.changed_on.year, user.changed_on.month, user.changed_on.day).timestamp()}
         for user in blocked_users
         ]
     
