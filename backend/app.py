@@ -184,7 +184,7 @@ def get_blocked_users_endpoint():
     blocked_users = [
         {"username": user.username, 
          "reason" : user.reason, 
-         "changed_on" : time.mktime(user.changed_on.timetuple())}
+         "changed_on" : int(time.mktime(user.changed_on.timetuple())) if user.changed_on else None}
         for user in blocked_users
         ]
     
