@@ -184,7 +184,7 @@ def get_blocked_users_endpoint():
     blocked_users = [
         {"username": user.username, 
          "reason" : user.reason, 
-         "changed_on" : type(user.changed_on) if user.changed_on else None}
+         "changed_on" : str(type(user.changed_on))}
         for user in blocked_users
         ]
     
