@@ -1,10 +1,23 @@
 let nameDictionary = {};
 let lastNamesOnPage = [];
 let lastCommandersOnPage = [];
+let playerDropdownButtonListeners = [];
+
+let currentReportedPlayer = null;
 
 function main() {
-
   addSpectatorButton();
+  const playerDropdownButtons = document.querySelectorAll("button.p-1.shadow-md.rounded.text-white.transition-all.ease-in-out.duration-200.bg-surface-high");
+  for(const dropdown of Array.from(playerDropdownButtons.values()).filter((dropdown) => !playerDropdownButtonListeners.includes(dropdown))) {
+    playerDropdownButtonListeners.push(dropdown);
+    dropdown.addEventListener('click', () => {
+      setTimeout(() => {
+        addReportButton();
+      }, 10);
+      currentReportedPlayer = dropdown.parentElement.parentElement.parentElement.querySelector('div.flex-1.overflow-hidden').querySelector('div.flex-1').querySelector('div.cursor-pointer.text-white.w-full.overflow-hidden').querySelector('div.flex.items-center.w-full').querySelector('div.font-bold.truncate.leading-snug.text-sm').innerHTML;
+      console.log(currentReportedPlayer)
+    })
+  }
 
   // Retrieve the player names
   const nameElements = document.querySelectorAll('.font-bold.truncate.leading-snug.text-sm');
@@ -16,18 +29,31 @@ function main() {
   });
 
   // Retrieve the player's commanders
-  const commanderElements = document.querySelectorAll('.text-xs.italic.text-gray-400.truncate.leading-snug.flex > div');
+  const commanderElements = document.querySelectorAll('.text-xs.italic.text-gray-400.truncate.leading-snug.flex');  
   const commandersOnPage = [];
 
   commanderElements.forEach(element => {
-    const commanderName = element.textContent.trim();
-    commandersOnPage.push(commanderName);
+    // If there are no child divs, add two empty strings to the array
+    if (!element.children) {
+      commandersOnPage.push('', '');
+    } else {
+      if (element.children[0]) {
+        child = element.children[0].textContent.trim();
+        commandersOnPage.push(child);
+      } // child 1 is a / character
+      if (element.children[2]) {
+        child = element.children[2].textContent.trim();
+        commandersOnPage.push(child);
+      } else {
+        commandersOnPage.push('');
+      }
+    }
   });
 
   // If there are no names on the page, the active page is probably the game start page
   if (namesOnPage.length !== 0) {
-    const allNamesOnPageAreContained = lastNamesOnPage.join(',') === namesOnPage.join(',');
-    const allCommandersAreContained = lastCommandersOnPage.join(',') === commandersOnPage.join(',');
+    const allNamesOnPageAreContained = JSON.stringify(lastNamesOnPage) === JSON.stringify(namesOnPage);
+    const allCommandersAreContained = JSON.stringify(lastCommandersOnPage) === JSON.stringify(commandersOnPage);
 
     if (!allNamesOnPageAreContained || !allCommandersAreContained) {
       chrome.runtime.sendMessage({
@@ -62,9 +88,8 @@ function formatNames() {
 
   elements.forEach(element => {
     const elementText = element.textContent.trim().toLowerCase();
-
     // If the player has a record in the name dictionary, apply the custom format
-    if (nameDictionary[elementText]) {
+    if (nameDictionary[elementText] && nameDictionary[elementText].custom_format !== null) {
         element.style.color = nameDictionary[elementText].custom_format.color;
         element.style.fontSize = nameDictionary[elementText].custom_format.fontSize;
         element.style.fontWeight = nameDictionary[elementText].custom_format.fontWeight;
@@ -120,6 +145,35 @@ function addSpectatorButton() {
     });
 
     targetDiv.appendChild(spectatorButton);
+  }
+}
+
+function addReportButton() {
+  const playerDropdownDiv = document.querySelectorAll('div .bg-surface-high.rounded.text-sm.shadow-lg.py-1.w-40');
+  if(playerDropdownDiv && !document.getElementById("ReportButton")) {
+    const reportButton = document.createElement('button');
+    reportButton.textContent = 'Pals Report';
+    reportButton.id = 'ReportButton';
+    reportButton.className = 'text-left w-full px-4 cursor-pointer transition-all ease-in-out duration-200 hover:bg-red-700 hover:text-white py-1 text-xs';
+    reportButton.style.color = 'red';
+    reportButton.onmouseover = () => {
+      reportButton.style.color = 'white';
+    }
+    reportButton.onmouseout = () => {
+      reportButton.style.color = 'red';
+    }
+    reportButton.addEventListener('click', () => {
+      const reason = prompt(`Please enter the reason for reporting ${currentReportedPlayer}.`);
+      if(reason !== null) {
+        chrome.runtime.sendMessage({
+          action: 'reportPlayer',
+          data: { reportedUser: currentReportedPlayer, "reason": reason, "sessionID": window.location.pathname }
+        });
+      }
+    });
+    for(const div of playerDropdownDiv) {
+      div.appendChild(reportButton);
+    }
   }
 }
 

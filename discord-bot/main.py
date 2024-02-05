@@ -10,6 +10,8 @@ SETUP
 --------------
 '''
 
+ENVIRONMENT = os.environ["ENVIRONMENT"]
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -340,12 +342,12 @@ async def update_games():
 START BOT
 --------------
 '''
-    
+
 @client.event
 async def on_ready():
     print("Ready!")
     fetch_users.start()
     update_games.start()
     
-    
-client.run(os.environ["DISCORD_TOKEN"])
+if ENVIRONMENT == "production":
+    client.run(os.environ["DISCORD_TOKEN"])

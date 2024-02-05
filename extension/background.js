@@ -1,6 +1,16 @@
+let ENVIRONMENT = 'preproduction'; // Set to 'production' or 'preproduction' to change the API environment
+
 let useDefaultDictionary = false; // Set this to false when using the API
 let nameDictionary = {}; // Default empty dictionary
 let extensionID = chrome.runtime.id; // Extension ID for the API to check for valid requests
+let APILink = '';
+
+// Set environment-specific API link
+if (ENVIRONMENT == 'production') {
+    APILink = 'https://backend-production-c33b.up.railway.app/';
+} else {
+    APILink = 'https://extension-backend-preproduction.up.railway.app/';
+}
 
 function simpleUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -50,7 +60,7 @@ function loadDictionary(inputNames, inputCommanders, sessionID) {
             commanders: inputCommanders
           });
 
-        fetch('https://backend-production-c33b.up.railway.app/user_profiles', {
+        fetch(APILink+'user_profiles', {
         method: 'POST',
         headers: {
             'Origin': 'chrome-extension://' + extensionID,
@@ -107,5 +117,38 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         console.log(message);
         // Send the data back to the popup
         chrome.runtime.sendMessage({ action: 'recieveNameDictPopup', data: nameDictionary });
+    }
+    if(message.action === "reportPlayer") {
+        console.log(message);
+        const reason = message.data.reason;
+        const username = message.data.reportedUser.trim();
+        const sessionId = message.data.sessionId;
+        const requestBody = JSON.stringify({
+            username, reason
+        });
+        console.log(requestBody);
+        console.log('reporting user...')
+        fetch(APILink+'block_user', {
+            method: 'POST',
+            headers: {
+                'Origin': 'chrome-extension://' + extensionID,
+                'Content-Type': 'application/json'
+                },
+                body: requestBody
+            }).then(response => {
+                console.log("getting a response...")
+                if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('done')
+                console.log(data);
+            }
+            ).catch(error => {
+                console.error('Error reporting user:', error.message);
+            }
+            );
     }
   });
