@@ -38,7 +38,7 @@ export default function Home(props: PageProps<BlockedUser[]>) {
 
           <BlockListTable
             blocked_users={blockedUsers}
-            class="children:(w-[50%] children:(border border-gray-300 children:(px-4)))"
+            class="m-auto children:(children:(border border-gray-300 children:(px-4)))"
           />
         </div>
       </body>
