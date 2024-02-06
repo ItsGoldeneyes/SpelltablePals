@@ -14,24 +14,31 @@ export default function Home(props: PageProps<BlockedUser[]>) {
   const blockedUsers = props.data;
   return (
     <html>
-      <body>
-        <div>
-          <div class="flex children:px-3">
-            <img
-              src="/pals.png"
-              alt="Spelltable Pals"
-              class="w-24 h-24 rounded-md"
-            />
-            <div class="children:text-center">
-              <h1 class="font-bold text-6xl">Spelltable Pals</h1>
-              <h2 class="text-3xl">no no list</h2>
-            </div>
+      <body class="min-w-[60%] max-w-[80%] m-auto">
+        <div class="flex children:mx-3 m-auto justify-center py-10 pb-0">
+          <img
+            src="/pals.png"
+            alt="Spelltable Pals"
+            class="w-24 h-24 rounded-md"
+          />
+          <div class="children:text-center">
+            <h1 class="font-bold text-6xl">Spelltable Pals</h1>
+            <h2 class="text-3xl">no no list</h2>
           </div>
         </div>
-        <div>
+        <div class="flex-row justify-center items-center">
+          <div class="m-auto p-4 w-[50%]">
+            <p>
+              These people have been deemed by the Spelltable Pals community to
+              be unworthy of being pals. They have been blocked by the
+              community. If you believe you have been blocked in error, please
+              contact the Spelltable Pals team.
+            </p>
+          </div>
+
           <BlockListTable
             blocked_users={blockedUsers}
-            class="m-auto children:(w-[50%] children:(border border-gray-300 children:(px-4)))"
+            class="children:(w-[50%] children:(border border-gray-300 children:(px-4)))"
           />
         </div>
       </body>
