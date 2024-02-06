@@ -21,9 +21,9 @@ export default function Home(props: PageProps<BlockedUser[]>) {
             alt="Spelltable Pals"
             class="w-24 h-24 rounded-md"
           />
-          <div class="children:text-center">
+          <div class="children:text-left">
             <h1 class="font-bold text-6xl">Spelltable Pals</h1>
-            <h2 class="text-3xl">no no list</h2>
+            <h2 class="text-3xl italic">no no list</h2>
           </div>
         </div>
         <div class="flex-row justify-center items-center">
@@ -38,7 +38,7 @@ export default function Home(props: PageProps<BlockedUser[]>) {
 
           <BlockListTable
             blocked_users={blockedUsers}
-            class="m-auto children:(children:(border border-gray-300 children:(px-4)))"
+            class="m-auto children:(children:(first:(bg-black text-white) even:(bg-gray-200) p-3) border border-gray-300)"
           />
         </div>
       </body>
