@@ -1,3 +1,5 @@
+export {};
+
 let ENVIRONMENT = "preproduction"; // Set to 'production' or 'preproduction' to change the API environment
 
 const useDefaultDictionary = false; // Set this to false when using the API
@@ -25,7 +27,11 @@ let sessionID = simpleUUID(); // Session ID to be sent to the API for proper gam
 console.log("Background script loaded");
 console.log("Session ID:", sessionID);
 
-function loadDictionary(inputNames, inputCommanders, sessionID) {
+function loadDictionary(
+  inputNames: string[],
+  inputCommanders: string[],
+  sessionID: string,
+) {
   // If using the test variable, set the default dictionary
   if (useDefaultDictionary) {
     nameDictionary = {

@@ -1,9 +1,31 @@
-let nameDictionary = {};
-let lastNamesOnPage = [];
-let lastCommandersOnPage = [];
-let playerDropdownButtonListeners = [];
+export {};
 
-let currentReportedPlayer = null;
+type NameDictionaryPlayer = {
+  custom_format: {
+    color: string;
+    fontSize: string;
+    fontWeight: string;
+    backgroundColor: string;
+    textDecoration: string;
+    textTransform: string;
+    textShadow: string;
+    textIndent: string;
+    letterSpacing: string;
+    lineHeight: string;
+    wordSpacing: string;
+    whiteSpace: string;
+  };
+  blocked: boolean;
+  reason: string;
+  role: string;
+};
+
+let nameDictionary: Record<string, NameDictionaryPlayer> = {};
+let lastNamesOnPage: string[] = [];
+let lastCommandersOnPage: string[] = [];
+let playerDropdownButtonListeners: Element[] = [];
+
+let currentReportedPlayer: string | null = null;
 
 function main() {
   addSpectatorButton();
@@ -20,15 +42,20 @@ function main() {
       setTimeout(() => {
         addReportButton();
       }, 10);
-      currentReportedPlayer =
-        dropdown.parentElement.parentElement.parentElement.querySelector(
+      const player = dropdown.parentElement?.parentElement
+        ?.parentElement
+        ?.querySelector(
           "div.flex-1.overflow-hidden",
-        ).querySelector("div.flex-1").querySelector(
+        )?.querySelector("div.flex-1")?.querySelector(
           "div.cursor-pointer.text-white.w-full.overflow-hidden",
-        ).querySelector("div.flex.items-center.w-full").querySelector(
+        )?.querySelector("div.flex.items-center.w-full")?.querySelector(
           "div.font-bold.truncate.leading-snug.text-sm",
-        ).innerHTML;
-      console.log(currentReportedPlayer);
+        )?.innerHTML;
+      if (player !== undefined) {
+        currentReportedPlayer = player;
+      } else {
+        currentReportedPlayer = null;
+      }
     });
   }
 
@@ -36,31 +63,34 @@ function main() {
   const nameElements = document.querySelectorAll(
     ".font-bold.truncate.leading-snug.text-sm",
   );
-  const namesOnPage = [];
+  const namesOnPage: string[] = [];
 
   nameElements.forEach((element) => {
-    const name = element.textContent.trim().toLowerCase();
-    namesOnPage.push(name);
+    const name = element?.textContent?.trim().toLowerCase();
+    if (name !== undefined) {
+      namesOnPage.push(name);
+    }
   });
 
   // Retrieve the player's commanders
   const commanderElements = document.querySelectorAll(
     ".text-xs.italic.text-gray-400.truncate.leading-snug.flex",
   );
-  const commandersOnPage = [];
+  const commandersOnPage: string[] = [];
 
   commanderElements.forEach((element) => {
     // If there are no child divs, add two empty strings to the array
     if (!element.children) {
       commandersOnPage.push("", "");
     } else {
+      let child;
       if (element.children[0]) {
-        child = element.children[0].textContent.trim();
-        commandersOnPage.push(child);
+        child = element?.children[0]?.textContent?.trim();
+        if (child !== undefined) commandersOnPage.push(child);
       } // child 1 is a / character
       if (element.children[2]) {
-        child = element.children[2].textContent.trim();
-        commandersOnPage.push(child);
+        child = element?.children[2]?.textContent?.trim();
+        if (child !== undefined) commandersOnPage.push(child);
       } else {
         commandersOnPage.push("");
       }
@@ -98,11 +128,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 });
 
 // Convert all keys in an object to lowercase
-const lowerize = (obj) =>
+const lowerize = (obj: Record<string, any>) =>
   Object.keys(obj).reduce((acc, k) => {
     acc[k.toLowerCase()] = obj[k];
     return acc;
-  }, {});
+  }, {} as Record<string, string>);
 
 // Format names on the page
 function formatNames() {
@@ -112,49 +142,51 @@ function formatNames() {
   );
 
   elements.forEach((element) => {
-    const elementText = element.textContent.trim().toLowerCase();
+    const elementText = element.textContent?.trim().toLowerCase();
     // If the player has a record in the name dictionary, apply the custom format
     if (
+      elementText !== undefined &&
       nameDictionary[elementText] &&
       nameDictionary[elementText].custom_format !== null
     ) {
-      element.style.color = nameDictionary[elementText].custom_format.color;
-      element.style.fontSize =
+      (element as HTMLElement).style.color =
+        nameDictionary[elementText].custom_format.color;
+      (element as HTMLElement).style.fontSize =
         nameDictionary[elementText].custom_format.fontSize;
-      element.style.fontWeight =
+      (element as HTMLElement).style.fontWeight =
         nameDictionary[elementText].custom_format.fontWeight;
-      element.style.backgroundColor =
+      (element as HTMLElement).style.backgroundColor =
         nameDictionary[elementText].custom_format.backgroundColor;
-      element.style.textDecoration =
+      (element as HTMLElement).style.textDecoration =
         nameDictionary[elementText].custom_format.textDecoration;
-      element.style.textTransform =
+      (element as HTMLElement).style.textTransform =
         nameDictionary[elementText].custom_format.textTransform;
-      element.style.textShadow =
+      (element as HTMLElement).style.textShadow =
         nameDictionary[elementText].custom_format.textShadow;
-      element.style.textIndent =
+      (element as HTMLElement).style.textIndent =
         nameDictionary[elementText].custom_format.textIndent;
-      element.style.letterSpacing =
+      (element as HTMLElement).style.letterSpacing =
         nameDictionary[elementText].custom_format.letterSpacing;
-      element.style.lineHeight =
+      (element as HTMLElement).style.lineHeight =
         nameDictionary[elementText].custom_format.lineHeight;
-      element.style.wordSpacing =
+      (element as HTMLElement).style.wordSpacing =
         nameDictionary[elementText].custom_format.wordSpacing;
-      element.style.whiteSpace =
+      (element as HTMLElement).style.whiteSpace =
         nameDictionary[elementText].custom_format.whiteSpace;
     } else {
       // If the player does not have a record in the name dictionary, reset the format
-      element.style.color = "";
-      element.style.fontSize = "";
-      element.style.fontWeight = "";
-      element.style.backgroundColor = "";
-      element.style.textDecoration = "";
-      element.style.textTransform = "";
-      element.style.textShadow = "";
-      element.style.textIndent = "";
-      element.style.letterSpacing = "";
-      element.style.lineHeight = "";
-      element.style.wordSpacing = "";
-      element.style.whiteSpace = "";
+      (element as HTMLElement).style.color = "";
+      (element as HTMLElement).style.fontSize = "";
+      (element as HTMLElement).style.fontWeight = "";
+      (element as HTMLElement).style.backgroundColor = "";
+      (element as HTMLElement).style.textDecoration = "";
+      (element as HTMLElement).style.textTransform = "";
+      (element as HTMLElement).style.textShadow = "";
+      (element as HTMLElement).style.textIndent = "";
+      (element as HTMLElement).style.letterSpacing = "";
+      (element as HTMLElement).style.lineHeight = "";
+      (element as HTMLElement).style.wordSpacing = "";
+      (element as HTMLElement).style.whiteSpace = "";
     }
   });
 }

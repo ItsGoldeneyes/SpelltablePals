@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 let nameDictionary = {};
 let lastNamesOnPage = [];
 let lastCommandersOnPage = [];
@@ -10,37 +11,49 @@ function main() {
     for (const dropdown of Array.from(playerDropdownButtons.values()).filter((dropdown) => !playerDropdownButtonListeners.includes(dropdown))) {
         playerDropdownButtonListeners.push(dropdown);
         dropdown.addEventListener("click", () => {
+            var _a, _b, _c, _d, _e, _f, _g, _h;
             setTimeout(() => {
                 addReportButton();
             }, 10);
-            currentReportedPlayer =
-                dropdown.parentElement.parentElement.parentElement.querySelector("div.flex-1.overflow-hidden").querySelector("div.flex-1").querySelector("div.cursor-pointer.text-white.w-full.overflow-hidden").querySelector("div.flex.items-center.w-full").querySelector("div.font-bold.truncate.leading-snug.text-sm").innerHTML;
-            console.log(currentReportedPlayer);
+            const player = (_h = (_g = (_f = (_e = (_d = (_c = (_b = (_a = dropdown.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.parentElement) === null || _c === void 0 ? void 0 : _c.querySelector("div.flex-1.overflow-hidden")) === null || _d === void 0 ? void 0 : _d.querySelector("div.flex-1")) === null || _e === void 0 ? void 0 : _e.querySelector("div.cursor-pointer.text-white.w-full.overflow-hidden")) === null || _f === void 0 ? void 0 : _f.querySelector("div.flex.items-center.w-full")) === null || _g === void 0 ? void 0 : _g.querySelector("div.font-bold.truncate.leading-snug.text-sm")) === null || _h === void 0 ? void 0 : _h.innerHTML;
+            if (player !== undefined) {
+                currentReportedPlayer = player;
+            }
+            else {
+                currentReportedPlayer = null;
+            }
         });
     }
     // Retrieve the player names
     const nameElements = document.querySelectorAll(".font-bold.truncate.leading-snug.text-sm");
     const namesOnPage = [];
     nameElements.forEach((element) => {
-        const name = element.textContent.trim().toLowerCase();
-        namesOnPage.push(name);
+        var _a;
+        const name = (_a = element === null || element === void 0 ? void 0 : element.textContent) === null || _a === void 0 ? void 0 : _a.trim().toLowerCase();
+        if (name !== undefined) {
+            namesOnPage.push(name);
+        }
     });
     // Retrieve the player's commanders
     const commanderElements = document.querySelectorAll(".text-xs.italic.text-gray-400.truncate.leading-snug.flex");
     const commandersOnPage = [];
     commanderElements.forEach((element) => {
+        var _a, _b, _c, _d;
         // If there are no child divs, add two empty strings to the array
         if (!element.children) {
             commandersOnPage.push("", "");
         }
         else {
+            let child;
             if (element.children[0]) {
-                child = element.children[0].textContent.trim();
-                commandersOnPage.push(child);
+                child = (_b = (_a = element === null || element === void 0 ? void 0 : element.children[0]) === null || _a === void 0 ? void 0 : _a.textContent) === null || _b === void 0 ? void 0 : _b.trim();
+                if (child !== undefined)
+                    commandersOnPage.push(child);
             } // child 1 is a / character
             if (element.children[2]) {
-                child = element.children[2].textContent.trim();
-                commandersOnPage.push(child);
+                child = (_d = (_c = element === null || element === void 0 ? void 0 : element.children[2]) === null || _c === void 0 ? void 0 : _c.textContent) === null || _d === void 0 ? void 0 : _d.trim();
+                if (child !== undefined)
+                    commandersOnPage.push(child);
             }
             else {
                 commandersOnPage.push("");
@@ -81,11 +94,14 @@ function formatNames() {
     lowerize(nameDictionary);
     const elements = document.querySelectorAll(".font-bold.truncate.leading-snug.text-sm");
     elements.forEach((element) => {
-        const elementText = element.textContent.trim().toLowerCase();
+        var _a;
+        const elementText = (_a = element.textContent) === null || _a === void 0 ? void 0 : _a.trim().toLowerCase();
         // If the player has a record in the name dictionary, apply the custom format
-        if (nameDictionary[elementText] &&
+        if (elementText !== undefined &&
+            nameDictionary[elementText] &&
             nameDictionary[elementText].custom_format !== null) {
-            element.style.color = nameDictionary[elementText].custom_format.color;
+            element.style.color =
+                nameDictionary[elementText].custom_format.color;
             element.style.fontSize =
                 nameDictionary[elementText].custom_format.fontSize;
             element.style.fontWeight =
