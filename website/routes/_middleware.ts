@@ -1,7 +1,7 @@
 import { FreshContext } from "$fresh/server.ts";
 
 const invite = "https://discord.com/invite/9QwzXz5Rt5";
-const disabled = true;
+const disabled = false;
 
 // TODO(ybabts): Integrate these controls into the database or Discord bot and move this to a separate file
 
