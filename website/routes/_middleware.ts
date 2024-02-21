@@ -1,8 +1,7 @@
 import { FreshContext } from "$fresh/server.ts";
-import { tldts } from "../deps.ts";
 
 const invite = "https://discord.com/invite/9QwzXz5Rt5";
-const disabled = false;
+const disabled = true;
 
 // TODO(ybabts): Integrate these controls into the database or Discord bot and move this to a separate file
 
@@ -10,8 +9,9 @@ export function handler(
   req: Request,
   ctx: FreshContext,
 ) {
-  const domain = tldts.parse(req.url);
-  if (domain.subdomain === "discord" || domain.subdomain === "discord.beta") {
+  const url = new URL(req.url);
+  const path = url.pathname;
+  if (path === "/discord") {
     if (disabled) {
       return new Response(
         "Our Discord is currently not taking any more invites, sorry",
