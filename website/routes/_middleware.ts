@@ -11,8 +11,7 @@ export function handler(
   ctx: FreshContext,
 ) {
   const domain = tldts.parse(req.url);
-  console.log(domain);
-  if (domain.subdomain === "discord") {
+  if (domain.subdomain === "discord" || domain.subdomain === "discord.beta") {
     if (disabled) {
       return new Response(
         "Our Discord is currently not taking any more invites, sorry",
