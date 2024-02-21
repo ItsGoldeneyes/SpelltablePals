@@ -6,9 +6,9 @@ export default function App({ Component }: AppProps) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Spelltable Pals</title>
+        <title>fresh_template</title>
       </head>
-      <body class="bg-[#D9C1F7]">
+      <body>
         <Component />
       </body>
     </html>
