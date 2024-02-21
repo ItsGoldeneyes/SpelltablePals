@@ -17,7 +17,7 @@ export default function BlockListTable(
         <th>Reason</th>
       </tr>
       {blockedUsers.sort((a, b) => b.changed_on - a.changed_on).map((user) => (
-        <tr class="children:px-2">
+        <tr>
           <td>{user.username}</td>
           <td>{new Date(user.changed_on * 1000).toDateString()}</td>
           <td>{user.reason}</td>
