@@ -70,6 +70,10 @@ class Trackedgames(db.Model):
     commander_4_2 = db.Column(db.String(50), nullable=True)
     start_time = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.String(50), nullable=True)
+    
+class Discordinvite(db.Model):
+    enabled = db.Column(db.Boolean, nullable=False)
+    invite_link = db.Column(db.String(200), nullable=True, primary_key=True, unique=True)
 
 
 ''' 
@@ -219,6 +223,52 @@ def set_user_colour_endpoint():
     status = set_user_colour(data['username'].lower(), data['colour'].lower())
     
     return {"status": status}
+
+@app.route("/get_discord_invite", methods=['GET'])
+def get_discord_invite_endpoint():
+    '''
+    This function returns the discord invite link.
+    '''
+    
+    print("GET: /get_discord_invite")
+    # Get the discord invite link from the database if enabled = true
+    invite = Discordinvite.query.filter(Discordinvite.enabled == True).first()
+    
+    if not invite:
+        return False
+    
+    return invite.invite_link
+
+@app.route("/update_discord_invite", methods=['POST'])
+def update_discord_invite_endpoint():
+    '''
+    This function updates the discord invite link. 
+    Request format:
+        {"invite_link": "invite_link",
+        "enabled": "True", "False", "None"}
+    '''
+    
+    data = request.get_json(force=True)
+    print(f"POST: /update_discord_invite {data['invite_link']} {data['enabled']}")
+    
+    # Get old discord invite and update with new info
+    invite = Discordinvite.query.filter().first()
+    
+    if not invite:
+        new_invite = Discordinvite(invite_link=data['invite_link'], enabled=data['enabled'])
+        db.session.add(new_invite)
+        db.session.commit()
+        return {"status": "Success"}
+    
+    if data['enabled'] == "None":
+        invite.invite_link = data['invite_link']
+        
+    else:
+        invite.enabled = data['enabled']
+        
+    db.session.commit()
+    return {"status": "Success"}
+
 
 '''
 -----------------
