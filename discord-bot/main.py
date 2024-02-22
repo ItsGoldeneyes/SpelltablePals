@@ -418,8 +418,5 @@ async def on_ready():
         fetch_users.start()
         update_games.start()
     
-if ENVIRONMENT == "production":
+if ENVIRONMENT == "production" or ENVIRONMENT == "development":
     client.run(os.environ["DISCORD_TOKEN"])
-    
-if ENVIRONMENT == "development":
-    client.run(os.environ["DISCORD_TOKEN_DEV"])
