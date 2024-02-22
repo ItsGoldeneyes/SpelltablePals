@@ -313,7 +313,7 @@ async def toggle_invite_link_command(interaction):
         return
 
     if api_response.json()["invite_link"] == "None":
-        new_invite_link = await client.get_channel[SERVER_INFO[interaction.guild.id]["invite_channel"]].create_invite(max_age=0, max_uses=0, unique=True)
+        new_invite_link = await client.get_channel(SERVER_INFO[interaction.guild.id]["invite_channel"]).create_invite(max_age=0, max_uses=0, unique=True)
         api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": new_invite_link, "enabled": "None"})
 
     else:
