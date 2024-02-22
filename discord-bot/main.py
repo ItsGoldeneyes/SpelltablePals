@@ -20,14 +20,16 @@ client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(client)
 
 SERVER_INFO = {}
-SERVER_INFO[1187847033596432394] = {"guild_name": "Bot Test", 
-                                      "roles": {"chill": 1189712419996586055, "council": 1189712386509262948}, 
+SERVER_INFO[1187847033596432394] = {"guild_name": "Bot Test",
+                                      "roles": {"chill": 1189712419996586055, "council": 1189712386509262948},
                                       "report_channel": 1189700021009010840,
-                                      "mod_report_channel": 1189971481170563195}
+                                      "mod_report_channel": 1189971481170563195,
+                                      "invite_channel": 1210359718795542579}
 SERVER_INFO[1073654117475569784] = {"guild_name": "SpellTable Pals",
                                         "roles": {"chill": 1073656663518744586, "council": 1091947617476415498},
                                         "report_channel": 1188131117035950160,
-                                        "mod_report_channel": 1186943235470405692}
+                                        "mod_report_channel": 1186943235470405692,
+                                      "invite_channel": 1073654117475569786}
 
 OWNER_USER_ID = 744739465045737623
 BOT_ID = 1187847835920629881
@@ -291,41 +293,6 @@ async def set_colour_command(interaction, colour: str):
     await interaction.followup.send(response, ephemeral=True)
     return
 
-
-@tree.command(
-    name="update_invite_link",
-    description="Update the invite link for the bot"
-)
-async def update_invite_link_command(interaction, link: str):
-    print("update_invite_link_command")
-    user_roles = SERVER_INFO[interaction.guild.id]["roles"]
-    if user_roles["council"] not in [role.id for role in interaction.user.roles]:
-        response = "You are not authorized to use this command."
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    if link == None:
-        response = "Please provide a link."
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": link, "enabled": "None"})
-
-    if api_response.status_code != 200:
-        response = "Something went wrong. Please try again later."
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    if api_response.json()["status"] != "Success":
-        response = f"Error updating invite link: {api_response.json()['status']}"
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    response = f"Invite link updated!"
-    await interaction.response.send_message(response, ephemeral=True)
-    return
-
-
 @tree.command(
     name="toggle_invite_link",
     description="Toggle the invite link for the bot"
@@ -338,7 +305,24 @@ async def toggle_invite_link_command(interaction):
         await interaction.response.send_message(response, ephemeral=True)
         return
 
-    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": "Toggle"})
+    api_response = requests.get(f"{BACKEND_API}/get_discord_invite")
+
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+
+    if api_response.json()["invite_link"] == "None":
+        new_invite_link = await SERVER_INFO[interaction.guild.id]["invite_channel"].create_invite(max_age=0, max_uses=0, unique=True)
+        api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": new_invite_link, "enabled": "None"})
+
+    else:
+        invite = await interaction.guild.invites()
+        for i in invite:
+            if i.url == api_response.json()["invite_link"]:
+                await i.delete()
+                break
+        api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": "Toggle"})
 
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."
