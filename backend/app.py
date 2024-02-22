@@ -269,6 +269,7 @@ def update_discord_invite_endpoint():
 
     else:
         # Verify the invite link is valid
+        print(data['invite_link'][0:18])
         if data['invite_link'][0:18] != "https://discord.gg/":
             return {"status": "Invalid invite link - must start with 'https://discord.gg/'"}
         else:
