@@ -11,6 +11,7 @@ SETUP
 '''
 
 ENVIRONMENT = os.environ["ENVIRONMENT"]
+BACKEND_API = os.environ["BACKEND_API"]
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -28,7 +29,6 @@ SERVER_INFO[1073654117475569784] = {"guild_name": "SpellTable Pals",
                                         "report_channel": 1188131117035950160,
                                         "mod_report_channel": 1186943235470405692}
 
-BACKEND_API = "https://backend-production-c33b.up.railway.app"
 OWNER_USER_ID = 744739465045737623
 BOT_ID = 1187847835920629881
 
