@@ -255,7 +255,7 @@ def update_discord_invite_endpoint():
     invite = Discordinvite.query.filter().first()
 
     if not invite:
-        new_invite = Discordinvite(invite_link=data['invite_link'], enabled=data['enabled'])
+        new_invite = Discordinvite(invite_link=data['invite_link'], enabled=True if data['enabled'] == "True" else False)
         db.session.add(new_invite)
         db.session.commit()
         return {"status": "Success"}
@@ -273,6 +273,7 @@ def update_discord_invite_endpoint():
             return {"status": "Invalid invite link - must start with 'https://discord.gg/'"}
         else:
             invite.invite_link = data['invite_link']
+            invite.enabled = True
 
     db.session.commit()
     return {"status": "Success"}
