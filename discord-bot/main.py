@@ -46,13 +46,14 @@ SLASH COMMANDS
     )
 async def sync_command(interaction):
     print("sync_command")
+    await interaction.response.defer()
     if interaction.user.id == OWNER_USER_ID:
         response = "Synced!"
         await tree.sync()
-        await interaction.response.send_message(response, ephemeral=True)
+        await interaction.followup.send(response, ephemeral=True)
     else:
         response = "You are not authorized to use this command."
-        await interaction.response.send_message(response, ephemeral=True)
+        await interaction.followup.send(response, ephemeral=True)
 
 
 @tree.command(
@@ -313,10 +314,12 @@ async def toggle_invite_link_command(interaction):
         return
 
     if api_response.json()["invite_link"] == "None":
+        invite_link_enabled = True
         new_invite_link = await client.get_channel(SERVER_INFO[interaction.guild.id]["invite_channel"]).create_invite(max_age=0, max_uses=0, unique=True)
         api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": str(new_invite_link), "enabled": "None"})
 
     else:
+        invite_link_enabled = False
         invite = await interaction.guild.invites()
         for i in invite:
             if i.url == api_response.json()["invite_link"]:
@@ -334,7 +337,10 @@ async def toggle_invite_link_command(interaction):
         await interaction.response.send_message(response, ephemeral=True)
         return
 
-    response = f"Invite link updated!"
+    if invite_link_enabled:
+        response = f"Invite link enabled!"
+    else:
+        response = f"Invite link disabled!"
     await interaction.response.send_message(response, ephemeral=True)
     return
 
