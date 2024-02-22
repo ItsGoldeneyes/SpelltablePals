@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "SpellTable BlockList",
+  "version": "1.0",
+  "description": "Warns you if you are about to play against a player the community has flagged.",
+  "permissions": [
+    "scripting",
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://spelltable.wizards.com/game/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "128": "128.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

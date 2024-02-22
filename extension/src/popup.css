@@ -1,0 +1,75 @@
+body {
+    height: 300px;
+    width: 500px;
+    margin: 0px !important;
+    border-radius: 5px;
+    background-size: contain;
+    background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(150, 137, 137, 0.3)), url('title_page_background.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: 'Arial', sans-serif; /* Choose an appropriate font-family */
+    color: white; /* Set the default text color */
+    text-align: center;
+  }
+  
+  #titlePage {
+    text-align: center;
+    font-size: 24px; /* Increase the font size for the title */
+    margin-top: 20px; /* Add some space above the title */
+  }
+  
+  h1 {
+    color: #ffffff; /* Set a custom color for the h1 elements */
+    /* drop shadow */
+    text-shadow: 2px 2px 4px #000000;
+  }
+  
+  p {
+    font-size: 20px; /* Adjust the font size for paragraphs */
+    text-shadow: 2px 2px 4px #000000;
+  }
+  
+  #gamePage h1 {
+    color: #FFFFFF; /* Set a different color for game page headings */
+    font-size: 40px; /* Increase the font size for the title */
+  }
+  
+  #playerInfoContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+    background-color: #85baeb;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 1);
+  }
+  
+  .player-info {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 5px;
+    color: #333; /* Set a darker color for player info text */
+    background-color: #fff; /* Set a background color for player info */
+    border-radius: 8px; /* Add some border-radius for a rounded appearance */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+  }
+  
+  /* Additional styling for each player-info if needed */
+  #playerInfoContainer .player-info:nth-child(1) {
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
+  }
+  
+  #playerInfoContainer .player-info:nth-child(2) {
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 1;
+  }
+  
+  #playerInfoContainer .player-info:nth-child(3) {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+  }
+  
+  #playerInfoContainer .player-info:nth-child(4) {
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+  }
