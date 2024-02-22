@@ -1,18 +1,15 @@
 import { FreshContext } from "$fresh/server.ts";
+import { fetchDiscordInvite } from "../src/mod.ts";
 
-const invite = "https://discord.com/invite/9QwzXz5Rt5";
-const disabled = false;
-
-// TODO(ybabts): Integrate these controls into the database or Discord bot.
-
-export function DiscordLinkMiddleware(
+export async function DiscordLinkMiddleware(
   req: Request,
   ctx: FreshContext,
 ) {
   const url = new URL(req.url);
   const path = url.pathname;
   if (path === "/discord") {
-    if (disabled) {
+    const invite = await fetchDiscordInvite();
+    if (invite === "None") {
       return new Response(
         "Our Discord is currently not taking any more invites, sorry",
         { status: 403 },
