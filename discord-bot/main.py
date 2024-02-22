@@ -307,7 +307,7 @@ async def update_invite_link_command(interaction, link: str):
         await interaction.response.send_message(response, ephemeral=True)
         return
     
-    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": link, "enabled": True})
+    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": link, "enabled": "None"})
     
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."
@@ -325,17 +325,22 @@ async def update_invite_link_command(interaction, link: str):
 
 
 @tree.command(
-    name="disable_invite_link",
-    description="Disable the invite link for the bot"
+    name="toggle_invite_link",
+    description="Toggle the invite link for the bot"
 )
-async def disable_invite_link_command(interaction):
-    print("disable_invite_link_command")
+async def toggle_invite_link_command(interaction, enabled: str):
+    print("toggle_invite_link_command")
     if interaction.user.roles[0].id != SERVER_INFO[interaction.guild.id]["roles"]["council"]:
         response = "You are not authorized to use this command."
         await interaction.response.send_message(response, ephemeral=True)
         return
     
-    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"enabled": False})
+    if enabled == None:
+        response = "Please provide a value."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": enabled})
     
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."
@@ -343,14 +348,14 @@ async def disable_invite_link_command(interaction):
         return
     
     if api_response.json()["status"] != "Success":
-        response = f"Error disabling invite link: {api_response.json()['status']}"
+        response = f"Error updating invite link: {api_response.json()['status']}"
         await interaction.response.send_message(response, ephemeral=True)
         return
     
-    response = f"Invite link disabled!"
+    response = f"Invite link updated!"
     await interaction.response.send_message(response, ephemeral=True)
     return
-
+    
     
 '''
 --------------
