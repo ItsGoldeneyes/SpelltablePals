@@ -330,7 +330,7 @@ async def update_invite_link_command(interaction, link: str):
     name="toggle_invite_link",
     description="Toggle the invite link for the bot"
 )
-async def toggle_invite_link_command(interaction, enabled: str):
+async def toggle_invite_link_command(interaction):
     print("toggle_invite_link_command")
     user_roles = SERVER_INFO[interaction.guild.id]["roles"]
     if user_roles["council"] not in [role.id for role in interaction.user.roles]:
@@ -338,12 +338,7 @@ async def toggle_invite_link_command(interaction, enabled: str):
         await interaction.response.send_message(response, ephemeral=True)
         return
 
-    if enabled == None:
-        response = "Please provide a value."
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": enabled})
+    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": "Toggle"})
 
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."

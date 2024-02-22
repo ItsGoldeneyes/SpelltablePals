@@ -260,11 +260,19 @@ def update_discord_invite_endpoint():
         db.session.commit()
         return {"status": "Success"}
 
-    if data['enabled'] == "None":
-        invite.invite_link = data['invite_link']
+    # If enabled is not None, toggle the invite status
+    if data['enabled'] != "None":
+        if invite.enabled:
+            invite.enabled = False
+        else:
+            invite.enabled = True
 
     else:
-        invite.enabled = data['enabled']
+        # Verify the invite link is valid
+        if data['invite_link'][0:16] != "https://discord.gg/":
+            return {"status": "Invalid invite link - must start with 'https://discord.gg/'"}
+        else:
+            invite.invite_link = data['invite_link']
 
     db.session.commit()
     return {"status": "Success"}
@@ -349,9 +357,9 @@ def update_pals(user_profiles):
                 if Spelltableusers.query.filter(Spelltableusers.username == user_profiles[user]['username']).first():
                     user_profiles[user]['username'] = user_profiles[user]['username'] + str(max_id+1)
 
-                new_user = Spelltableusers(id=max_id+1, 
+                new_user = Spelltableusers(id=max_id+1,
                                         username=user_profiles[user]['username'],
-                                        role=user_profiles[user]['role'], 
+                                        role=user_profiles[user]['role'],
                                         discord_id=user,
                                         changed_on=datetime.datetime.now())
                 db.session.add(new_user)
@@ -363,7 +371,7 @@ def update_pals(user_profiles):
 
         # If the user has a custom role or blocked status, don't update their role
         if user_profiles[user]['role'] != db_user_profile.role:
-            if db_user_profile.role not in ['custom', 'blocked']: 
+            if db_user_profile.role not in ['custom', 'blocked']:
                 db_user_profile.role = user_profiles[user]['role']
                 changed_flag=True
 
@@ -402,9 +410,9 @@ def block_user(username, reason):
     if not user:
         print(f"User {username} not found, adding to database")
         max_id = db.session.query(db.func.max(Spelltableusers.id)).scalar()
-        new_user = Spelltableusers(id=max_id+1, 
+        new_user = Spelltableusers(id=max_id+1,
                                 username=username,
-                                role='blocked', 
+                                role='blocked',
                                 reason=reason,
                                 changed_on=datetime.datetime.now())
         db.session.add(new_user)
