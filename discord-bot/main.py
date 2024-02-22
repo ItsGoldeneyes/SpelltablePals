@@ -61,10 +61,10 @@ async def info_command(interaction):
     print("info_command")
     response = "Hello! \n\
 I'm here to help you have a better SpellTable experience! \n\
-*For information about my commands, type /help.*"        
+*For information about my commands, type /help.*"
     await interaction.response.send_message(response, ephemeral=True)
-    
-    
+
+
 @tree.command(
     name="help",
     description="Get help with the bot"
@@ -77,20 +77,20 @@ async def help_command(interaction):
 */ping* - Get the bot's latency \n\
 */block* - Submits a block request for a given SpellTable user. \n\
 */stats* - Get your SpellTable stats! \n\
-If you have any questions, please contact @Goldeneyes."       
+If you have any questions, please contact @Goldeneyes."
     await interaction.response.send_message(response, ephemeral=True)
-    
-    
+
+
 @tree.command(
     name="ping",
     description="Get the bot's latency"
     )
 async def ping_command(interaction):
     print("ping_command")
-    response = f"Pong! {round(client.latency * 1000)}ms"        
+    response = f"Pong! {round(client.latency * 1000)}ms"
     await interaction.response.send_message(response, ephemeral=True)
-    
-    
+
+
 @tree.command(
     name="block",
     description="Submits a block request for a given SpellTable user"
@@ -101,28 +101,28 @@ async def block_command(interaction, username: str, reason: str):
         response = "Please provide a username and a reason."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     api_response = requests.post(f"{BACKEND_API}/block_user", json={"username": username, "reason": reason})
-    
+
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     if api_response.json()["status"] != "Success":
         if api_response.json()["status"] == "Failed: chill":
-            
+
             for guild in client.guilds:
                 report_channel = client.get_channel(SERVER_INFO[guild.id]["mod_report_channel"])
                 if report_channel == None:
                     continue
                 else:
                     await report_channel.send(f"{interaction.user.display_name} attempted to block {username} for reason {reason}, but {username} is a Certified Chill user.")
-            
+
             response = "User is Certified Chill, please contact a moderator if you would like to proceed."
             await interaction.response.send_message(response, ephemeral=True)
             return
-        
+
         response = "Something went wrong. Please try again later."
         await interaction.response.send_message(response, ephemeral=True)
         return
@@ -132,9 +132,9 @@ async def block_command(interaction, username: str, reason: str):
             continue
         else:
             await report_channel.send(f"User **{username}** blocked by {interaction.user.display_name} for reason {reason}")
-    
-    
-    response = f"Block request logged."        
+
+
+    response = f"Block request logged."
     await interaction.response.send_message(response, ephemeral=True)
     return
 
@@ -150,32 +150,32 @@ async def unblock_command(interaction, username: str):
         response = "You are not authorized to use this command."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     if username == None:
         response = "Please provide a username."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     api_response = requests.post(f"{BACKEND_API}/unblock_user", json={"username": username})
-    
+
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     if api_response.json()["status"] != "Success":
         response = f"Error unblocking user: {api_response.json()['status']}"
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     for guild in client.guilds:
         report_channel = client.get_channel(SERVER_INFO[guild.id]["mod_report_channel"])
         if report_channel == None:
             continue
         else:
             await report_channel.send(f"User **{username}** unblocked by {interaction.user.display_name}")
-    
-    response = f"Unblock request logged."        
+
+    response = f"Unblock request logged."
     await interaction.response.send_message(response, ephemeral=True)
     return
 
@@ -191,19 +191,19 @@ async def stats_command(interaction, username: str):
     # await interaction.response.defer()
     # if not username:
     #     username = interaction.user.display_name
-    
+
     # api_response = requests.post(f"{BACKEND_API}/get_user_stats", json={"username": username})
-    
+
     # if api_response.status_code != 200:
     #     response = "Something went wrong. Please try again later."
     #     await interaction.followup.send(response)
     #     return
-    
+
     # if api_response.json()["status"] != "Success":
     #     response = f"Error getting stats: {api_response.json()['status']}"
     #     await interaction.followup.send(response)
     #     return
-    
+
     # stats = api_response.json()["stats"]
     # response = f"Stats for {username}: \n\
     # **{stats['total_games']}** Games Played \n\
@@ -236,7 +236,7 @@ async def fetch_command(interaction):
             else:
                 role = ''
             request_body[member.id] = {"role": role, "username": member.display_name}
-        
+
     api_response = requests.post(f"{BACKEND_API}/update_pal_profiles", json=request_body)
     if api_response.json()["status"] != "Success":
         print("Something went wrong. Please try again later.")
@@ -244,7 +244,7 @@ async def fetch_command(interaction):
     print("Users updated!")
     response = "Users updated!"
     await interaction.followup.send(response, ephemeral=True)
-    
+
 
 @tree.command(
     name="update",
@@ -253,15 +253,15 @@ async def fetch_command(interaction):
 async def update_command(interaction):
     print("update_command")
     await interaction.response.defer()
-    api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})    
+    api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})
     if api_response.json()["status"] != "Success":
         print("Something went wrong. Please try again later.")
         return
     print("Games updated!")
     response = "Games updated!"
     await interaction.followup.send(response, ephemeral=True)
-    
-    
+
+
 @tree.command(
     name="set_colour",
     description="Update your username colour on Spelltable!"
@@ -273,23 +273,24 @@ async def set_colour_command(interaction, colour: str):
         response = "Please provide a colour."
         await interaction.followup.send(response, ephemeral=True)
         return
-    
+
     api_response = requests.post(f"{BACKEND_API}/set_user_colour", json={"username": interaction.user.display_name, "colour": colour})
-    
+
     if api_response.status_code != 200:
         print(api_response.status_code, api_response.json())
         response = "Something went wrong. Please try again later."
         await interaction.followup.send(response, ephemeral=True)
         return
-    
+
     if api_response.json()["status"] != "Success":
         response = f"Error setting colour: {api_response.json()['status']}"
         await interaction.followup.send(response, ephemeral=True)
         return
-    
-    response = f"Colour set!"        
+
+    response = f"Colour set!"
     await interaction.followup.send(response, ephemeral=True)
     return
+
 
 @tree.command(
     name="update_invite_link",
@@ -297,31 +298,32 @@ async def set_colour_command(interaction, colour: str):
 )
 async def update_invite_link_command(interaction, link: str):
     print("update_invite_link_command")
-    if interaction.user.roles[0].id != SERVER_INFO[interaction.guild.id]["roles"]["council"]:
+    user_roles = SERVER_INFO[interaction.guild.id]["roles"]
+    if user_roles["council"] not in [role.id for role in interaction.user.roles]:
         response = "You are not authorized to use this command."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     if link == None:
         response = "Please provide a link."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": link, "enabled": "None"})
-    
+
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     if api_response.json()["status"] != "Success":
         response = f"Error updating invite link: {api_response.json()['status']}"
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     response = f"Invite link updated!"
     await interaction.response.send_message(response, ephemeral=True)
-    return  
+    return
 
 
 @tree.command(
@@ -330,33 +332,34 @@ async def update_invite_link_command(interaction, link: str):
 )
 async def toggle_invite_link_command(interaction, enabled: str):
     print("toggle_invite_link_command")
-    if interaction.user.roles[0].id != SERVER_INFO[interaction.guild.id]["roles"]["council"]:
+    user_roles = SERVER_INFO[interaction.guild.id]["roles"]
+    if user_roles["council"] not in [role.id for role in interaction.user.roles]:
         response = "You are not authorized to use this command."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     if enabled == None:
         response = "Please provide a value."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": enabled})
-    
+
     if api_response.status_code != 200:
         response = "Something went wrong. Please try again later."
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     if api_response.json()["status"] != "Success":
         response = f"Error updating invite link: {api_response.json()['status']}"
         await interaction.response.send_message(response, ephemeral=True)
         return
-    
+
     response = f"Invite link updated!"
     await interaction.response.send_message(response, ephemeral=True)
     return
-    
-    
+
+
 '''
 --------------
 LOOPS
@@ -368,7 +371,7 @@ async def fetch_users():
     '''
     Fetches all users in all servers bot is in and updates their roles through the api
     '''
-    
+
     # Get all users in all servers bot is in
     request_body = {}
     for guild in client.guilds:
@@ -383,26 +386,26 @@ async def fetch_users():
             else:
                 role = ''
             request_body[member.id] = {"role": role, "username": member.display_name}
-        
+
     api_response = requests.post(url=f"{BACKEND_API}/update_pal_profiles", json=request_body)
     if api_response.json()["status"] != "Success":
         print("Something went wrong. Please try again later.")
         return
     print("Users updated!")
-    
-    
+
+
 @tasks.loop(seconds = 600)
 async def update_games():
     '''
     Triggers the backend to process the active games
     '''
 
-    api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})    
+    api_response = requests.request("POST", url=f"{BACKEND_API}/process_games", data={})
     if api_response.json()["status"] != "Success":
         print("Something went wrong. Please try again later.")
         return
     print("Games updated!")
-    
+
 '''
 --------------
 START BOT
@@ -413,10 +416,10 @@ START BOT
 async def on_ready():
     print("Ready!")
     await tree.sync()
-    
+
     if ENVIRONMENT == "production":
         fetch_users.start()
         update_games.start()
-    
+
 if ENVIRONMENT == "production" or ENVIRONMENT == "development":
     client.run(os.environ["DISCORD_TOKEN"])
