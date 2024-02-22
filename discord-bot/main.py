@@ -291,6 +291,67 @@ async def set_colour_command(interaction, colour: str):
     await interaction.followup.send(response, ephemeral=True)
     return
 
+@tree.command(
+    name="update_invite_link",
+    description="Update the invite link for the bot"
+)
+async def update_invite_link_command(interaction, link: str):
+    print("update_invite_link_command")
+    if interaction.user.roles[0].id != SERVER_INFO[interaction.guild.id]["roles"]["council"]:
+        response = "You are not authorized to use this command."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if link == None:
+        response = "Please provide a link."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": link, "enabled": True})
+    
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if api_response.json()["status"] != "Success":
+        response = f"Error updating invite link: {api_response.json()['status']}"
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    response = f"Invite link updated!"
+    await interaction.response.send_message(response, ephemeral=True)
+    return  
+
+
+@tree.command(
+    name="disable_invite_link",
+    description="Disable the invite link for the bot"
+)
+async def disable_invite_link_command(interaction):
+    print("disable_invite_link_command")
+    if interaction.user.roles[0].id != SERVER_INFO[interaction.guild.id]["roles"]["council"]:
+        response = "You are not authorized to use this command."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"enabled": False})
+    
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if api_response.json()["status"] != "Success":
+        response = f"Error disabling invite link: {api_response.json()['status']}"
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    response = f"Invite link disabled!"
+    await interaction.response.send_message(response, ephemeral=True)
+    return
+
+    
 '''
 --------------
 LOOPS
