@@ -235,9 +235,9 @@ def get_discord_invite_endpoint():
     invite = Discordinvite.query.filter(Discordinvite.enabled == True).first()
     
     if not invite:
-        return False
+        return {"invite_link": "None"}
     
-    return invite.invite_link
+    return {"invite_link": invite.invite_link}
 
 @app.route("/update_discord_invite", methods=['POST'])
 def update_discord_invite_endpoint():
