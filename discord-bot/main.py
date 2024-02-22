@@ -11,6 +11,7 @@ SETUP
 '''
 
 ENVIRONMENT = os.environ["ENVIRONMENT"]
+BACKEND_API = os.environ["BACKEND_API"]
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -28,7 +29,6 @@ SERVER_INFO[1073654117475569784] = {"guild_name": "SpellTable Pals",
                                         "report_channel": 1188131117035950160,
                                         "mod_report_channel": 1186943235470405692}
 
-BACKEND_API = "https://backend-production-c33b.up.railway.app"
 OWNER_USER_ID = 744739465045737623
 BOT_ID = 1187847835920629881
 
@@ -291,6 +291,72 @@ async def set_colour_command(interaction, colour: str):
     await interaction.followup.send(response, ephemeral=True)
     return
 
+@tree.command(
+    name="update_invite_link",
+    description="Update the invite link for the bot"
+)
+async def update_invite_link_command(interaction, link: str):
+    print("update_invite_link_command")
+    if interaction.user.roles[0].id != SERVER_INFO[interaction.guild.id]["roles"]["council"]:
+        response = "You are not authorized to use this command."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if link == None:
+        response = "Please provide a link."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": link, "enabled": "None"})
+    
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if api_response.json()["status"] != "Success":
+        response = f"Error updating invite link: {api_response.json()['status']}"
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    response = f"Invite link updated!"
+    await interaction.response.send_message(response, ephemeral=True)
+    return  
+
+
+@tree.command(
+    name="toggle_invite_link",
+    description="Toggle the invite link for the bot"
+)
+async def toggle_invite_link_command(interaction, enabled: str):
+    print("toggle_invite_link_command")
+    if interaction.user.roles[0].id != SERVER_INFO[interaction.guild.id]["roles"]["council"]:
+        response = "You are not authorized to use this command."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if enabled == None:
+        response = "Please provide a value."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": enabled})
+    
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    if api_response.json()["status"] != "Success":
+        response = f"Error updating invite link: {api_response.json()['status']}"
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+    
+    response = f"Invite link updated!"
+    await interaction.response.send_message(response, ephemeral=True)
+    return
+    
+    
 '''
 --------------
 LOOPS
@@ -346,8 +412,11 @@ START BOT
 @client.event
 async def on_ready():
     print("Ready!")
-    fetch_users.start()
-    update_games.start()
+    await tree.sync()
     
-if ENVIRONMENT == "production":
+    if ENVIRONMENT == "production":
+        fetch_users.start()
+        update_games.start()
+    
+if ENVIRONMENT == "production" or ENVIRONMENT == "development":
     client.run(os.environ["DISCORD_TOKEN"])
