@@ -412,9 +412,9 @@ START BOT
 @client.event
 async def on_ready():
     print("Ready!")
+    await tree.sync()
     
     if ENVIRONMENT == "production":
-        await tree.sync()
         fetch_users.start()
         update_games.start()
     
