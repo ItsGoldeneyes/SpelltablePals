@@ -2,4 +2,4 @@
 Get-ChildItem -Path "./src/" -File | Where-Object { $_.Extension -ne ".ts" -and $_.Name -ne "tsconfig.json" } | ForEach-Object { Copy-Item $_.FullName -Destination "./dist/" }
 
 # Compile TypeScript files from src to JavaScript, outputting to dist
-tsc -p ./src --outDir ./dist;
+npx tsc -p ./src --outDir ./dist;
