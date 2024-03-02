@@ -1,4 +1,4 @@
-export { };
+export {};
 
 type NameDictionaryPlayer = {
   custom_format: {
