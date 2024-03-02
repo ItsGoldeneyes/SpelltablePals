@@ -1,4 +1,4 @@
-export {};
+export { };
 
 type NameDictionaryPlayer = {
   custom_format: {
@@ -218,6 +218,30 @@ function addSpectatorButton() {
 
     targetDiv.appendChild(spectatorButton);
   }
+}
+
+function getCameraDiv() {
+  return document.querySelectorAll("div .flex-1.flex.flex-row.w-full.h-full.flex-wrap.justify-center.max-h-full")
+}
+
+function getPlayerDiv(n: number): HTMLDivElement | null  {
+  return getCameraDiv()[n] as HTMLDivElement ?? null;
+}
+
+function getPlayerStatusDiv(n: number): HTMLDivElement | null {
+  return getPlayerDiv(n)?.querySelector("div .absolute.inset-x-0.top-0.block.z-30") ?? null;
+}
+
+function getPlayerLifeTotalInput(n: number): HTMLInputElement | null {
+  return getPlayerStatusDiv(n)?.querySelector("input bg-transparent.font-bold.text-center.select-auto.text-white.text-3xl") ?? null;
+}
+
+function getPlayerLifeTotal(n: number): number | null {
+  const input = getPlayerLifeTotalInput(n);
+  if(input === null) return null;
+  const value = Number(input.value);
+  if (isNaN(value)) return null;
+  return value;
 }
 
 function addReportButton() {
