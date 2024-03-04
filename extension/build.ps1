@@ -1,3 +1,6 @@
+# Copy the tsconfig file from the root to the src folder
+Copy-Item -Path "./tsconfig.json" -Destination "./src/tsconfig.json"
+
 # Copy all files except those with a .ts extension from src to dist
 Get-ChildItem -Path "./src/" -File | Where-Object { $_.Extension -ne ".ts" -and $_.Name -ne "tsconfig.json" } | ForEach-Object { Copy-Item $_.FullName -Destination "./dist/" }
 

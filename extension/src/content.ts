@@ -1,6 +1,6 @@
-export {};
+/// <reference lib="dom" />
 
-type NameDictionaryPlayer = {
+type NameDictionaryPlayer2 = {
   custom_format: {
     color: string;
     fontSize: string;
@@ -20,7 +20,7 @@ type NameDictionaryPlayer = {
   role: string;
 };
 
-let nameDictionary: Record<string, NameDictionaryPlayer> = {};
+let nameDictionary2: Record<string, NameDictionaryPlayer2> = {};
 let lastNamesOnPage: string[] = [];
 let lastCommandersOnPage: string[] = [];
 let playerDropdownButtonListeners: Element[] = [];
@@ -29,13 +29,17 @@ let currentReportedPlayer: string | null = null;
 
 function main() {
   addSpectatorButton();
+
   const playerDropdownButtons = document.querySelectorAll(
     "button.p-1.shadow-md.rounded.text-white.transition-all.ease-in-out.duration-200.bg-surface-high",
   );
   for (
-    const dropdown of Array.from(playerDropdownButtons.values()).filter((
+    const dropdown of Array.from(playerDropdownButtons).filter((
       dropdown,
-    ) => !playerDropdownButtonListeners.includes(dropdown))
+    ) =>
+      !(playerDropdownButtonListeners.filter((v) => v === dropdown).length >
+        0)
+    )
   ) {
     playerDropdownButtonListeners.push(dropdown);
     dropdown.addEventListener("click", () => {
@@ -101,8 +105,8 @@ function main() {
   if (namesOnPage.length !== 0) {
     const allNamesOnPageAreContained =
       JSON.stringify(lastNamesOnPage) === JSON.stringify(namesOnPage);
-    const allCommandersAreContained =
-      JSON.stringify(lastCommandersOnPage) === JSON.stringify(commandersOnPage);
+    const allCommandersAreContained = JSON.stringify(lastCommandersOnPage) ===
+      JSON.stringify(commandersOnPage);
 
     if (!allNamesOnPageAreContained || !allCommandersAreContained) {
       chrome.runtime.sendMessage({
@@ -120,12 +124,14 @@ function main() {
   lastCommandersOnPage = commandersOnPage;
 }
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === "recieveNameDictContent") {
-    nameDictionary = message.data;
-    formatNames();
-  }
-});
+chrome.runtime.onMessage.addListener(
+  function (message, sender, sendResponse) {
+    if (message.action === "recieveNameDictContent") {
+      nameDictionary2 = message.data;
+      formatNames();
+    }
+  },
+);
 
 // Convert all keys in an object to lowercase
 const lowerize = (obj: Record<string, any>) =>
@@ -136,7 +142,7 @@ const lowerize = (obj: Record<string, any>) =>
 
 // Format names on the page
 function formatNames() {
-  lowerize(nameDictionary);
+  lowerize(nameDictionary2);
   const elements = document.querySelectorAll(
     ".font-bold.truncate.leading-snug.text-sm",
   );
@@ -146,33 +152,33 @@ function formatNames() {
     // If the player has a record in the name dictionary, apply the custom format
     if (
       elementText !== undefined &&
-      nameDictionary[elementText] &&
-      nameDictionary[elementText].custom_format !== null
+      nameDictionary2[elementText] &&
+      nameDictionary2[elementText].custom_format !== null
     ) {
       (element as HTMLElement).style.color =
-        nameDictionary[elementText].custom_format.color;
+        nameDictionary2[elementText].custom_format.color;
       (element as HTMLElement).style.fontSize =
-        nameDictionary[elementText].custom_format.fontSize;
+        nameDictionary2[elementText].custom_format.fontSize;
       (element as HTMLElement).style.fontWeight =
-        nameDictionary[elementText].custom_format.fontWeight;
+        nameDictionary2[elementText].custom_format.fontWeight;
       (element as HTMLElement).style.backgroundColor =
-        nameDictionary[elementText].custom_format.backgroundColor;
+        nameDictionary2[elementText].custom_format.backgroundColor;
       (element as HTMLElement).style.textDecoration =
-        nameDictionary[elementText].custom_format.textDecoration;
+        nameDictionary2[elementText].custom_format.textDecoration;
       (element as HTMLElement).style.textTransform =
-        nameDictionary[elementText].custom_format.textTransform;
+        nameDictionary2[elementText].custom_format.textTransform;
       (element as HTMLElement).style.textShadow =
-        nameDictionary[elementText].custom_format.textShadow;
+        nameDictionary2[elementText].custom_format.textShadow;
       (element as HTMLElement).style.textIndent =
-        nameDictionary[elementText].custom_format.textIndent;
+        nameDictionary2[elementText].custom_format.textIndent;
       (element as HTMLElement).style.letterSpacing =
-        nameDictionary[elementText].custom_format.letterSpacing;
+        nameDictionary2[elementText].custom_format.letterSpacing;
       (element as HTMLElement).style.lineHeight =
-        nameDictionary[elementText].custom_format.lineHeight;
+        nameDictionary2[elementText].custom_format.lineHeight;
       (element as HTMLElement).style.wordSpacing =
-        nameDictionary[elementText].custom_format.wordSpacing;
+        nameDictionary2[elementText].custom_format.wordSpacing;
       (element as HTMLElement).style.whiteSpace =
-        nameDictionary[elementText].custom_format.whiteSpace;
+        nameDictionary2[elementText].custom_format.whiteSpace;
     } else {
       // If the player does not have a record in the name dictionary, reset the format
       (element as HTMLElement).style.color = "";

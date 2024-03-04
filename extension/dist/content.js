@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference lib="dom" />
 let nameDictionary = {};
 let lastNamesOnPage = [];
 let lastCommandersOnPage = [];
@@ -8,7 +8,8 @@ let currentReportedPlayer = null;
 function main() {
     addSpectatorButton();
     const playerDropdownButtons = document.querySelectorAll("button.p-1.shadow-md.rounded.text-white.transition-all.ease-in-out.duration-200.bg-surface-high");
-    for (const dropdown of Array.from(playerDropdownButtons.values()).filter((dropdown) => !playerDropdownButtonListeners.includes(dropdown))) {
+    for (const dropdown of Array.from(playerDropdownButtons).filter((dropdown) => !(playerDropdownButtonListeners.filter((v) => v === dropdown).length >
+        0))) {
         playerDropdownButtonListeners.push(dropdown);
         dropdown.addEventListener("click", () => {
             var _a, _b, _c, _d, _e, _f, _g, _h;
@@ -63,7 +64,8 @@ function main() {
     // If there are no names on the page, the active page is probably the game start page
     if (namesOnPage.length !== 0) {
         const allNamesOnPageAreContained = JSON.stringify(lastNamesOnPage) === JSON.stringify(namesOnPage);
-        const allCommandersAreContained = JSON.stringify(lastCommandersOnPage) === JSON.stringify(commandersOnPage);
+        const allCommandersAreContained = JSON.stringify(lastCommandersOnPage) ===
+            JSON.stringify(commandersOnPage);
         if (!allNamesOnPageAreContained || !allCommandersAreContained) {
             chrome.runtime.sendMessage({
                 action: "getNameDictContent",
