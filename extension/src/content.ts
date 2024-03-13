@@ -282,6 +282,10 @@ function observeInputs() {
           if (
             mutation.type === "attributes" && mutation.attributeName === "value"
           ) {
+            if (!clickAudio.ended) {
+              clickAudio.pause();
+              clickAudio.currentTime = 0;
+            }
             clickAudio.play();
           }
         }
