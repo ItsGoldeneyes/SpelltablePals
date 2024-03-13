@@ -1,6 +1,6 @@
 "use strict";
 /// <reference lib="dom" />
-let nameDictionary = {};
+let nameDictionary2 = {};
 let lastNamesOnPage = [];
 let lastCommandersOnPage = [];
 let playerDropdownButtonListeners = [];
@@ -82,7 +82,7 @@ function main() {
 }
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.action === "recieveNameDictContent") {
-        nameDictionary = message.data;
+        nameDictionary2 = message.data;
         formatNames();
     }
 });
@@ -93,39 +93,39 @@ const lowerize = (obj) => Object.keys(obj).reduce((acc, k) => {
 }, {});
 // Format names on the page
 function formatNames() {
-    lowerize(nameDictionary);
+    lowerize(nameDictionary2);
     const elements = document.querySelectorAll(".font-bold.truncate.leading-snug.text-sm");
     elements.forEach((element) => {
         var _a;
         const elementText = (_a = element.textContent) === null || _a === void 0 ? void 0 : _a.trim().toLowerCase();
         // If the player has a record in the name dictionary, apply the custom format
         if (elementText !== undefined &&
-            nameDictionary[elementText] &&
-            nameDictionary[elementText].custom_format !== null) {
+            nameDictionary2[elementText] &&
+            nameDictionary2[elementText].custom_format !== null) {
             element.style.color =
-                nameDictionary[elementText].custom_format.color;
+                nameDictionary2[elementText].custom_format.color;
             element.style.fontSize =
-                nameDictionary[elementText].custom_format.fontSize;
+                nameDictionary2[elementText].custom_format.fontSize;
             element.style.fontWeight =
-                nameDictionary[elementText].custom_format.fontWeight;
+                nameDictionary2[elementText].custom_format.fontWeight;
             element.style.backgroundColor =
-                nameDictionary[elementText].custom_format.backgroundColor;
+                nameDictionary2[elementText].custom_format.backgroundColor;
             element.style.textDecoration =
-                nameDictionary[elementText].custom_format.textDecoration;
+                nameDictionary2[elementText].custom_format.textDecoration;
             element.style.textTransform =
-                nameDictionary[elementText].custom_format.textTransform;
+                nameDictionary2[elementText].custom_format.textTransform;
             element.style.textShadow =
-                nameDictionary[elementText].custom_format.textShadow;
+                nameDictionary2[elementText].custom_format.textShadow;
             element.style.textIndent =
-                nameDictionary[elementText].custom_format.textIndent;
+                nameDictionary2[elementText].custom_format.textIndent;
             element.style.letterSpacing =
-                nameDictionary[elementText].custom_format.letterSpacing;
+                nameDictionary2[elementText].custom_format.letterSpacing;
             element.style.lineHeight =
-                nameDictionary[elementText].custom_format.lineHeight;
+                nameDictionary2[elementText].custom_format.lineHeight;
             element.style.wordSpacing =
-                nameDictionary[elementText].custom_format.wordSpacing;
+                nameDictionary2[elementText].custom_format.wordSpacing;
             element.style.whiteSpace =
-                nameDictionary[elementText].custom_format.whiteSpace;
+                nameDictionary2[elementText].custom_format.whiteSpace;
         }
         else {
             // If the player does not have a record in the name dictionary, reset the format
@@ -168,19 +168,19 @@ function addSpectatorButton() {
     }
 }
 function getCameraDiv() {
-    return document.querySelectorAll("div .flex-1.flex.flex-row.w-full.h-full.flex-wrap.justify-center.max-h-full");
+    return document.querySelector("div.flex-1.flex.flex-row.w-full.h-full.flex-wrap.justify-center.max-h-full");
 }
 function getPlayerDiv(n) {
-    var _a;
-    return (_a = getCameraDiv()[n]) !== null && _a !== void 0 ? _a : null;
+    var _a, _b;
+    return (_b = (_a = getCameraDiv()) === null || _a === void 0 ? void 0 : _a.children[n]) !== null && _b !== void 0 ? _b : null;
 }
 function getPlayerStatusDiv(n) {
     var _a, _b;
-    return (_b = (_a = getPlayerDiv(n)) === null || _a === void 0 ? void 0 : _a.querySelector("div .absolute.inset-x-0.top-0.block.z-30")) !== null && _b !== void 0 ? _b : null;
+    return (_b = (_a = getPlayerDiv(n)) === null || _a === void 0 ? void 0 : _a.querySelector("div.absolute.inset-x-0.top-0.block.z-30")) !== null && _b !== void 0 ? _b : null;
 }
 function getPlayerLifeTotalInput(n) {
     var _a, _b;
-    return (_b = (_a = getPlayerStatusDiv(n)) === null || _a === void 0 ? void 0 : _a.querySelector("input bg-transparent.font-bold.text-center.select-auto.text-white.text-3xl")) !== null && _b !== void 0 ? _b : null;
+    return (_b = (_a = getPlayerStatusDiv(n)) === null || _a === void 0 ? void 0 : _a.querySelector("input.bg-transparent.font-bold.text-center.select-auto.text-white.text-3xl")) !== null && _b !== void 0 ? _b : null;
 }
 function getPlayerLifeTotal(n) {
     const input = getPlayerLifeTotalInput(n);
@@ -190,6 +190,48 @@ function getPlayerLifeTotal(n) {
     if (isNaN(value))
         return null;
     return value;
+}
+const inputSelector = "input.bg-transparent.font-bold.text-center.select-auto.text-white.text-3xl";
+const observerOptions = {
+    attributes: true,
+    attributeOldValue: true,
+    attributeFilter: ["value"],
+};
+const observers = {};
+function observeInputs() {
+    const inputs = document.querySelectorAll(inputSelector);
+    inputs.forEach((input) => {
+        const id = input.id || input.name ||
+            Math.random().toString(36).substring(2); // Generate a unique id for the input
+        if (!observers[id]) {
+            const observer = new MutationObserver((mutationsList, observer) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === "attributes" && mutation.attributeName === "value") {
+                        clickAudio.play();
+                    }
+                }
+            });
+            observer.observe(input, observerOptions);
+            observers[id] = observer;
+        }
+    });
+}
+const clickAudio = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568.wav");
+clickAudio.volume = 0.2;
+clickAudio.playbackRate = 2;
+function getPlayerInfo(n) {
+    var _a, _b, _c, _d, _e;
+    const div = getPlayerStatusDiv(n);
+    const name = (_a = div === null || div === void 0 ? void 0 : div.querySelector("div.font-bold.flex.flex-row.truncate.items-end.leading-snug.text-sm")) === null || _a === void 0 ? void 0 : _a.innerHTML;
+    const pronouns = (_b = div === null || div === void 0 ? void 0 : div.querySelector("div.px-2.truncate.leading-snug.text-sm")) === null || _b === void 0 ? void 0 : _b.innerHTML;
+    const commander = (_d = (_c = div === null || div === void 0 ? void 0 : div.querySelector("div.text-xs.italic.text-gray-400.truncate.leading-snug.flex.justify-end")) === null || _c === void 0 ? void 0 : _c.children[0]) === null || _d === void 0 ? void 0 : _d.innerHTML;
+    const life = (_e = getPlayerLifeTotal(n)) !== null && _e !== void 0 ? _e : undefined;
+    return {
+        name,
+        pronouns,
+        commander,
+        life,
+    };
 }
 function addReportButton() {
     const playerDropdownDiv = document.querySelectorAll("div .bg-surface-high.rounded.text-sm.shadow-lg.py-1.w-40");
@@ -225,9 +267,7 @@ function addReportButton() {
     }
 }
 // Set up an interval to execute main function every second
-const intervalId = setInterval(() => main(), 1000);
-const lifeSoundInterval = setInterval(() => {
-    console.log(getPlayerLifeTotal(3));
+const intervalId = setInterval(() => {
+    main();
+    observeInputs();
 }, 1000);
-console.log("starting");
-setInterval(() => console.log("hello world"), 1000);

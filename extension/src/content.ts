@@ -227,24 +227,24 @@ function addSpectatorButton() {
 }
 
 function getCameraDiv() {
-  return document.querySelectorAll(
-    "div .flex-1.flex.flex-row.w-full.h-full.flex-wrap.justify-center.max-h-full",
+  return document.querySelector(
+    "div.flex-1.flex.flex-row.w-full.h-full.flex-wrap.justify-center.max-h-full",
   );
 }
 
 function getPlayerDiv(n: number): HTMLDivElement | null {
-  return getCameraDiv()[n] as HTMLDivElement ?? null;
+  return getCameraDiv()?.children[n] as HTMLDivElement ?? null;
 }
 
 function getPlayerStatusDiv(n: number): HTMLDivElement | null {
   return getPlayerDiv(n)?.querySelector(
-    "div .absolute.inset-x-0.top-0.block.z-30",
+    "div.absolute.inset-x-0.top-0.block.z-30",
   ) ?? null;
 }
 
 function getPlayerLifeTotalInput(n: number): HTMLInputElement | null {
   return getPlayerStatusDiv(n)?.querySelector(
-    "input bg-transparent.font-bold.text-center.select-auto.text-white.text-3xl",
+    "input.bg-transparent.font-bold.text-center.select-auto.text-white.text-3xl",
   ) ?? null;
 }
 
@@ -254,6 +254,69 @@ function getPlayerLifeTotal(n: number): number | null {
   const value = Number(input.value);
   if (isNaN(value)) return null;
   return value;
+}
+
+type PlayerInfo = {
+  name?: string;
+  pronouns?: string;
+  commander?: string;
+  life?: number;
+};
+const inputSelector =
+  "input.bg-transparent.font-bold.text-center.select-auto.text-white.text-3xl";
+const observerOptions = {
+  attributes: true,
+  attributeOldValue: true,
+  attributeFilter: ["value"],
+};
+const observers: { [key: string]: MutationObserver } = {};
+
+function observeInputs() {
+  const inputs = document.querySelectorAll<HTMLInputElement>(inputSelector);
+  inputs.forEach((input) => {
+    const id = input.id || input.name ||
+      Math.random().toString(36).substring(2); // Generate a unique id for the input
+    if (!observers[id]) {
+      const observer = new MutationObserver((mutationsList, observer) => {
+        for (const mutation of mutationsList) {
+          if (
+            mutation.type === "attributes" && mutation.attributeName === "value"
+          ) {
+            clickAudio.play();
+          }
+        }
+      });
+      observer.observe(input, observerOptions);
+      observers[id] = observer;
+    }
+  });
+}
+
+const clickAudio = new Audio(
+  "https://assets.mixkit.co/active_storage/sfx/2568/2568.wav",
+);
+
+clickAudio.volume = 0.2;
+clickAudio.playbackRate = 2;
+
+function getPlayerInfo(n: number): PlayerInfo | null {
+  const div = getPlayerStatusDiv(n);
+  const name = div?.querySelector(
+    "div.font-bold.flex.flex-row.truncate.items-end.leading-snug.text-sm",
+  )?.innerHTML;
+  const pronouns = div?.querySelector(
+    "div.px-2.truncate.leading-snug.text-sm",
+  )?.innerHTML;
+  const commander = div?.querySelector(
+    "div.text-xs.italic.text-gray-400.truncate.leading-snug.flex.justify-end",
+  )?.children[0]?.innerHTML;
+  const life = getPlayerLifeTotal(n) ?? undefined;
+  return {
+    name,
+    pronouns,
+    commander,
+    life,
+  };
 }
 
 function addReportButton() {
@@ -295,12 +358,7 @@ function addReportButton() {
 }
 
 // Set up an interval to execute main function every second
-const intervalId = setInterval(() => main(), 1000);
-
-const lifeSoundInterval = setInterval(() => {
-  console.log(getPlayerLifeTotal(3));
+const intervalId = setInterval(() => {
+  main();
+  observeInputs();
 }, 1000);
-
-console.log("starting");
-
-setInterval(() => console.log("hello world"), 1000);
