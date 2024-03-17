@@ -25,13 +25,35 @@ export default function Home(props: PageProps<BlockedUser[]>) {
           <h2 class="text-3xl italic">Caution List</h2>
         </div>
       </div>
-      <div class="m-auto p-4 w-[50%]">
+      <div class="m-auto p-4 w-[50%] children:py-1">
+        <p class="text-center">
+          <a href="/discord" target="_blank" class="text-blue-600 underline">
+            Join our Discord!
+          </a>
+        </p>
         <p>
-          This is a list of users who the Spelltable Pals have had a poor
-          experience with. If you are a member of the Spelltable Pals, please
-          use this list to help avoid playing with these users. If you are a
-          user on this list, please reach out to the Spelltable Pals to discuss
-          the situation and potentially be removed from this list.
+          The List names users that Spelltable Pals have had negative
+          experiences with, to varying degrees.
+        </p>
+        <p>
+          If you are a Spelltable Pals member, you may refer to The List when
+          joining games to see if another player has been flagged by the
+          community for bigotry, aggression, misrepresenting their deck, etc.
+          You can also download the Chrome extension{" "}
+          <a
+            class="text-blue-600 underline"
+            target="_blank"
+            href="https://github.com/ItsGoldeneyes/SpelltablePals"
+          >
+            here
+          </a>.
+        </p>
+        <p>
+          If you are not a Spelltable Pals member & your name is listed, you may
+          contact us to discuss the circumstances surrounding your caution.
+        </p>
+        <p>
+          Keep Magic the Gathering Fun!
         </p>
       </div>
       <div class="flex-row justify-center items-center">
