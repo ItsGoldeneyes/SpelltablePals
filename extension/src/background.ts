@@ -1,6 +1,6 @@
 export {};
 
-let ENVIRONMENT = "preproduction"; // Set to 'production' or 'preproduction' to change the API environment
+let ENVIRONMENT = "production"; // Set to 'production' or 'preproduction' to change the API environment
 
 const useDefaultDictionary = false; // Set this to false when using the API
 let nameDictionary = {}; // Default empty dictionary
