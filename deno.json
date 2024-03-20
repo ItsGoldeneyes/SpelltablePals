@@ -1,0 +1,25 @@
+{
+  "lock": false,
+  "fmt": {
+    "indentWidth": 2,
+    "singleQuote": false,
+    "lineWidth": 80,
+    "semiColons": true,
+    "proseWrap": "preserve"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended", "fresh"],
+      "include": [
+        "ban-untagged-todo",
+        "default-param-last",
+        "eqeqeq",
+        "no-await-in-loop",
+        "no-const-assign",
+        "no-eval",
+        "no-external-import",
+        "no-sparse-arrays"
+      ]
+    }
+  }
+}

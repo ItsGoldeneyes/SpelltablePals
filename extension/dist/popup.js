@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 let nameDictionary = {};
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.action === "recieveNameDictPopup") {

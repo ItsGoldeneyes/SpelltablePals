@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 let ENVIRONMENT = "production"; // Set to 'production' or 'preproduction' to change the API environment
 const useDefaultDictionary = false; // Set this to false when using the API
-let nameDictionary = {}; // Default empty dictionary
+let nameDictionary1 = {}; // Default empty dictionary
 const extensionID = chrome.runtime.id; // Extension ID for the API to check for valid requests
 let APILink = "";
 // Set environment-specific API link
@@ -24,7 +24,7 @@ console.log("Session ID:", sessionID);
 function loadDictionary(inputNames, inputCommanders, sessionID) {
     // If using the test variable, set the default dictionary
     if (useDefaultDictionary) {
-        nameDictionary = {
+        nameDictionary1 = {
             "Goldeneyes": {
                 "role": "custom",
                 "reason": "Test",
@@ -50,7 +50,7 @@ function loadDictionary(inputNames, inputCommanders, sessionID) {
             const currentTab = tabs[0];
             chrome.tabs.sendMessage((_a = currentTab.id) !== null && _a !== void 0 ? _a : 0, {
                 action: "recieveNameDictContent",
-                data: nameDictionary,
+                data: nameDictionary1,
             });
         });
     }
@@ -75,15 +75,15 @@ function loadDictionary(inputNames, inputCommanders, sessionID) {
             return response.json();
         })
             .then((data) => {
-            nameDictionary = data;
-            console.log("Name dictionary fetched successfully:", nameDictionary);
+            nameDictionary1 = data;
+            console.log("Name dictionary fetched successfully:", nameDictionary1);
             // Send the data back to the content script
             chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
                 var _a;
                 const currentTab = tabs[0];
                 chrome.tabs.sendMessage((_a = currentTab.id) !== null && _a !== void 0 ? _a : 0, {
                     action: "recieveNameDictContent",
-                    data: nameDictionary,
+                    data: nameDictionary1,
                 });
             });
         })
@@ -120,7 +120,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         // Send the data back to the popup
         chrome.runtime.sendMessage({
             action: "recieveNameDictPopup",
-            data: nameDictionary,
+            data: nameDictionary1,
         });
     }
     if (message.action === "reportPlayer") {

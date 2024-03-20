@@ -1,5 +1,3 @@
-export {};
-
 type NameDictionaryPlayer = {
   custom_format: {
     color: string;
@@ -20,13 +18,15 @@ type NameDictionaryPlayer = {
   role: string;
 };
 
-let nameDictionary: Record<string, NameDictionaryPlayer> = {};
+let nameDictionary: Record<string, NameDictionaryPlayer2> = {};
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === "recieveNameDictPopup") {
-    nameDictionary = message.data;
-  }
-});
+chrome.runtime.onMessage.addListener(
+  function (message, sender, sendResponse) {
+    if (message.action === "recieveNameDictPopup") {
+      nameDictionary = message.data;
+    }
+  },
+);
 
 function loadDynamicCSS() {
   // Create a link element
@@ -53,7 +53,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const titlePage = document.getElementById("titlePage");
     const gamePage = document.getElementById("gamePage");
-    const playerInfoContainer = document.getElementById("playerInfoContainer");
+    const playerInfoContainer = document.getElementById(
+      "playerInfoContainer",
+    );
 
     if (
       url.hostname === "spelltable.wizards.com" &&
@@ -90,26 +92,30 @@ function getPlayersInfo() {
   chrome.runtime.sendMessage({ action: "updatePopup", names: namesOnPage });
 }
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === "updatePopup") {
-    const playerInfoContainer = document.getElementById("playerInfoContainer");
-    if (playerInfoContainer !== null) playerInfoContainer.innerHTML = "";
+chrome.runtime.onMessage.addListener(
+  function (message, sender, sendResponse) {
+    if (message.action === "updatePopup") {
+      const playerInfoContainer = document.getElementById(
+        "playerInfoContainer",
+      );
+      if (playerInfoContainer !== null) playerInfoContainer.innerHTML = "";
 
-    // Ensure that there are always four players
-    for (let i = 0; i < 4; i++) {
-      const playerName = message.names[i] || "<no player>";
-      const playerInfoDiv = document.createElement("div");
-      playerInfoDiv.classList.add("player-info");
+      // Ensure that there are always four players
+      for (let i = 0; i < 4; i++) {
+        const playerName = message.names[i] || "<no player>";
+        const playerInfoDiv = document.createElement("div");
+        playerInfoDiv.classList.add("player-info");
 
-      playerInfoDiv.textContent = `${playerName} - ${
-        getPlayerStatus(playerName.lower())
-      }`;
-      if (playerInfoContainer !== null) {
-        playerInfoContainer.appendChild(playerInfoDiv);
+        playerInfoDiv.textContent = `${playerName} - ${
+          getPlayerStatus(playerName.lower())
+        }`;
+        if (playerInfoContainer !== null) {
+          playerInfoContainer.appendChild(playerInfoDiv);
+        }
       }
     }
-  }
-});
+  },
+);
 
 function getPlayerStatus(name: string) {
   if (nameDictionary[name]) {
