@@ -34,9 +34,16 @@ SERVER_INFO[1073654117475569784] = {"guild_name": "SpellTable Pals",
 OWNER_USER_ID = 744739465045737623
 BOT_ID = 1187847835920629881
 
+# Import cogs
+cog_files = ["cogs.invite", "cogs.tournament", "cogs.moderation"]
+
+for cog_file in cog_files:
+    client.load_extension(cog_file)
+    print(f"Loaded {cog_file} cog")
+
 '''
 --------------
-SLASH COMMANDS
+BUILT-IN SLASH COMMANDS
 --------------
 '''
 
@@ -73,6 +80,9 @@ I'm here to help you have a better SpellTable experience! \n\
     description="Get help with the bot"
     )
 async def help_command(interaction):
+    '''
+    TODO: Add modular help information with loaded cogs    
+    '''
     print("help_command")
     response = "Here are my commands: \n\
 */info* - Get info about the bot \n\
@@ -294,55 +304,6 @@ async def set_colour_command(interaction, colour: str):
     await interaction.followup.send(response, ephemeral=True)
     return
 
-@tree.command(
-    name="toggle_invite_link",
-    description="Toggle the invite link for the bot"
-)
-async def toggle_invite_link_command(interaction):
-    print("toggle_invite_link_command")
-    user_roles = SERVER_INFO[interaction.guild.id]["roles"]
-    if user_roles["council"] not in [role.id for role in interaction.user.roles]:
-        response = "You are not authorized to use this command."
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    api_response = requests.get(f"{BACKEND_API}/get_discord_invite")
-
-    if api_response.status_code != 200:
-        response = "Something went wrong. Please try again later."
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    if api_response.json()["invite_link"] == "None":
-        invite_link_enabled = True
-        new_invite_link = await client.get_channel(SERVER_INFO[interaction.guild.id]["invite_channel"]).create_invite(max_age=0, max_uses=0, unique=True)
-        api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": str(new_invite_link), "enabled": "None"})
-
-    else:
-        invite_link_enabled = False
-        invite = await interaction.guild.invites()
-        for i in invite:
-            if i.url == api_response.json()["invite_link"]:
-                await i.delete()
-                break
-        api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": "Toggle"})
-
-    if api_response.status_code != 200:
-        response = "Something went wrong. Please try again later."
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    if api_response.json()["status"] != "Success":
-        response = f"Error updating invite link: {api_response.json()['status']}"
-        await interaction.response.send_message(response, ephemeral=True)
-        return
-
-    if invite_link_enabled:
-        response = f"Invite link enabled!"
-    else:
-        response = f"Invite link disabled!"
-    await interaction.response.send_message(response, ephemeral=True)
-    return
 
 
 '''
