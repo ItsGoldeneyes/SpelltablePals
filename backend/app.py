@@ -74,6 +74,11 @@ class Trackedgames(db.Model):
 class Discordinvite(db.Model):
     enabled = db.Column(db.Boolean, nullable=False)
     invite_link = db.Column(db.String(200), nullable=True, primary_key=True, unique=True)
+    creator_id = db.Column(db.String(50), nullable=True)
+    creator_name = db.Column(db.String(50), nullable=True)
+    uses = db.Column(db.Integer, nullable=True)
+    created_on = db.Column(db.DateTime, nullable=True)
+    expired_on = db.Column(db.DateTime, nullable=True)
 
 
 '''
@@ -278,6 +283,34 @@ def update_discord_invite_endpoint():
     db.session.commit()
     return {"status": "Success"}
 
+
+@app.route("/update_discord_invite", methods=['POST'])
+def update_discord_invite_endpoint():
+    '''
+    This function creates a new Discord invite link.
+    Request format:
+        {"creator_id": String,
+        "creator_name": String.
+        "creator_role": String}
+    '''
+
+    data = request.get_json(force=True)
+    print(f"POST: /create_discord_invite {data['creator_id']} {data['creator_name']}")
+
+    # Check if user has an enabled invite link
+    invite = Discordinvite.query.filter(Discordinvite.enabled == True).first()
+
+    if invite:
+        return {"status": "Invite already exists"}
+
+    if data['creator_role'] not in ['council']:
+        # Check if user has made more than 2 invites in the last 24 hours, if so, return an error
+        invites = Discordinvite.query.filter(Discordinvite.creator_id == data['creator_id']).filter(Discordinvite.created_on > datetime.datetime.now() - datetime.timedelta(days=1)).all()
+        if len(invites) > 2:
+            return {"status": "Invite limit reached"}
+
+    # Create a new invite link
+    new_invite = Discordinvite(invite_link=str(uuid.uuid4()), enabled=True, creator_id=data['creator_id'], creator_name=data['creator_name'], creator_role=data['creator_role'])
 
 '''
 -----------------

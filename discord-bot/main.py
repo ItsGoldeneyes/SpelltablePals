@@ -345,6 +345,57 @@ async def toggle_invite_link_command(interaction):
     return
 
 
+@tree.command(
+    name="invite",
+    description="Create a new server invite"
+)
+async def create_invite_command(interaction):
+    print("create invite command")
+    user_roles = SERVER_INFO[interaction.guild.id]["roles"]
+    if user_roles["chill"] not in [role.id for role in interaction.user.roles]:
+        response = "Only Certified Chill users can create invites."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+
+    api_response = requests.get(f"{BACKEND_API}/create_discord_invite")
+
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+
+    if api_response.json()["invite_link"] == "None":
+        invite_link_enabled = True
+        new_invite_link = await client.get_channel(SERVER_INFO[interaction.guild.id]["invite_channel"]).create_invite(max_age=0, max_uses=0, unique=True)
+        api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": str(new_invite_link), "enabled": "None"})
+
+    else:
+        invite_link_enabled = False
+        invite = await interaction.guild.invites()
+        for i in invite:
+            if i.url == api_response.json()["invite_link"]:
+                await i.delete()
+                break
+        api_response = requests.post(f"{BACKEND_API}/update_discord_invite", json={"invite_link": "None", "enabled": "Toggle"})
+
+    if api_response.status_code != 200:
+        response = "Something went wrong. Please try again later."
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+
+    if api_response.json()["status"] != "Success":
+        response = f"Error updating invite link: {api_response.json()['status']}"
+        await interaction.response.send_message(response, ephemeral=True)
+        return
+
+    if invite_link_enabled:
+        response = f"Invite link enabled!"
+    else:
+        response = f"Invite link disabled!"
+    await interaction.response.send_message(response, ephemeral=True)
+    return
+
+
 '''
 --------------
 LOOPS
