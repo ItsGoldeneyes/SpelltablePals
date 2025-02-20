@@ -22,7 +22,7 @@ export default function Home(props: PageProps<BlockedUser[]>) {
         />
         <div class="children:text-left">
           <h1 class="font-bold text-6xl">Spelltable Pals</h1>
-            <a href="/discord" target="_blank" class="underline text-2xl">
+            <a href="/discord" target="_blank" class="underline text-2xl text-blue-600">
             Join our Discord!
             </a>
         </div>
