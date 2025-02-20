@@ -22,14 +22,14 @@ export default function Home(props: PageProps<BlockedUser[]>) {
         />
         <div class="children:text-left">
           <h1 class="font-bold text-6xl">Spelltable Pals</h1>
-          <h2 class="text-3xl italic">Caution List</h2>
+          <a href="/discord" target="_blank" class="text-blue-600 underline">
+            Join our Discord!
+          </a>
         </div>
       </div>
       <div class="m-auto p-4 w-[50%] children:py-1">
         <p class="text-center">
-          <a href="/discord" target="_blank" class="text-blue-600 underline">
-            Join our Discord!
-          </a>
+          <h2 class="text-3xl italic">Caution List</h2>
         </p>
         <p>
           The List names users that Spelltable Pals have had negative
